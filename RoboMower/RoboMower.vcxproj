@@ -1,0 +1,186 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{A279F449-8C13-4804-BEA7-21FA0407C9BA}</ProjectGuid>
+    <RootNamespace>RoboMower</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>include;</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG_;_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>extlibs/sfml</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sfml-audio-d.lib;sfml-graphics-d.lib;sfml-network-d.lib;sfml-system-d.lib;sfml-window-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>include;</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>extlibs/sfml</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sfml-audio.lib;sfml-graphics.lib;sfml-main.lib;sfml-network.lib;sfml-system.lib;sfml-window.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="include\Affectors.hpp" />
+    <ClInclude Include="include\AnimatedDrawable.hpp" />
+    <ClInclude Include="include\AnimationController.hpp" />
+    <ClInclude Include="include\App.hpp" />
+    <ClInclude Include="include\AudioManager.hpp" />
+    <ClInclude Include="include\Command.hpp" />
+    <ClInclude Include="include\Component.hpp" />
+    <ClInclude Include="include\Entity.hpp" />
+    <ClInclude Include="include\FileSystem.hpp" />
+    <ClInclude Include="include\GameState.hpp" />
+    <ClInclude Include="include\JsonUtil.hpp" />
+    <ClInclude Include="include\Log.hpp" />
+    <ClInclude Include="include\MenuBackgroundState.hpp" />
+    <ClInclude Include="include\MenuJoinState.hpp" />
+    <ClInclude Include="include\MenuLobbyState.hpp" />
+    <ClInclude Include="include\MenuMainState.hpp" />
+    <ClInclude Include="include\MenuOptionState.hpp" />
+    <ClInclude Include="include\MenuPauseState.hpp" />
+    <ClInclude Include="include\MessageBus.hpp" />
+    <ClInclude Include="include\Music.hpp" />
+    <ClInclude Include="include\Particle.hpp" />
+    <ClInclude Include="include\ParticleController.hpp" />
+    <ClInclude Include="include\ParticleSystem.hpp" />
+    <ClInclude Include="include\PostBloom.hpp" />
+    <ClInclude Include="include\PostChromeAb.hpp" />
+    <ClInclude Include="include\PostProcess.hpp" />
+    <ClInclude Include="include\Protocol.hpp" />
+    <ClInclude Include="include\QuadTree.hpp" />
+    <ClInclude Include="include\QuadTreeComponent.hpp" />
+    <ClInclude Include="include\QuadTreeNode.hpp" />
+    <ClInclude Include="include\Reports.hpp" />
+    <ClInclude Include="include\Resource.hpp" />
+    <ClInclude Include="include\Scene.hpp" />
+    <ClInclude Include="include\Score.hpp" />
+    <ClInclude Include="include\Server.hpp" />
+    <ClInclude Include="include\ShaderResource.hpp" />
+    <ClInclude Include="include\Shaders.hpp" />
+    <ClInclude Include="include\SoundPlayer.hpp" />
+    <ClInclude Include="include\State.hpp" />
+    <ClInclude Include="include\StateIds.hpp" />
+    <ClInclude Include="include\StateStack.hpp" />
+    <ClInclude Include="include\StatsOverlayState.hpp" />
+    <ClInclude Include="include\TextDrawable.hpp" />
+    <ClInclude Include="include\UIButton.hpp" />
+    <ClInclude Include="include\UICheckBox.hpp" />
+    <ClInclude Include="include\UIComboBox.hpp" />
+    <ClInclude Include="include\UIContainer.hpp" />
+    <ClInclude Include="include\UIControl.hpp" />
+    <ClInclude Include="include\UILabel.hpp" />
+    <ClInclude Include="include\UIScoreList.hpp" />
+    <ClInclude Include="include\UISelection.hpp" />
+    <ClInclude Include="include\UISlider.hpp" />
+    <ClInclude Include="include\UITextBox.hpp" />
+    <ClInclude Include="include\UIWindow.hpp" />
+    <ClInclude Include="include\Util.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Affectors.cpp" />
+    <ClCompile Include="src\AnimatedDrawable.cpp" />
+    <ClCompile Include="src\AnimationController.cpp" />
+    <ClCompile Include="src\App.cpp" />
+    <ClCompile Include="src\AudioManager.cpp" />
+    <ClCompile Include="src\CommandQueue.cpp" />
+    <ClCompile Include="src\Component.cpp" />
+    <ClCompile Include="src\Entity.cpp" />
+    <ClCompile Include="src\FileSystem.cpp" />
+    <ClCompile Include="src\FontResource.cpp" />
+    <ClCompile Include="src\GameState.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\MenuBackgroundState.cpp" />
+    <ClCompile Include="src\MenuJoinState.cpp" />
+    <ClCompile Include="src\MenuLobbyState.cpp" />
+    <ClCompile Include="src\MenuMainState.cpp" />
+    <ClCompile Include="src\MenuOptionState.cpp" />
+    <ClCompile Include="src\MenuPauseState.cpp" />
+    <ClCompile Include="src\MessageBus.cpp" />
+    <ClCompile Include="src\Music.cpp" />
+    <ClCompile Include="src\ParticleController.cpp" />
+    <ClCompile Include="src\ParticleSystem.cpp" />
+    <ClCompile Include="src\PostBloom.cpp" />
+    <ClCompile Include="src\PostChromeAb.cpp" />
+    <ClCompile Include="src\PostProcess.cpp" />
+    <ClCompile Include="src\QuadTree.cpp" />
+    <ClCompile Include="src\QuadTreeComponent.cpp" />
+    <ClCompile Include="src\QuadTreeNode.cpp" />
+    <ClCompile Include="src\Reports.cpp" />
+    <ClCompile Include="src\Scene.cpp" />
+    <ClCompile Include="src\Score.cpp" />
+    <ClCompile Include="src\Server.cpp" />
+    <ClCompile Include="src\ShaderResource.cpp" />
+    <ClCompile Include="src\SoundPlayer.cpp" />
+    <ClCompile Include="src\State.cpp" />
+    <ClCompile Include="src\StateStack.cpp" />
+    <ClCompile Include="src\StatsOverlayState.cpp" />
+    <ClCompile Include="src\TextDrawable.cpp" />
+    <ClCompile Include="src\UIButton.cpp" />
+    <ClCompile Include="src\UICheckBox.cpp" />
+    <ClCompile Include="src\UIComboBox.cpp" />
+    <ClCompile Include="src\UIContainer.cpp" />
+    <ClCompile Include="src\UIControl.cpp" />
+    <ClCompile Include="src\UILabel.cpp" />
+    <ClCompile Include="src\UIScoreList.cpp" />
+    <ClCompile Include="src\UISelection.cpp" />
+    <ClCompile Include="src\UISlider.cpp" />
+    <ClCompile Include="src\UITextBox.cpp" />
+    <ClCompile Include="src\UIWindow.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
