@@ -9,35 +9,34 @@
 #include <Log.hpp>
 
 MessageBus::MessageBus()
-: m_polling(false){}
+//: m_polling(false){}
+{}
 
 Message MessageBus::poll()
 {
-    m_polling = true;
-    Message m = m_messages.front();
-    m_messages.pop();
+    //m_polling = true;
+    Message m = m_currentMessages.front();
+    m_currentMessages.pop();
 
     return m;
 }
 
-void MessageBus::send(const Message& m)
+void MessageBus::post(const Message& m)
 {
-    (m_polling) ? m_deferredMessages.push(m) : m_messages.push(m);
+    m_pendingMessages.push(m);
 }
 
 bool MessageBus::empty()
 {
-    auto empty = m_messages.empty();
-    if (empty)
+    if (m_currentMessages.empty())
     {
-        m_deferredMessages.swap(m_messages);
-        m_polling = false;
+        m_currentMessages.swap(m_pendingMessages);
+        return true;
     }
-
-    return empty;
+    return false;
 }
 
 std::size_t MessageBus::pendingMessageCount() const
 {
-    return m_messages.size();
+    return m_currentMessages.size();
 }

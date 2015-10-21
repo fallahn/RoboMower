@@ -37,7 +37,7 @@ MenuLobbyState::MenuLobbyState(StateStack& stack, Context context)
     msg.ui.type = Message::UIEvent::MenuOpened;
     msg.ui.value = 0.f;
     msg.ui.stateId = States::ID::MenuLobby;
-    m_messageBus.send(msg);
+    m_messageBus.post(msg);
 }
 
 
@@ -59,7 +59,7 @@ bool MenuLobbyState::update(float dt)
                 Message msg;
                 msg.type = Message::Type::Network;
                 msg.network.action = Message::NetworkEvent::RequestDisconnect;
-                m_messageBus.send(msg);
+                m_messageBus.post(msg);
 
                 requestStackPop();
                 requestStackPush(States::ID::MenuMain);
@@ -153,7 +153,7 @@ void MenuLobbyState::handlePacket(sf::Packet& packet)
         msg.ui.type = Message::UIEvent::MenuClosed;
         msg.ui.value = 0.f;
         msg.ui.stateId = States::ID::MenuLobby;
-        m_messageBus.send(msg);
+        m_messageBus.post(msg);
 
         requestStackClear();
         requestStackPush(States::ID::Game);
@@ -181,7 +181,7 @@ void MenuLobbyState::buildMenu()
             msg.ui.type = Message::UIEvent::MenuClosed;
             msg.ui.value = 0.f;
             msg.ui.stateId = States::ID::MenuLobby;
-            m_messageBus.send(msg);
+            m_messageBus.post(msg);
 
             requestStackClear();
             requestStackPush(States::ID::Game);
@@ -202,11 +202,11 @@ void MenuLobbyState::buildMenu()
         msg.ui.type = Message::UIEvent::MenuClosed;
         msg.ui.value = 0.f;
         msg.ui.stateId = States::ID::MenuLobby;
-        m_messageBus.send(msg);
+        m_messageBus.post(msg);
 
         msg.type = Message::Type::Network;
         msg.network.action = Message::NetworkEvent::RequestDisconnect;
-        m_messageBus.send(msg);
+        m_messageBus.post(msg);
 
         requestStackPush(States::ID::MenuMain);
     });

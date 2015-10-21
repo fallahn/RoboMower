@@ -33,7 +33,7 @@ MenuPauseState::MenuPauseState(StateStack& stack, Context context)
     msg.ui.type = Message::UIEvent::MenuOpened;
     msg.ui.value = 0.f;
     msg.ui.stateId = States::ID::MenuPaused;
-    m_messageBus.send(msg);
+    m_messageBus.post(msg);
 
     //TODO check if hosting and send pause packet to server
 }
@@ -111,7 +111,7 @@ void MenuPauseState::buildMenu(const sf::Font& font)
         msg.type = Message::Type::Network;
         //msg.network.stateID = States::ID::MenuPaused;
         msg.network.action = Message::NetworkEvent::RequestDisconnect;
-        m_messageBus.send(msg);
+        m_messageBus.post(msg);
     });
     m_uiContainer.addControl(button);
 }
@@ -122,5 +122,5 @@ void MenuPauseState::sendCloseMessage()
     msg.type = Message::Type::UI;
     msg.ui.stateId = States::ID::MenuPaused;
     msg.ui.type = Message::UIEvent::MenuClosed;
-    m_messageBus.send(msg);
+    m_messageBus.post(msg);
 }

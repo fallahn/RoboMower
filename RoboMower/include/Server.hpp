@@ -55,7 +55,7 @@ private:
         bool ready;
         bool timeout;
         sf::Int16 uid;
-        bool inWorld;
+        //bool inWorld;
     };
 
     sf::Thread m_thread;
@@ -69,7 +69,7 @@ private:
     bool m_waitingThreadEnd;
     sf::Mutex m_mutex;
 
-    sf::Vector2f m_worldSize;
+    //sf::Vector2f m_worldSize;
     MessageBus m_messageBus;
     Scene m_scene;
 
@@ -86,7 +86,7 @@ private:
     void handleConnections();
     void handleDisconnections();
 
-    void informWorldState(sf::TcpSocket&);
+    //void informWorldState(sf::TcpSocket&);
     void sendToAll(sf::Packet&);
     void pingClients();
 
@@ -95,8 +95,8 @@ private:
     std::function<void()> updateClientState;
     void updateClientGameState();
     void updateClientLobbyState();
-    void getEntityPositions(const Entity&, sf::Packet&);
-    void checkBounds(sf::Vector2f&);
+    //void getEntityPositions(const Entity&, sf::Packet&);
+    //void checkBounds(sf::Vector2f&);
 };
 
 #endif //SERVER_HPP_

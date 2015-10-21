@@ -23,7 +23,7 @@ Component::~Component()
     msg.component.action = Message::ComponentEvent::Deleted;
     msg.component.ptr = this;
     msg.component.entityId = m_parentUID;
-    m_messageBus.send(msg);
+    m_messageBus.post(msg);
 }
 
 //public
@@ -70,7 +70,7 @@ sf::FloatRect Component::globalBounds() const
 //protected
 void Component::sendMessage(const Message& m)
 {
-    m_messageBus.send(m);
+    m_messageBus.post(m);
 }
 
 MessageBus& Component::getMessageBus() const

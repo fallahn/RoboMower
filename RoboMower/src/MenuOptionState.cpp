@@ -43,7 +43,7 @@ MenuOptionState::MenuOptionState(StateStack& stateStack, Context context)
     msg.ui.type = Message::UIEvent::MenuOpened;
     msg.ui.value = 0.f;
     msg.ui.stateId = States::ID::MenuOptions;
-    m_messageBus.send(msg);
+    m_messageBus.post(msg);
 }
 
 //public
@@ -141,7 +141,7 @@ void MenuOptionState::buildMenu(const sf::Font& font)
         msg.type = Message::Type::UI;
         msg.ui.type = Message::UIEvent::RequestVolumeChange;
         msg.ui.value = slider->getValue();
-        m_messageBus.send(msg);
+        m_messageBus.post(msg);
 
     }, ui::Slider::Event::ValueChanged);
     soundSlider->setValue(getContext().appInstance.getAudioSettings().volume); //set this *after* callback is set
@@ -155,7 +155,7 @@ void MenuOptionState::buildMenu(const sf::Font& font)
         Message msg;
         msg.type = Message::Type::UI;
         msg.ui.type = (checkBox->checked()) ? Message::UIEvent::RequestAudioMute : Message::UIEvent::RequestAudioUnmute;
-        m_messageBus.send(msg);
+        m_messageBus.post(msg);
     }, ui::CheckBox::Event::CheckChanged);
     muteCheckbox->check(getContext().appInstance.getAudioSettings().muted);
     m_uiContainer.addControl(muteCheckbox);
@@ -205,7 +205,7 @@ void MenuOptionState::buildMenu(const sf::Font& font)
         msg.type = Message::Type::UI;
         msg.ui.type = Message::UIEvent::RequestDifficultyChange;
         msg.ui.difficulty = static_cast<Difficulty>(s->getSelectedValue());
-        m_messageBus.send(msg);
+        m_messageBus.post(msg);
     });
     difficultySelection->selectItem(static_cast<int>(getContext().appInstance.getGameSettings().difficulty));
     m_uiContainer.addControl(difficultySelection);
@@ -218,7 +218,7 @@ void MenuOptionState::buildMenu(const sf::Font& font)
         Message msg;
         msg.type = Message::Type::UI;
         msg.ui.type = (checkBox->checked()) ? Message::UIEvent::RequestControllerEnable : Message::UIEvent::RequestControllerDisable;
-        m_messageBus.send(msg);
+        m_messageBus.post(msg);
     }, ui::CheckBox::Event::CheckChanged);
     controllerCheckbox->check(getContext().appInstance.getGameSettings().controllerEnabled);
     m_uiContainer.addControl(controllerCheckbox);
@@ -240,7 +240,7 @@ void MenuOptionState::buildMenu(const sf::Font& font)
         Message msg;
         msg.type = Message::Type::UI;
         msg.ui.type = Message::UIEvent::ResizedWindow;
-        m_messageBus.send(msg);
+        m_messageBus.post(msg);
 
     });
     m_uiContainer.addControl(applyButton);
@@ -266,5 +266,5 @@ void MenuOptionState::close()
     msg.ui.type = Message::UIEvent::MenuClosed;
     msg.ui.value = 0.f;
     msg.ui.stateId = States::ID::MenuOptions;
-    m_messageBus.send(msg);
+    m_messageBus.post(msg);
 }

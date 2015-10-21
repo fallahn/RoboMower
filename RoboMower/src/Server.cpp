@@ -38,7 +38,6 @@ GameServer::GameServer()
     m_maxPlayers        (4u),
     m_connectedPlayers  (0u),
     m_waitingThreadEnd  (false),
-    m_worldSize         (sceneWidth, 1080.f),
     m_messageBus        (),
     m_scene             (m_messageBus, false)
 {
@@ -226,10 +225,6 @@ void GameServer::handlePacket(sf::Packet& packet, RemoteConnection& connection, 
         //LOG("SERVER " + std::to_string(packetType), Logger::Type::Info);
     }
         break;
-    case Client::RequestWorldState:
-        informWorldState(connection.socket);
-        connection.inWorld = true;
-        break;
     case Client::Ping:
 
         break;
@@ -252,7 +247,7 @@ void GameServer::handleConnections()
         m_connections[m_connectedPlayers]->ready = true;
         m_connections[m_connectedPlayers]->lastPacketTime = now();
         m_connections[m_connectedPlayers]->uid = uid;
-        m_connections[m_connectedPlayers]->inWorld = false;
+
         m_connectedPlayers++;
         LOG("SERVER connection accepted", Logger::Type::Info);
 
@@ -292,14 +287,6 @@ void GameServer::handleDisconnections()
     }
 }
 
-void GameServer::informWorldState(sf::TcpSocket& socket)
-{
-    //tell clients connected player details
-    sf::Packet packet;
-    packet << static_cast<sf::Int32>(Server::InitialState) << m_worldSize.x << m_connectedPlayers;
-
-}
-
 void GameServer::sendToAll(sf::Packet& packet)
 {
     for (auto& c : m_connections)
@@ -328,10 +315,6 @@ void GameServer::handleMessage(const Message& msg)
     case Message::Type::Player:
         switch (msg.player.action)
         {
-        case Message::PlayerEvent::FiredWeapon:
-        {
-
-        }
         break;
         case Message::PlayerEvent::Spawned:
         {
@@ -346,28 +329,6 @@ void GameServer::handleMessage(const Message& msg)
         default: break;
         }
         break;
-    case Message::Type::Alien:
-        switch (msg.alien.action)
-        {
-        case Message::AlienEvent::Died:
-        {
-
-        }
-            break;
-        default: break;
-        }
-        break;
-    case Message::Type::Human:
-        switch (msg.human.action)
-        {
-        case Message::HumanEvent::Died:
-        {
-
-        }
-            break;
-        default:break;
-        }
-        break;
     default: break;
     }
 }
@@ -380,11 +341,9 @@ void GameServer::updateClientGameState()
     packet << m_clock.getElapsedTime().asMilliseconds();
     packet << m_scene.getLayer(sceneLayer).size();
 
-    getEntityPositions(m_scene.getLayer(sceneLayer), packet);
-
     for (auto& c : m_connections)
     {
-        if (c->inWorld)c->socket.send(packet);
+        c->socket.send(packet);
     }
 
     //send player info
@@ -393,7 +352,7 @@ void GameServer::updateClientGameState()
 
     for (auto& c : m_connections)
     {
-        if (c->inWorld)c->socket.send(packet);
+        c->socket.send(packet);
     }
 }
 
@@ -404,25 +363,6 @@ void GameServer::updateClientLobbyState()
     packet << m_connectedPlayers;
 
     sendToAll(packet);
-}
-
-void GameServer::getEntityPositions(const Entity& entity, sf::Packet& packet)
-{
-    Server::EntityState state;
-    state.uid = static_cast<sf::Int16>(entity.getUID());
-    state.position = entity.getWorldPosition();
-
-    const auto& children = entity.getChildren();
-    for (const auto& c : children)
-    {
-        getEntityPositions(*c, packet);
-    }
-}
-
-void GameServer::checkBounds(sf::Vector2f& position)
-{
-    position.x = std::max(0.f, std::min(m_worldSize.x, position.x));
-    position.y = std::max(0.f, std::min(m_worldSize.y, position.y));
 }
 
 //ctor for remote connections

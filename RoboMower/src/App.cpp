@@ -171,7 +171,7 @@ void App::applyVideoSettings(const VideoSettings& settings)
     Message msg;
     msg.type = Message::Type::UI;
     msg.ui.type = Message::UIEvent::ResizedWindow;
-    m_messageBus.send(msg);
+    m_messageBus.post(msg);
 }
 
 sf::Font& App::getFont(const std::string& path)
@@ -321,7 +321,7 @@ void App::handleEvents()
                 saveScreenshot();
                 break;
 #ifdef _DEBUG_
-            case sf::Keyboard::F11:
+            case sf::Keyboard::BackSpace:
                 m_stateStack.pushState(States::ID::Stats);
                 break;
 #endif //_DEBUG_
@@ -391,7 +391,7 @@ void App::handleMessages()
                     Message newMsg;
                     newMsg.type = Message::Type::Network;
                     newMsg.network.action = Message::NetworkEvent::ConnectSuccess;
-                    m_messageBus.send(newMsg);
+                    m_messageBus.post(newMsg);
                 }
                 else
                 {
@@ -399,7 +399,7 @@ void App::handleMessages()
                     Message newMsg;
                     newMsg.type = Message::Type::Network;
                     newMsg.network.action = Message::NetworkEvent::ConnectFail;
-                    m_messageBus.send(newMsg);
+                    m_messageBus.post(newMsg);
                     LOG("whoopsie", Logger::Type::Info);
                 }
                 break;

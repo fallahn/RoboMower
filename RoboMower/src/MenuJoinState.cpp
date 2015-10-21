@@ -27,7 +27,7 @@ MenuJoinState::MenuJoinState(StateStack& stack, Context context)
     msg.ui.type = Message::UIEvent::MenuOpened;
     msg.ui.value = 0.f;
     msg.ui.stateId = States::ID::MenuJoin;
-    m_messageBus.send(msg);
+    m_messageBus.post(msg);
 }
 
 //public
@@ -105,7 +105,7 @@ void MenuJoinState::buildMenu()
         Message m;
         m.type = Message::Type::Network;
         m.network.action = Message::NetworkEvent::RequestJoinServer;
-        m_messageBus.send(m);
+        m_messageBus.post(m);
 
     });
     m_uiContainer.addControl(joinButton);
@@ -132,5 +132,5 @@ void MenuJoinState::sendCloseMessage()
     msg.ui.type = Message::UIEvent::MenuClosed;
     msg.ui.value = 0.f;
     msg.ui.stateId = States::ID::MenuJoin;
-    m_messageBus.send(msg);
+    m_messageBus.post(msg);
 }

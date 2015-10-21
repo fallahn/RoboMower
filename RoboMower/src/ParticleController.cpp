@@ -54,9 +54,6 @@ void ParticleController::handleMessage(const Message& msg)
 {
     switch (msg.type)
     {
-    case Message::Type::Alien:
-
-        break;
     case Message::Type::Player:
 
         break;

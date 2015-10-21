@@ -162,7 +162,7 @@ void Entity::destroy()
     msg.type = Message::Type::Entity;
     msg.entity.action = Message::EntityEvent::Destroyed;
     msg.entity.entity = this;
-    m_messageBus.send(msg);
+    m_messageBus.post(msg);
 
     m_destroyed = true;
 }

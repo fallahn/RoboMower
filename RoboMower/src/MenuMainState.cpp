@@ -25,7 +25,7 @@ MenuMainState::MenuMainState(StateStack& stack, Context context)
     msg.ui.type = Message::UIEvent::MenuOpened;
     msg.ui.value = 0.f;
     msg.ui.stateId = States::ID::MenuMain;
-    m_messageBus.send(msg);
+    m_messageBus.post(msg);
 }
 
 //public
@@ -91,7 +91,7 @@ void MenuMainState::buildMenu()
         msg.type = Message::Type::Network;
         msg.network.action = Message::NetworkEvent::RequestStartServer;
         msg.network.stateID = States::ID::Game;
-        m_messageBus.send(msg);
+        m_messageBus.post(msg);
 
         close();
         requestStackClear();
@@ -110,7 +110,7 @@ void MenuMainState::buildMenu()
         msg.type = Message::Type::Network;
         msg.network.action = Message::NetworkEvent::RequestStartServer;
         msg.network.stateID = States::ID::MenuLobby;
-        m_messageBus.send(msg);
+        m_messageBus.post(msg);
     });
     m_uiContainer.addControl(button);
 
@@ -156,5 +156,5 @@ void MenuMainState::close()
     msg.ui.type = Message::UIEvent::MenuClosed;
     msg.ui.value = 0.f;
     msg.ui.stateId = States::ID::MenuMain;
-    m_messageBus.send(msg);
+    m_messageBus.post(msg);
 }

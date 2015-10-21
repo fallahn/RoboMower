@@ -30,9 +30,7 @@ public:
         UI,
         Player,
         ComponentSystem,
-        Network,
-        Alien,
-        Human
+        Network
     }type;
 
     struct AudioEvent
@@ -86,8 +84,7 @@ public:
         enum
         {
             Died,
-            Spawned,
-            FiredWeapon
+            Spawned
         }action;
         sf::Int32 timestamp;
         sf::Uint64 entityID;
@@ -118,27 +115,6 @@ public:
         States::ID stateID;
     };
 
-    struct AlienEvent
-    {
-        enum
-        {
-            Died,
-            Spawned,
-            PickedUp,
-            Targetted
-        }action;
-        sf::Uint64 entityID;
-    };
-
-    struct HumanEvent
-    {
-        enum
-        {
-            Died
-        }action;
-        sf::Uint64 entityID;
-    };
-
     union
     {
         AudioEvent audio;
@@ -148,8 +124,6 @@ public:
         PlayerEvent player;
         ComponentEvent component;
         NetworkEvent network;
-        AlienEvent alien;
-        HumanEvent human;
     };
 };
 
@@ -164,16 +138,16 @@ public:
     //read and despatch all messages on the message stack
     Message poll();
     //places a message on the message stack
-    void send(const Message& msg);
+    void post(const Message& msg);
 
     bool empty();
 
-    std::size_t pendingMessageCount() const;
+    std::size_t pendingMessageCount() const; //used for stats
 
 private:
-    std::queue<Message> m_messages;
-    std::queue<Message> m_deferredMessages;
-    bool m_polling;
+    std::queue<Message> m_currentMessages;
+    std::queue<Message> m_pendingMessages;
+    //bool m_polling;
 };
 
 #endif
