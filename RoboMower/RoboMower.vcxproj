@@ -45,6 +45,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>include;../xygine/include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG_;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -71,7 +72,28 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Game.cpp" />
+    <ClCompile Include="src\GameState.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\MenuBackgroundState.cpp" />
+    <ClCompile Include="src\MenuJoinState.cpp" />
+    <ClCompile Include="src\MenuLobbyState.cpp" />
+    <ClCompile Include="src\MenuMainState.cpp" />
+    <ClCompile Include="src\MenuOptionState.cpp" />
+    <ClCompile Include="src\MenuPauseState.cpp" />
+    <ClCompile Include="src\StatsOverlayState.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\Game.hpp" />
+    <ClInclude Include="include\GameState.hpp" />
+    <ClInclude Include="include\MenuBackgroundState.hpp" />
+    <ClInclude Include="include\MenuJoinState.hpp" />
+    <ClInclude Include="include\MenuLobbyState.hpp" />
+    <ClInclude Include="include\MenuMainState.hpp" />
+    <ClInclude Include="include\MenuOptionState.hpp" />
+    <ClInclude Include="include\MenuPauseState.hpp" />
+    <ClInclude Include="include\StateIds.hpp" />
+    <ClInclude Include="include\StatsOverlayState.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

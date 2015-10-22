@@ -5,7 +5,7 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#include <xygine/App.hpp>
+#include <Game.hpp>
 
 #ifdef __linux
 #include <X11/Xlib.h>
@@ -17,8 +17,8 @@ int main()
     XInitThreads();
 #endif //__linux
 
-    xy::App app;
-    app.run();
+    Game game;
+    game.run();
 
     return 0;
 }

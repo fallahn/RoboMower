@@ -18,5 +18,64 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Game.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MenuBackgroundState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MenuJoinState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MenuLobbyState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MenuMainState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MenuOptionState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MenuPauseState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\StatsOverlayState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\Game.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GameState.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MenuBackgroundState.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MenuJoinState.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MenuLobbyState.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MenuMainState.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MenuOptionState.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MenuPauseState.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\StateIds.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\StatsOverlayState.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
