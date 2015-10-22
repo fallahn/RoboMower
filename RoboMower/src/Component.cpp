@@ -5,8 +5,8 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#include <Component.hpp>
-#include <MessageBus.hpp>
+#include <xygine/Component.hpp>
+#include <xygine/MessageBus.hpp>
 
 Component::Component(MessageBus& m)
     : m_messageBus  (m),

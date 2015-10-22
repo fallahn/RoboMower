@@ -5,9 +5,9 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#include <Affectors.hpp>
-#include <ParticleSystem.hpp>
-#include <Util.hpp>
+#include <xygine/Affectors.hpp>
+#include <xygine/ParticleSystem.hpp>
+#include <xygine/Util.hpp>
 
 namespace
 {

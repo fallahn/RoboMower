@@ -5,9 +5,9 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#include <QuadTreeComponent.hpp>
-#include <QuadTreeNode.hpp>
-#include <Entity.hpp>
+#include <xygine/QuadTreeComponent.hpp>
+#include <xygine/QuadTreeNode.hpp>
+#include <xygine/Entity.hpp>
 
 #include <cassert>
 

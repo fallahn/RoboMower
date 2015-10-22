@@ -5,7 +5,7 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#include <SoundPlayer.hpp>
+#include <xygine/SoundPlayer.hpp>
 
 #include <SFML/Audio/Listener.hpp>
 

@@ -5,11 +5,11 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#include <MenuPauseState.hpp>
-#include <App.hpp>
-#include <Util.hpp>
+#include <xygine/MenuPauseState.hpp>
+#include <xygine/App.hpp>
+#include <xygine/Util.hpp>
 
-#include <UIButton.hpp>
+#include <xygine/ui/UIButton.hpp>
 
 #include <SFML/Window/Mouse.hpp>
 

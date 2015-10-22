@@ -5,10 +5,10 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#include <StatsOverlayState.hpp>
-#include <Reports.hpp>
-#include <App.hpp>
-#include <UIButton.hpp>
+#include <xygine/StatsOverlayState.hpp>
+#include <xygine/Reports.hpp>
+#include <xygine/App.hpp>
+#include <xygine/ui/UIButton.hpp>
 
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>

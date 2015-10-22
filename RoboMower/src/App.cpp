@@ -5,19 +5,19 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#include <App.hpp>
-#include <Protocol.hpp>
-#include <MenuMainState.hpp>
-#include <MenuLobbyState.hpp>
-#include <MenuJoinState.hpp>
-#include <MenuBackgroundState.hpp>
-#include <MenuOptionState.hpp>
-#include <MenuPauseState.hpp>
-#include <GameState.hpp>
-#include <StatsOverlayState.hpp>
-#include <Util.hpp>
-#include <Log.hpp>
-#include <Reports.hpp>
+#include <xygine/App.hpp>
+#include <xygine/Protocol.hpp>
+#include <xygine/MenuMainState.hpp>
+#include <xygine/MenuLobbyState.hpp>
+#include <xygine/MenuJoinState.hpp>
+#include <xygine/MenuBackgroundState.hpp>
+#include <xygine/MenuOptionState.hpp>
+#include <xygine/MenuPauseState.hpp>
+#include <xygine/GameState.hpp>
+#include <xygine/StatsOverlayState.hpp>
+#include <xygine/Util.hpp>
+#include <xygine/Log.hpp>
+#include <xygine/Reports.hpp>
 
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics/Shader.hpp>

@@ -5,7 +5,7 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#include <FileSystem.hpp>
+#include <xygine/FileSystem.hpp>
 
 #include <sys/types.h>
 #include <sys/stat.h>

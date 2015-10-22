@@ -5,8 +5,8 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#include <UIButton.hpp>
-#include <Util.hpp>
+#include <xygine/ui/UIButton.hpp>
+#include <xygine/Util.hpp>
 
 #include <SFML/Graphics/RenderTarget.hpp>
 

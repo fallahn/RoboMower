@@ -5,8 +5,8 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#include <UIWindow.hpp>
-#include <Log.hpp>
+#include <xygine/ui/UIWindow.hpp>
+#include <xygine/Log.hpp>
 
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderStates.hpp>

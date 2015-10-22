@@ -5,8 +5,8 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#include <MenuBackgroundState.hpp>
-#include <App.hpp>
+#include <xygine/MenuBackgroundState.hpp>
+#include <xygine/App.hpp>
 
 namespace
 {

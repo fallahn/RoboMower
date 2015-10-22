@@ -5,8 +5,8 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#include <Score.hpp>
-#include <Log.hpp>
+#include <xygine/Score.hpp>
+#include <xygine/Log.hpp>
 
 #include <string>
 #include <fstream>

@@ -6,7 +6,7 @@
 //==============================================================================
 
 //creates a default font in memory to return when requested font unavailable//
-#include <Resource.hpp>
+#include <xygine/Resource.hpp>
 
 
 FontResource::FontResource()

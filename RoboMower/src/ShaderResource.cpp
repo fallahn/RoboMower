@@ -5,7 +5,7 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#include <ShaderResource.hpp>
+#include <xygine/ShaderResource.hpp>
 
 #include <SFML/Graphics/Shader.hpp>
 

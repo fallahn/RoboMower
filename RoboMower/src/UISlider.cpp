@@ -5,8 +5,8 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#include <UISlider.hpp>
-#include <Util.hpp>
+#include <xygine/ui/UISlider.hpp>
+#include <xygine/Util.hpp>
 
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Window/Event.hpp>

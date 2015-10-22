@@ -5,9 +5,9 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#include <MenuMainState.hpp>
-#include <App.hpp>
-#include <UIButton.hpp>
+#include <xygine/MenuMainState.hpp>
+#include <xygine/App.hpp>
+#include <xygine/ui/UIButton.hpp>
 
 #include <SFML/Window/Mouse.hpp>
 

@@ -5,12 +5,12 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#include <MenuLobbyState.hpp>
-#include <App.hpp>
-#include <Log.hpp>
-#include <Protocol.hpp>
+#include <xygine/MenuLobbyState.hpp>
+#include <xygine/App.hpp>
+#include <xygine/Log.hpp>
+#include <xygine/Protocol.hpp>
 
-#include <UIButton.hpp>
+#include <xygine//ui/UIButton.hpp>
 
 #include <SFML/Window/Mouse.hpp>
 #include <SFML/Network/Packet.hpp>

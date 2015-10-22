@@ -5,8 +5,8 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#include <State.hpp>
-#include <StateStack.hpp>
+#include <xygine/State.hpp>
+#include <xygine/StateStack.hpp>
 
 #include <SFML/Graphics/RenderWindow.hpp>
 

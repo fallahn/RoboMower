@@ -5,8 +5,8 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#include <Music.hpp>
-#include <Log.hpp>
+#include <xygine/Music.hpp>
+#include <xygine/Log.hpp>
 
 #include <cassert>
 #include <algorithm>

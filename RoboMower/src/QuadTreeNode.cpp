@@ -5,9 +5,9 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#include <QuadTree.hpp>
-#include <Util.hpp>
-#include <Log.hpp>
+#include <xygine/QuadTree.hpp>
+#include <xygine/Util.hpp>
+#include <xygine/Log.hpp>
 
 #include <cassert>
 

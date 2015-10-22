@@ -5,11 +5,11 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#include <AudioManager.hpp>
-#include <MessageBus.hpp>
-#include <Util.hpp>
-#include <Log.hpp>
-#include <FileSystem.hpp>
+#include <xygine/AudioManager.hpp>
+#include <xygine/MessageBus.hpp>
+#include <xygine/Util.hpp>
+#include <xygine/Log.hpp>
+#include <xygine/FileSystem.hpp>
 
 #include <SFML/Audio/Listener.hpp>
 

@@ -5,8 +5,8 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#include <MessageBus.hpp>
-#include <Log.hpp>
+#include <xygine/MessageBus.hpp>
+#include <xygine/Log.hpp>
 
 Message MessageBus::poll()
 {

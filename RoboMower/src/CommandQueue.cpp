@@ -5,8 +5,8 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#include <Command.hpp>
-#include <Entity.hpp>
+#include <xygine/Command.hpp>
+#include <xygine/Entity.hpp>
 
 void CommandQueue::push(const Command& command)
 {

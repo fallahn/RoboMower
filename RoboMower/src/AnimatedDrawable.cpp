@@ -5,17 +5,17 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#include <AnimatedDrawable.hpp>
-#include <Resource.hpp>
-#include <Util.hpp>
-#include <JsonUtil.hpp>
-#include <Log.hpp>
+#include <xygine/AnimatedDrawable.hpp>
+#include <xygine/Resource.hpp>
+#include <xygine/Util.hpp>
+#include <xygine/JsonUtil.hpp>
+#include <xygine/Log.hpp>
 
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Shader.hpp>
 
-#include <picojson.h>
+#include <xygine/picojson.h>
 
 #include <cassert>
 #include <fstream>

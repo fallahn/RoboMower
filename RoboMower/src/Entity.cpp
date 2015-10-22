@@ -5,11 +5,11 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#include <Entity.hpp>
-#include <Component.hpp>
-#include <MessageBus.hpp>
-#include <Command.hpp>
-#include <Scene.hpp>
+#include <xygine/Entity.hpp>
+#include <xygine/Component.hpp>
+#include <xygine/MessageBus.hpp>
+#include <xygine/Command.hpp>
+#include <xygine/Scene.hpp>
 
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderStates.hpp>

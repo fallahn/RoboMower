@@ -5,10 +5,10 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#include <Scene.hpp>
-#include <MessageBus.hpp>
-#include <TextDrawable.hpp>
-#include <QuadTreeComponent.hpp>
+#include <xygine/Scene.hpp>
+#include <xygine/MessageBus.hpp>
+#include <xygine/TextDrawable.hpp>
+#include <xygine/QuadTreeComponent.hpp>
 
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Sprite.hpp>

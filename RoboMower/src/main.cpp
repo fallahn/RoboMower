@@ -5,7 +5,7 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#include <App.hpp>
+#include <xygine/App.hpp>
 
 #ifdef __linux
 #include <X11/Xlib.h>

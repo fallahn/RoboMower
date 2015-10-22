@@ -5,15 +5,15 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#include <GameState.hpp>
-#include <TextDrawable.hpp>
-#include <ParticleSystem.hpp>
-#include <AnimationController.hpp>
-#include <Reports.hpp>
+#include <xygine/GameState.hpp>
+#include <xygine/TextDrawable.hpp>
+#include <xygine/ParticleSystem.hpp>
+#include <xygine/AnimationController.hpp>
+#include <xygine/Reports.hpp>
 
-#include <App.hpp>
-#include <Log.hpp>
-#include <Util.hpp>
+#include <xygine/App.hpp>
+#include <xygine/Log.hpp>
+#include <xygine/Util.hpp>
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Event.hpp>

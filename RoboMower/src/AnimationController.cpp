@@ -5,10 +5,10 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#include <AnimationController.hpp>
-#include <MessageBus.hpp>
-#include <Entity.hpp>
-#include <AnimatedDrawable.hpp>
+#include <xygine/AnimationController.hpp>
+#include <xygine/MessageBus.hpp>
+#include <xygine/Entity.hpp>
+#include <xygine/AnimatedDrawable.hpp>
 
 #include <cassert>
 

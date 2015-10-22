@@ -5,7 +5,7 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#include <PostBloom.hpp>
+#include <xygine/PostBloom.hpp>
 
 PostBloom::PostBloom()
 {

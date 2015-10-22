@@ -5,9 +5,9 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#include <UISelection.hpp>
-#include <Util.hpp>
-#include <Log.hpp>
+#include <xygine/ui/UISelection.hpp>
+#include <xygine/Util.hpp>
+#include <xygine/Log.hpp>
 
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderStates.hpp>

@@ -5,7 +5,7 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#include <UICheckBox.hpp>
+#include <xygine/ui/UICheckBox.hpp>
 
 #include <SFML/Graphics/RenderTarget.hpp>
 

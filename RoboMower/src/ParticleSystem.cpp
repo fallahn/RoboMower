@@ -5,10 +5,10 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#include <ParticleSystem.hpp>
-#include <Util.hpp>
-#include <Entity.hpp>
-#include <MessageBus.hpp>
+#include <xygine/ParticleSystem.hpp>
+#include <xygine/Util.hpp>
+#include <xygine/Entity.hpp>
+#include <xygine/MessageBus.hpp>
 
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Shader.hpp>

@@ -5,7 +5,7 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#include <Reports.hpp>
+#include <xygine/Reports.hpp>
 
 #include <cassert>
 #include <algorithm>

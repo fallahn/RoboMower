@@ -5,16 +5,16 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#include <MenuOptionState.hpp>
-#include <Util.hpp>
-#include <App.hpp>
-#include <Log.hpp>
+#include <xygine/MenuOptionState.hpp>
+#include <xygine/Util.hpp>
+#include <xygine/App.hpp>
+#include <xygine/Log.hpp>
 
-#include <UISlider.hpp>
-#include <UICheckBox.hpp>
-#include <UISelection.hpp>
-#include <UIButton.hpp>
-#include <UITextBox.hpp>
+#include <xygine/ui/UISlider.hpp>
+#include <xygine/ui/UICheckBox.hpp>
+#include <xygine/ui/UISelection.hpp>
+#include <xygine/ui/UIButton.hpp>
+#include <xygine/ui/UITextBox.hpp>
 
 #include <SFML/Window/Event.hpp>
 

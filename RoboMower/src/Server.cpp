@@ -5,12 +5,12 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#include <Server.hpp>
-#include <Protocol.hpp>
-#include <Log.hpp>
-#include <Util.hpp>
-#include <QuadTreeComponent.hpp>
-#include <Reports.hpp>
+#include <xygine/Server.hpp>
+#include <xygine/Protocol.hpp>
+#include <xygine/Log.hpp>
+#include <xygine/Util.hpp>
+#include <xygine/QuadTreeComponent.hpp>
+#include <xygine/Reports.hpp>
 
 #include <SFML/Network/Packet.hpp>
 #include <SFML/System/Lock.hpp>

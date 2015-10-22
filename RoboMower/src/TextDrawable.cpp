@@ -5,7 +5,7 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#include <TextDrawable.hpp>
+#include <xygine/TextDrawable.hpp>
 
 TextDrawable::TextDrawable(MessageBus& mb)
     : Component(mb){}

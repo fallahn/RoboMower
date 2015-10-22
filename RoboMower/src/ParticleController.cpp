@@ -5,11 +5,11 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#include <ParticleController.hpp>
-#include <ParticleSystem.hpp>
-#include <Entity.hpp>
-#include <MessageBus.hpp>
-#include <Scene.hpp>
+#include <xygine/ParticleController.hpp>
+#include <xygine/ParticleSystem.hpp>
+#include <xygine/Entity.hpp>
+#include <xygine/MessageBus.hpp>
+#include <xygine/Scene.hpp>
 
 namespace
 {
