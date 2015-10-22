@@ -15,9 +15,8 @@
 
 #include <SFML/Window/Mouse.hpp>
 
-using namespace xy;
 
-MenuJoinState::MenuJoinState(StateStack& stack, Context context)
+MenuJoinState::MenuJoinState(xy::StateStack& stack, Context context)
     : State         (stack, context),
     m_messageBus    (context.appInstance.getMessageBus())
 {
@@ -25,9 +24,9 @@ MenuJoinState::MenuJoinState(StateStack& stack, Context context)
     m_cursorSprite.setPosition(context.renderWindow.mapPixelToCoords(sf::Mouse::getPosition(context.renderWindow)));
     buildMenu();
 
-    Message msg;
-    msg.type = Message::Type::UI;
-    msg.ui.type = Message::UIEvent::MenuOpened;
+    xy::Message msg;
+    msg.type = xy::Message::Type::UI;
+    msg.ui.type = xy::Message::UIEvent::MenuOpened;
     msg.ui.value = 0.f;
     msg.ui.stateId = States::ID::MenuJoin;
     m_messageBus.post(msg);
@@ -60,18 +59,18 @@ bool MenuJoinState::handleEvent(const sf::Event& evt)
     return false;
 }
 
-void MenuJoinState::handleMessage(const Message& msg)
+void MenuJoinState::handleMessage(const xy::Message& msg)
 {
-    if (msg.type == Message::Type::Network)
+    if (msg.type == xy::Message::Type::Network)
     {
         switch (msg.network.action)
         {
-        case Message::NetworkEvent::ConnectSuccess:
+        case xy::Message::NetworkEvent::ConnectSuccess:
             requestStackPop();
             requestStackPush(States::ID::MenuLobby);
             sendCloseMessage();
             break;
-        case Message::NetworkEvent::ConnectFail:
+        case xy::Message::NetworkEvent::ConnectFail:
             m_statusLabel->setString("Connection Failed.");
             break;
         default: break;
@@ -84,38 +83,38 @@ void MenuJoinState::buildMenu()
 {
     const auto& font = getContext().appInstance.getFont("flaps");
 
-    auto textbox = std::make_shared<ui::TextBox>(font);
+    auto textbox = std::make_shared<xy::ui::TextBox>(font);
     textbox->setLabelText("IP Address:");
     textbox->setPosition(960.f, 500.f);
-    textbox->setAlignment(ui::Alignment::Centre);
+    textbox->setAlignment(xy::ui::Alignment::Centre);
     textbox->setText("127.0.0.1");
     m_uiContainer.addControl(textbox);
 
-    m_statusLabel = std::make_shared<ui::Label>(font);
-    m_statusLabel->setAlignment(ui::Alignment::Centre);
+    m_statusLabel = std::make_shared<xy::ui::Label>(font);
+    m_statusLabel->setAlignment(xy::ui::Alignment::Centre);
     m_statusLabel->setPosition(960.f, 590.f);
     m_uiContainer.addControl(m_statusLabel);
 
-    auto joinButton = std::make_shared<ui::Button>(font, getContext().appInstance.getTexture("assets/images/ui/button.png"));
+    auto joinButton = std::make_shared<xy::ui::Button>(font, getContext().appInstance.getTexture("assets/images/ui/button.png"));
     joinButton->setText("Join");
-    joinButton->setAlignment(ui::Alignment::Centre);
+    joinButton->setAlignment(xy::ui::Alignment::Centre);
     joinButton->setPosition(840.f, 770.f);
     joinButton->setCallback([textbox, this]()
     {
         getContext().appInstance.setDestinationIP(textbox->getText());
         m_statusLabel->setString("Connecting...");
 
-        Message m;
-        m.type = Message::Type::Network;
-        m.network.action = Message::NetworkEvent::RequestJoinServer;
+        xy::Message m;
+        m.type = xy::Message::Type::Network;
+        m.network.action = xy::Message::NetworkEvent::RequestJoinServer;
         m_messageBus.post(m);
 
     });
     m_uiContainer.addControl(joinButton);
 
-    auto backButton = std::make_shared<ui::Button>(font, getContext().appInstance.getTexture("assets/images/ui/button.png"));
+    auto backButton = std::make_shared<xy::ui::Button>(font, getContext().appInstance.getTexture("assets/images/ui/button.png"));
     backButton->setText("Back");
-    backButton->setAlignment(ui::Alignment::Centre);
+    backButton->setAlignment(xy::ui::Alignment::Centre);
     backButton->setPosition(1080.f, 770.f);
     backButton->setCallback([this]()
     {
@@ -130,9 +129,9 @@ void MenuJoinState::buildMenu()
 
 void MenuJoinState::sendCloseMessage()
 {
-    Message msg;
-    msg.type = Message::Type::UI;
-    msg.ui.type = Message::UIEvent::MenuClosed;
+    xy::Message msg;
+    msg.type = xy::Message::Type::UI;
+    msg.ui.type = xy::Message::UIEvent::MenuClosed;
     msg.ui.value = 0.f;
     msg.ui.stateId = States::ID::MenuJoin;
     m_messageBus.post(msg);

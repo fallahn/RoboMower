@@ -22,9 +22,7 @@ namespace
     const float tickRate = 1.f / 20.f;
 }
 
-using namespace xy;
-
-MenuLobbyState::MenuLobbyState(StateStack& stack, Context context)
+MenuLobbyState::MenuLobbyState(xy::StateStack& stack, Context context)
     : State                 (stack, context),
     m_messageBus            (context.appInstance.getMessageBus()),
     m_font                  (context.appInstance.getFont("dfg")),
@@ -35,9 +33,9 @@ MenuLobbyState::MenuLobbyState(StateStack& stack, Context context)
     m_cursorSprite.setPosition(context.renderWindow.mapPixelToCoords(sf::Mouse::getPosition(context.renderWindow)));
     buildMenu();
 
-    Message msg;
-    msg.type = Message::Type::UI;
-    msg.ui.type = Message::UIEvent::MenuOpened;
+    xy::Message msg;
+    msg.type = xy::Message::Type::UI;
+    msg.ui.type = xy::Message::UIEvent::MenuOpened;
     msg.ui.value = 0.f;
     msg.ui.stateId = States::ID::MenuLobby;
     m_messageBus.post(msg);
@@ -59,16 +57,16 @@ bool MenuLobbyState::update(float dt)
         {
             if (m_timeSinceLastPacket > clientTimeout)
             {
-                Message msg;
-                msg.type = Message::Type::Network;
-                msg.network.action = Message::NetworkEvent::RequestDisconnect;
+                xy::Message msg;
+                msg.type = xy::Message::Type::Network;
+                msg.network.action = xy::Message::NetworkEvent::RequestDisconnect;
                 m_messageBus.post(msg);
 
                 requestStackPop();
                 requestStackPush(States::ID::MenuMain);
 
                 m_socket->disconnect();
-                LOG("CLIENT lost connection to server", Logger::Type::Info);
+                LOG("CLIENT lost connection to server", xy::Logger::Type::Info);
             }
         }
         m_timeSinceLastPacket += dt;
@@ -78,7 +76,7 @@ bool MenuLobbyState::update(float dt)
     if (m_tickClock.getElapsedTime().asSeconds() > tickRate)
     {
         sf::Packet packet;
-        packet << static_cast<sf::Int32>(Client::LobbyData);
+        packet << static_cast<sf::Int32>(xy::Client::LobbyData);
         //TODO send name(?) and ready status
         m_socket->send(packet);
         m_tickClock.restart();
@@ -113,7 +111,7 @@ bool MenuLobbyState::handleEvent(const sf::Event& evt)
     return false;
 }
 
-void MenuLobbyState::handleMessage(const Message&)
+void MenuLobbyState::handleMessage(const xy::Message&)
 {
 
 }
@@ -125,7 +123,7 @@ void MenuLobbyState::handlePacket(sf::Packet& packet)
     packet >> type;
     switch (type)
     {
-    case Server::LobbyData:
+    case xy::Server::LobbyData:
     {
         sf::Uint32 count;
         packet >> count;
@@ -140,20 +138,20 @@ void MenuLobbyState::handlePacket(sf::Packet& packet)
     }
         break;
         //erase disconnections from texts
-    case Server::PlayerDisconnect:
+    case xy::Server::PlayerDisconnect:
     {
         sf::Int16 uid;
         packet >> uid;
         if (m_texts.find(uid) != m_texts.end())
             m_texts.erase(uid);
 
-        LOG("CLIENT disconnected player " + std::to_string(uid), Logger::Type::Info);
+        LOG("CLIENT disconnected player " + std::to_string(uid), xy::Logger::Type::Info);
     }
         break;
-    case Server::GameStart:
-        Message msg;
-        msg.type = Message::Type::UI;
-        msg.ui.type = Message::UIEvent::MenuClosed;
+    case xy::Server::GameStart:
+        xy::Message msg;
+        msg.type = xy::Message::Type::UI;
+        msg.ui.type = xy::Message::UIEvent::MenuClosed;
         msg.ui.value = 0.f;
         msg.ui.stateId = States::ID::MenuLobby;
         m_messageBus.post(msg);
@@ -169,9 +167,9 @@ void MenuLobbyState::buildMenu()
 {
     const auto& font = getContext().appInstance.getFont("flaps");
     
-    auto startButton = std::make_shared<ui::Button>(font, getContext().appInstance.getTexture("assets/images/ui/button.png"));
+    auto startButton = std::make_shared<xy::ui::Button>(font, getContext().appInstance.getTexture("assets/images/ui/button.png"));
     startButton->setText("Start");
-    startButton->setAlignment(ui::Alignment::Centre);
+    startButton->setAlignment(xy::ui::Alignment::Centre);
     startButton->setPosition(840.f, 770.f);
     startButton->setCallback([this]()
     {
@@ -179,9 +177,9 @@ void MenuLobbyState::buildMenu()
         if (getContext().appInstance.hosting())
         {
             //TODO check all clients are ready
-            Message msg;
-            msg.type = Message::Type::UI;
-            msg.ui.type = Message::UIEvent::MenuClosed;
+            xy::Message msg;
+            msg.type = xy::Message::Type::UI;
+            msg.ui.type = xy::Message::UIEvent::MenuClosed;
             msg.ui.value = 0.f;
             msg.ui.stateId = States::ID::MenuLobby;
             m_messageBus.post(msg);
@@ -192,23 +190,23 @@ void MenuLobbyState::buildMenu()
     });
     m_uiContainer.addControl(startButton);
 
-    auto backButton = std::make_shared<ui::Button>(font, getContext().appInstance.getTexture("assets/images/ui/button.png"));
+    auto backButton = std::make_shared<xy::ui::Button>(font, getContext().appInstance.getTexture("assets/images/ui/button.png"));
     backButton->setText("Back");
-    backButton->setAlignment(ui::Alignment::Centre);
+    backButton->setAlignment(xy::ui::Alignment::Centre);
     backButton->setPosition(1080.f, 770.f);
     backButton->setCallback([this]()
     {
         requestStackPop();
 
-        Message msg;
-        msg.type = Message::Type::UI;
-        msg.ui.type = Message::UIEvent::MenuClosed;
+        xy::Message msg;
+        msg.type = xy::Message::Type::UI;
+        msg.ui.type = xy::Message::UIEvent::MenuClosed;
         msg.ui.value = 0.f;
         msg.ui.stateId = States::ID::MenuLobby;
         m_messageBus.post(msg);
 
-        msg.type = Message::Type::Network;
-        msg.network.action = Message::NetworkEvent::RequestDisconnect;
+        msg.type = xy::Message::Type::Network;
+        msg.network.action = xy::Message::NetworkEvent::RequestDisconnect;
         m_messageBus.post(msg);
 
         requestStackPush(States::ID::MenuMain);

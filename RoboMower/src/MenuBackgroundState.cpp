@@ -14,9 +14,7 @@ namespace
     const std::string version("version 0.0.1");
 }
 
-using namespace xy;
-
-MenuBackgroundState::MenuBackgroundState(StateStack& stack, Context context)
+MenuBackgroundState::MenuBackgroundState(xy::StateStack& stack, Context context)
     : State     (stack, context),
     m_messageBus(context.appInstance.getMessageBus())
 {
@@ -44,7 +42,7 @@ bool MenuBackgroundState::handleEvent(const sf::Event&)
     return true;
 }
 
-void MenuBackgroundState::handleMessage(const Message&)
+void MenuBackgroundState::handleMessage(const xy::Message&)
 {
 
 }

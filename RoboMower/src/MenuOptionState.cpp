@@ -24,9 +24,7 @@ namespace
     
 }
 
-using namespace xy;
-
-MenuOptionState::MenuOptionState(StateStack& stateStack, Context context)
+MenuOptionState::MenuOptionState(xy::StateStack& stateStack, Context context)
     : State     (stateStack, context),
     m_messageBus(context.appInstance.getMessageBus())
 {
@@ -41,9 +39,9 @@ MenuOptionState::MenuOptionState(StateStack& stateStack, Context context)
     const auto& font = context.appInstance.getFont("assets/fonts/N_E_B.ttf");
     buildMenu(font);
 
-    Message msg;
-    msg.type = Message::Type::UI;
-    msg.ui.type = Message::UIEvent::MenuOpened;
+    xy::Message msg;
+    msg.type = xy::Message::Type::UI;
+    msg.ui.type = xy::Message::UIEvent::MenuOpened;
     msg.ui.value = 0.f;
     msg.ui.stateId = States::ID::MenuOptions;
     m_messageBus.post(msg);
@@ -108,14 +106,14 @@ bool MenuOptionState::handleEvent(const sf::Event& evt)
     return false; //consume events
 }
 
-void MenuOptionState::handleMessage(const Message& msg)
+void MenuOptionState::handleMessage(const xy::Message& msg)
 {
     switch (msg.type)
     {
-    case Message::Type::UI:
+    case xy::Message::Type::UI:
         switch (msg.ui.type)
         {
-        case Message::UIEvent::MenuClosed:
+        case xy::Message::UIEvent::MenuClosed:
             /*if (msg.ui.stateId == States::ID::Help)
             {
                 const auto& rw = getContext().renderWindow;
@@ -133,38 +131,38 @@ void MenuOptionState::handleMessage(const Message& msg)
 //private
 void MenuOptionState::buildMenu(const sf::Font& font)
 {
-    auto soundSlider = std::make_shared<ui::Slider>(font, getContext().appInstance.getTexture("assets/images/ui/slider_handle.png"), 375.f);
+    auto soundSlider = std::make_shared<xy::ui::Slider>(font, getContext().appInstance.getTexture("assets/images/ui/slider_handle.png"), 375.f);
     soundSlider->setPosition(600.f, 470.f);
     soundSlider->setText("Volume");
     soundSlider->setMaxValue(1.f);
-    soundSlider->setCallback([this](const ui::Slider* slider)
+    soundSlider->setCallback([this](const xy::ui::Slider* slider)
     {
         //send volume setting command
-        Message msg;
-        msg.type = Message::Type::UI;
-        msg.ui.type = Message::UIEvent::RequestVolumeChange;
+        xy::Message msg;
+        msg.type = xy::Message::Type::UI;
+        msg.ui.type = xy::Message::UIEvent::RequestVolumeChange;
         msg.ui.value = slider->getValue();
         m_messageBus.post(msg);
 
-    }, ui::Slider::Event::ValueChanged);
+    }, xy::ui::Slider::Event::ValueChanged);
     soundSlider->setValue(getContext().appInstance.getAudioSettings().volume); //set this *after* callback is set
     m_uiContainer.addControl(soundSlider);
 
-    auto muteCheckbox = std::make_shared<ui::CheckBox>(font, getContext().appInstance.getTexture("assets/images/ui/checkbox.png"));
+    auto muteCheckbox = std::make_shared<xy::ui::CheckBox>(font, getContext().appInstance.getTexture("assets/images/ui/checkbox.png"));
     muteCheckbox->setPosition(1070.f, 430.f);
     muteCheckbox->setText("Mute");
-    muteCheckbox->setCallback([this](const ui::CheckBox* checkBox)
+    muteCheckbox->setCallback([this](const xy::ui::CheckBox* checkBox)
     {
-        Message msg;
-        msg.type = Message::Type::UI;
-        msg.ui.type = (checkBox->checked()) ? Message::UIEvent::RequestAudioMute : Message::UIEvent::RequestAudioUnmute;
+        xy::Message msg;
+        msg.type = xy::Message::Type::UI;
+        msg.ui.type = (checkBox->checked()) ? xy::Message::UIEvent::RequestAudioMute : xy::Message::UIEvent::RequestAudioUnmute;
         m_messageBus.post(msg);
-    }, ui::CheckBox::Event::CheckChanged);
+    }, xy::ui::CheckBox::Event::CheckChanged);
     muteCheckbox->check(getContext().appInstance.getAudioSettings().muted);
     m_uiContainer.addControl(muteCheckbox);
 
 
-    auto resolutionBox = std::make_shared<ui::Selection>(font, getContext().appInstance.getTexture("assets/images/ui/scroll_arrow.png"), 375.f);
+    auto resolutionBox = std::make_shared<xy::ui::Selection>(font, getContext().appInstance.getTexture("assets/images/ui/scroll_arrow.png"), 375.f);
     resolutionBox->setPosition(600.f, 510.f);
 
     const auto& modes = getContext().appInstance.getVideoSettings().AvailableVideoModes;
@@ -185,72 +183,72 @@ void MenuOptionState::buildMenu(const sf::Font& font)
 
     m_uiContainer.addControl(resolutionBox);
 
-    auto fullscreenCheckbox = std::make_shared<ui::CheckBox>(font, getContext().appInstance.getTexture("assets/images/ui/checkbox.png"));
+    auto fullscreenCheckbox = std::make_shared<xy::ui::CheckBox>(font, getContext().appInstance.getTexture("assets/images/ui/checkbox.png"));
     fullscreenCheckbox->setPosition(1070.f, 510.f);
     fullscreenCheckbox->setText("Full Screen");
-    fullscreenCheckbox->setCallback([this](const ui::CheckBox*)
+    fullscreenCheckbox->setCallback([this](const xy::ui::CheckBox*)
     {
 
-    }, ui::CheckBox::Event::CheckChanged);
+    }, xy::ui::CheckBox::Event::CheckChanged);
     fullscreenCheckbox->check((getContext().appInstance.getVideoSettings().WindowStyle & sf::Style::Fullscreen) != 0);
     m_uiContainer.addControl(fullscreenCheckbox);
 
-    auto difficultySelection = std::make_shared<ui::Selection>(font, getContext().appInstance.getTexture("assets/images/ui/scroll_arrow.png"), 375.f);
+    auto difficultySelection = std::make_shared<xy::ui::Selection>(font, getContext().appInstance.getTexture("assets/images/ui/scroll_arrow.png"), 375.f);
     difficultySelection->setPosition(600.f, 590.f);
-    difficultySelection->addItem("Easy", static_cast<int>(Difficulty::Easy));
-    difficultySelection->addItem("Medium", static_cast<int>(Difficulty::Medium));
-    difficultySelection->addItem("Hard", static_cast<int>(Difficulty::Hard));
+    difficultySelection->addItem("Easy", static_cast<int>(xy::Difficulty::Easy));
+    difficultySelection->addItem("Medium", static_cast<int>(xy::Difficulty::Medium));
+    difficultySelection->addItem("Hard", static_cast<int>(xy::Difficulty::Hard));
     difficultySelection->selectItem(0);
-    difficultySelection->setCallback([this](const ui::Selection* s)
+    difficultySelection->setCallback([this](const xy::ui::Selection* s)
     {
         //send message with new difficulty
-        Message msg;
-        msg.type = Message::Type::UI;
-        msg.ui.type = Message::UIEvent::RequestDifficultyChange;
-        msg.ui.difficulty = static_cast<Difficulty>(s->getSelectedValue());
+        xy::Message msg;
+        msg.type = xy::Message::Type::UI;
+        msg.ui.type = xy::Message::UIEvent::RequestDifficultyChange;
+        msg.ui.difficulty = static_cast<xy::Difficulty>(s->getSelectedValue());
         m_messageBus.post(msg);
     });
     difficultySelection->selectItem(static_cast<int>(getContext().appInstance.getGameSettings().difficulty));
     m_uiContainer.addControl(difficultySelection);
 
-    auto controllerCheckbox = std::make_shared<ui::CheckBox>(font, getContext().appInstance.getTexture("assets/images/ui/checkbox.png"));
+    auto controllerCheckbox = std::make_shared<xy::ui::CheckBox>(font, getContext().appInstance.getTexture("assets/images/ui/checkbox.png"));
     controllerCheckbox->setPosition(1070.f, 590.f);
     controllerCheckbox->setText("Enable Controller");
-    controllerCheckbox->setCallback([this](const ui::CheckBox* checkBox)
+    controllerCheckbox->setCallback([this](const xy::ui::CheckBox* checkBox)
     {
-        Message msg;
-        msg.type = Message::Type::UI;
-        msg.ui.type = (checkBox->checked()) ? Message::UIEvent::RequestControllerEnable : Message::UIEvent::RequestControllerDisable;
+        xy::Message msg;
+        msg.type = xy::Message::Type::UI;
+        msg.ui.type = (checkBox->checked()) ? xy::Message::UIEvent::RequestControllerEnable : xy::Message::UIEvent::RequestControllerDisable;
         m_messageBus.post(msg);
-    }, ui::CheckBox::Event::CheckChanged);
+    }, xy::ui::CheckBox::Event::CheckChanged);
     controllerCheckbox->check(getContext().appInstance.getGameSettings().controllerEnabled);
     m_uiContainer.addControl(controllerCheckbox);
 
-    auto applyButton = std::make_shared<ui::Button>(font, getContext().appInstance.getTexture("assets/images/ui/button.png"));
+    auto applyButton = std::make_shared<xy::ui::Button>(font, getContext().appInstance.getTexture("assets/images/ui/button.png"));
     applyButton->setText("Apply");
-    applyButton->setAlignment(ui::Alignment::Centre);
+    applyButton->setAlignment(xy::ui::Alignment::Centre);
     applyButton->setPosition(840.f, 770.f);
     applyButton->setCallback([fullscreenCheckbox, resolutionBox, this]()
     {
         auto res = resolutionBox->getSelectedValue();
 
-        App::VideoSettings settings;
+        xy::App::VideoSettings settings;
         settings.VideoMode.width = res >> 16;
         settings.VideoMode.height = res & 0xFFFF;
         settings.WindowStyle = (fullscreenCheckbox->checked()) ? sf::Style::Fullscreen : sf::Style::Close;
         getContext().appInstance.applyVideoSettings(settings);
 
-        Message msg;
-        msg.type = Message::Type::UI;
-        msg.ui.type = Message::UIEvent::ResizedWindow;
+        xy::Message msg;
+        msg.type = xy::Message::Type::UI;
+        msg.ui.type = xy::Message::UIEvent::ResizedWindow;
         m_messageBus.post(msg);
 
     });
     m_uiContainer.addControl(applyButton);
 
-    auto backButton = std::make_shared<ui::Button>(font, getContext().appInstance.getTexture("assets/images/ui/button.png"));
+    auto backButton = std::make_shared<xy::ui::Button>(font, getContext().appInstance.getTexture("assets/images/ui/button.png"));
     backButton->setText("Back");
-    backButton->setAlignment(ui::Alignment::Centre);
+    backButton->setAlignment(xy::ui::Alignment::Centre);
     backButton->setPosition(1080.f, 770.f);
     backButton->setCallback([this]()
     {
@@ -264,9 +262,9 @@ void MenuOptionState::close()
 {
     requestStackPop();
 
-    Message msg;
-    msg.type = Message::Type::UI;
-    msg.ui.type = Message::UIEvent::MenuClosed;
+    xy::Message msg;
+    msg.type = xy::Message::Type::UI;
+    msg.ui.type = xy::Message::UIEvent::MenuClosed;
     msg.ui.value = 0.f;
     msg.ui.stateId = States::ID::MenuOptions;
     m_messageBus.post(msg);

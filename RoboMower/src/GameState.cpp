@@ -33,9 +33,7 @@ namespace
     const float joyMaxAxis = 100.f;
 }
 
-using namespace xy;
-
-GameState::GameState(StateStack& stateStack, Context context)
+GameState::GameState(xy::StateStack& stateStack, Context context)
     : State                 (stateStack, context),
     m_messageBus            (context.appInstance.getMessageBus()),
     m_scene                 (m_messageBus)
@@ -139,7 +137,7 @@ bool GameState::handleEvent(const sf::Event& evt)
     return true;
 }
 
-void GameState::handleMessage(const Message& msg)
+void GameState::handleMessage(const xy::Message& msg)
 { 
     m_audioManager.handleMessage(msg);
     m_scene.handleMessage(msg);

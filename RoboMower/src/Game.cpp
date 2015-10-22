@@ -66,6 +66,16 @@ void Game::handleMessage(const xy::Message& msg)
             break;
         default: break;
         }
+    case xy::Message::Type::UI:
+        switch (msg.ui.type)
+        {
+        case xy::Message::UIEvent::ResizedWindow:
+            m_stateStack.updateView();
+            break;
+        default: break;
+        }
+        break;
+    default: break;
     }
     
     m_stateStack.handleMessage(msg);

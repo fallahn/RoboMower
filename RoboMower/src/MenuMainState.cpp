@@ -12,9 +12,7 @@
 
 #include <SFML/Window/Mouse.hpp>
 
-using namespace xy;
-
-MenuMainState::MenuMainState(StateStack& stack, Context context)
+MenuMainState::MenuMainState(xy::StateStack& stack, Context context)
     : State     (stack, context),
     m_messageBus(context.appInstance.getMessageBus())
 {
@@ -23,9 +21,9 @@ MenuMainState::MenuMainState(StateStack& stack, Context context)
 
     buildMenu();
 
-    Message msg;
-    msg.type = Message::Type::UI;
-    msg.ui.type = Message::UIEvent::MenuOpened;
+    xy::Message msg;
+    msg.type = xy::Message::Type::UI;
+    msg.ui.type = xy::Message::UIEvent::MenuOpened;
     msg.ui.value = 0.f;
     msg.ui.stateId = States::ID::MenuMain;
     m_messageBus.post(msg);
@@ -59,7 +57,7 @@ bool MenuMainState::handleEvent(const sf::Event& evt)
     return false;
 }
 
-void MenuMainState::handleMessage(const Message& msg)
+void MenuMainState::handleMessage(const xy::Message& msg)
 {
     //if (msg.type == Message::Type::Network)
     //{
@@ -84,15 +82,15 @@ void MenuMainState::buildMenu()
 {
     const auto& font = getContext().appInstance.getFont("assets/fonts/VeraMono.ttf");
     
-    auto button = std::make_shared<ui::Button>(font, getContext().appInstance.getTexture("assets/images/ui/start_button.png"));
+    auto button = std::make_shared<xy::ui::Button>(font, getContext().appInstance.getTexture("assets/images/ui/start_button.png"));
     button->setText("Single Player");
-    button->setAlignment(ui::Alignment::Centre);
+    button->setAlignment(xy::ui::Alignment::Centre);
     button->setPosition(960.f, 475.f);
     button->setCallback([this]()
     {
-        Message msg;
-        msg.type = Message::Type::Network;
-        msg.network.action = Message::NetworkEvent::RequestStartServer;
+        xy::Message msg;
+        msg.type = xy::Message::Type::Network;
+        msg.network.action = xy::Message::NetworkEvent::RequestStartServer;
         msg.network.stateID = States::ID::Game;
         m_messageBus.post(msg);
 
@@ -101,25 +99,25 @@ void MenuMainState::buildMenu()
     });
     m_uiContainer.addControl(button);
 
-    button = std::make_shared<ui::Button>(font, getContext().appInstance.getTexture("assets/images/ui/start_button.png"));
+    button = std::make_shared<xy::ui::Button>(font, getContext().appInstance.getTexture("assets/images/ui/start_button.png"));
     button->setText("Host Multiplayer");
-    button->setAlignment(ui::Alignment::Centre);
+    button->setAlignment(xy::ui::Alignment::Centre);
     button->setPosition(960.f, 575.f);
     button->setCallback([this]()
     {
         close();
 
-        Message msg;
-        msg.type = Message::Type::Network;
-        msg.network.action = Message::NetworkEvent::RequestStartServer;
+        xy::Message msg;
+        msg.type = xy::Message::Type::Network;
+        msg.network.action = xy::Message::NetworkEvent::RequestStartServer;
         msg.network.stateID = States::ID::MenuLobby;
         m_messageBus.post(msg);
     });
     m_uiContainer.addControl(button);
 
-    button = std::make_shared<ui::Button>(font, getContext().appInstance.getTexture("assets/images/ui/start_button.png"));
+    button = std::make_shared<xy::ui::Button>(font, getContext().appInstance.getTexture("assets/images/ui/start_button.png"));
     button->setText("Join Multiplayer");
-    button->setAlignment(ui::Alignment::Centre);
+    button->setAlignment(xy::ui::Alignment::Centre);
     button->setPosition(960.f, 675.f);
     button->setCallback([this]()
     {
@@ -128,9 +126,9 @@ void MenuMainState::buildMenu()
     });
     m_uiContainer.addControl(button);
 
-    button = std::make_shared<ui::Button>(font, getContext().appInstance.getTexture("assets/images/ui/start_button.png"));
+    button = std::make_shared<xy::ui::Button>(font, getContext().appInstance.getTexture("assets/images/ui/start_button.png"));
     button->setText("Options");
-    button->setAlignment(ui::Alignment::Centre);
+    button->setAlignment(xy::ui::Alignment::Centre);
     button->setPosition(960.f, 775.f);
     button->setCallback([this]()
     {
@@ -139,9 +137,9 @@ void MenuMainState::buildMenu()
     });
     m_uiContainer.addControl(button);
 
-    button = std::make_shared<ui::Button>(font, getContext().appInstance.getTexture("assets/images/ui/start_button.png"));
+    button = std::make_shared<xy::ui::Button>(font, getContext().appInstance.getTexture("assets/images/ui/start_button.png"));
     button->setText("Quit");
-    button->setAlignment(ui::Alignment::Centre);
+    button->setAlignment(xy::ui::Alignment::Centre);
     button->setPosition(960.f, 875.f);
     button->setCallback([this]()
     {
@@ -154,9 +152,9 @@ void MenuMainState::close()
 {
     requestStackPop();
 
-    Message msg;
-    msg.type = Message::Type::UI;
-    msg.ui.type = Message::UIEvent::MenuClosed;
+    xy::Message msg;
+    msg.type = xy::Message::Type::UI;
+    msg.ui.type = xy::Message::UIEvent::MenuClosed;
     msg.ui.value = 0.f;
     msg.ui.stateId = States::ID::MenuMain;
     m_messageBus.post(msg);

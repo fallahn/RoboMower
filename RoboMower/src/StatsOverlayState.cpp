@@ -14,39 +14,37 @@
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 
-using namespace xy;
-
-StatsOverlayState::StatsOverlayState(StateStack& ss, Context c)
+StatsOverlayState::StatsOverlayState(xy::StateStack& ss, Context c)
     : State(ss, c)
 {
     c.renderWindow.setMouseCursorVisible(true);
 
     const auto& font = c.appInstance.getFont("assets/fonts/Console.ttf");
 
-    ui::Window::Palette palette;
+    xy::ui::Window::Palette palette;
     palette.background = { 0u, 20u, 120u, 190u };
     palette.borderActive = { 0u, 20u, 190u };
     palette.borderNormal = { 0u, 15u, 120u };
 
-    m_windows.emplace_back(std::make_unique<ui::Window>(font, 640, 480, palette));
+    m_windows.emplace_back(std::make_unique<xy::ui::Window>(font, 640, 480, palette));
     auto& window = m_windows.back();
     window->setPosition(20.f, 60.f);
     window->setTitle("Stats");
 
-    m_statsText = std::make_shared<ui::Label>(font);
+    m_statsText = std::make_shared<xy::ui::Label>(font);
     m_statsText->setPosition(20.f, 20.f);
-    m_statsText->setString(StatsReporter::reporter.getString());
+    m_statsText->setString(xy::StatsReporter::reporter.getString());
     m_statsText->setCharacterSize(26u);
     window->addControl(m_statsText);
 
-    m_windows.emplace_back(std::make_unique<ui::Window>(font, 840, 880, palette));
+    m_windows.emplace_back(std::make_unique<xy::ui::Window>(font, 840, 880, palette));
     auto& otherwindow = m_windows.back();
     otherwindow->setPosition(700.f, 60.f);
     otherwindow->setTitle("Console");
 
-    m_consoleText = std::make_shared<ui::Label>(font);
+    m_consoleText = std::make_shared<xy::ui::Label>(font);
     m_consoleText->setPosition(20.f, 20.f);
-    m_consoleText->setString(Logger::bufferString());
+    m_consoleText->setString(xy::Logger::bufferString());
     m_consoleText->setCharacterSize(26u);
     otherwindow->addControl(m_consoleText);
 }
@@ -59,8 +57,8 @@ StatsOverlayState::~StatsOverlayState()
 //public
 bool StatsOverlayState::update(float dt)
 {
-    m_statsText->setString(StatsReporter::reporter.getString());
-    m_consoleText->setString(Logger::bufferString());
+    m_statsText->setString(xy::StatsReporter::reporter.getString());
+    m_consoleText->setString(xy::Logger::bufferString());
     for (auto& w : m_windows)
     {
         w->update(dt);
@@ -74,7 +72,7 @@ bool StatsOverlayState::handleEvent(const sf::Event& evt)
     {
         switch (evt.key.code)
         {
-        case sf::Keyboard::F11:
+        case sf::Keyboard::BackSpace:
             requestStackPop();
             break;
         default:break;
@@ -91,7 +89,7 @@ bool StatsOverlayState::handleEvent(const sf::Event& evt)
     return false;
 }
 
-void StatsOverlayState::handleMessage(const Message&)
+void StatsOverlayState::handleMessage(const xy::Message&)
 {}
 
 void StatsOverlayState::draw()
