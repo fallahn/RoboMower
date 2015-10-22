@@ -35,6 +35,8 @@ namespace
     const std::string interweebl(": ");
 }
 
+using namespace xy;
+
 StatsReporter::StatsReporter()
     : m_rebuildString(true)
 {

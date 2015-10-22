@@ -44,6 +44,8 @@ source distribution.
 
 #endif //_WIN32
 
+using namespace xy;
+
 std::vector<std::string> FileSystem::listFiles(std::string path)
 {
     std::vector<std::string> results;

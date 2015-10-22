@@ -28,6 +28,7 @@ source distribution.
 //creates a default font in memory to return when requested font unavailable//
 #include <xygine/Resource.hpp>
 
+using namespace xy;
 
 FontResource::FontResource()
 {

@@ -31,7 +31,7 @@ source distribution.
 #define REPORTS_HPP_
 
 #ifdef _DEBUG_
-#define REPORT(name, value) StatsReporter::reporter.report(name, value)
+#define REPORT(name, value) xy::StatsReporter::reporter.report(name, value)
 #else
 #define REPORT(name, value)
 #endif //_DEBUG_
@@ -42,26 +42,29 @@ source distribution.
 #include <string>
 #include <unordered_map>
 
-class StatsReporter final
+namespace xy
 {
-public:
-    StatsReporter();
-    ~StatsReporter() = default;
-    StatsReporter(const StatsReporter&) = delete;
-    StatsReporter& operator = (const StatsReporter&) = delete;
+    class StatsReporter final
+    {
+    public:
+        StatsReporter();
+        ~StatsReporter() = default;
+        StatsReporter(const StatsReporter&) = delete;
+        StatsReporter& operator = (const StatsReporter&) = delete;
 
-    void report(const std::string& name, const std::string& value);
-    void remove(const std::string& name);
+        void report(const std::string& name, const std::string& value);
+        void remove(const std::string& name);
 
-    const std::string& getString();
+        const std::string& getString();
 
-    static StatsReporter reporter;
+        static StatsReporter reporter;
 
-private:
-    std::unordered_map<std::string, std::string> m_data;
-    std::string m_string;
-    bool m_rebuildString;
+    private:
+        std::unordered_map<std::string, std::string> m_data;
+        std::string m_string;
+        bool m_rebuildString;
 
-    sf::Mutex m_mutex;
-};
+        sf::Mutex m_mutex;
+    };
+}
 #endif //REPORTS_HPP_

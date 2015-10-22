@@ -35,6 +35,8 @@ source distribution.
 #include <SFML/Network/Packet.hpp>
 #include <SFML/System/Lock.hpp>
 
+using namespace xy;
+
 namespace
 {
     sf::Uint16 portNumber = 27012u;

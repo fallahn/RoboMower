@@ -36,75 +36,77 @@ source distribution.
 #include <memory>
 #include <string>
 
-class Entity;
-class Message;
-class MessageBus;
-class Component
+namespace xy
 {
-public:
-    using Ptr = std::unique_ptr<Component>;
-
-    enum class Type
+    class Entity;
+    class Message;
+    class MessageBus;
+    class Component
     {
-        Drawable,
-        Physics,
-        Script
+    public:
+        using Ptr = std::unique_ptr<Component>;
+
+        enum class Type
+        {
+            Drawable,
+            Physics,
+            Script
+        };
+
+        enum class UniqueType
+        {
+            AlienController,
+            AnimatedDrawable,
+            AnimationController,
+            GameController,
+            HumanController,
+            LaserDrawable,
+            NetworkController,
+            ParticleController,
+            ParticleSystem,
+            PlayerController,
+            QuadTreeComponent,
+            TerrainDrawable,
+            TextDrawable
+        };
+
+        explicit Component(MessageBus&);
+        virtual ~Component();
+        Component(const Component&) = delete;
+        const Component& operator = (const Component&) = delete;
+
+        virtual Type type() const = 0;
+        virtual UniqueType uniqueType() const = 0;
+        //this is called once per frame by the component's parent entity
+        //providing the opportunity to update each other
+        virtual void entityUpdate(Entity&, float) = 0;
+        virtual void handleMessage(const Message&) = 0;
+
+        //called when the component is first added to an entity
+        virtual void onStart(Entity&);
+
+        virtual void destroy();
+        bool destroyed() const;
+
+        void setParentUID(sf::Uint64 uid);
+        sf::Uint64 getParentUID() const;
+
+        void setName(const std::string&);
+        const std::string& getName() const;
+
+        virtual sf::FloatRect localBounds() const;
+        virtual sf::FloatRect globalBounds() const;
+
+    protected:
+        void sendMessage(const Message&);
+        MessageBus& getMessageBus() const;
+
+    private:
+        MessageBus& m_messageBus;
+        bool m_destroyed;
+
+        sf::Uint64 m_parentUID;
+        std::string m_name;
     };
-
-    enum class UniqueType
-    {
-        AlienController,
-        AnimatedDrawable,
-        AnimationController,
-        GameController,
-        HumanController,
-        LaserDrawable,
-        NetworkController,
-        ParticleController,
-        ParticleSystem,
-        PlayerController,
-        QuadTreeComponent,
-        TerrainDrawable,
-        TextDrawable
-    };
-
-    explicit Component(MessageBus&);
-    virtual ~Component();
-    Component(const Component&) = delete;
-    const Component& operator = (const Component&) = delete;
-
-    virtual Type type() const = 0;
-    virtual UniqueType uniqueType() const = 0;
-    //this is called once per frame by the component's parent entity
-    //providing the opportunity to update each other
-    virtual void entityUpdate(Entity&, float) = 0;
-    virtual void handleMessage(const Message&) = 0;
-
-    //called when the component is first added to an entity
-    virtual void onStart(Entity&);
-
-    virtual void destroy();
-    bool destroyed() const;
-
-    void setParentUID(sf::Uint64 uid);
-    sf::Uint64 getParentUID() const;
-
-    void setName(const std::string&);
-    const std::string& getName() const;
-
-    virtual sf::FloatRect localBounds() const;
-    virtual sf::FloatRect globalBounds() const;
-
-protected:
-    void sendMessage(const Message&);
-    MessageBus& getMessageBus() const;
-
-private:
-    MessageBus& m_messageBus;
-    bool m_destroyed;
-
-    sf::Uint64 m_parentUID;
-    std::string m_name;
-};
-
+}
 #endif //COMPONENT_HPP_

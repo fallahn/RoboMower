@@ -32,21 +32,23 @@ source distribution.
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/System/Vector2.hpp>
 
-struct Particle final : public sf::Transformable
+namespace xy
 {
-    enum class Type
+    struct Particle final : public sf::Transformable
     {
-        Trail,
-        Echo,
-        Sparkle,
-        Ident
+        enum class Type
+        {
+            Trail,
+            Echo,
+            Sparkle,
+            Ident
+        };
+
+        sf::Vector2f velocity;
+        sf::Color colour;
+        float rotation = 0.f;
+        float lifetime = 0.f;
+        sf::FloatRect textureRect;
     };
-
-    sf::Vector2f velocity;
-    sf::Color colour;
-    float rotation = 0.f;
-    float lifetime = 0.f;
-    sf::FloatRect textureRect;
-};
-
+}
 #endif //PARTICLE_HPP_

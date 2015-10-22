@@ -28,6 +28,8 @@ source distribution.
 #include <xygine/Component.hpp>
 #include <xygine/MessageBus.hpp>
 
+using namespace xy;
+
 Component::Component(MessageBus& m)
     : m_messageBus  (m),
     m_destroyed     (false),

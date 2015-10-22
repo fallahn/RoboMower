@@ -30,6 +30,7 @@ source distribution.
 
 #include <SFML/Graphics/RenderTarget.hpp>
 
+using namespace xy;
 using namespace ui;
 
 Button::Button(const sf::Font& font, const sf::Texture& texture)

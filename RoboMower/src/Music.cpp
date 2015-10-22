@@ -31,6 +31,8 @@ source distribution.
 #include <cassert>
 #include <algorithm>
 
+using namespace xy;
+
 MusicPlayer::MusicPlayer()
     : m_volume      (100.f)
 {

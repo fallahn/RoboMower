@@ -46,72 +46,74 @@ namespace sf
     class Event;
 }
 
-namespace ui
+namespace xy
 {
-    class Window final : public sf::Drawable, public sf::Transformable
+    namespace ui
     {
-    public:
-        using Ptr = std::unique_ptr<Window>;
-        struct Palette
-        {
-            sf::Color borderNormal;
-            sf::Color borderActive;
-            sf::Color background;
-        };
-
-        Window(const sf::Font&, sf::Uint16 width, sf::Uint16 height, const Palette& = Palette());
-        ~Window() = default;
-        Window(const Window&) = delete;
-        Window& operator = (const Window&) = delete;
-
-        void update(float);
-        void handleEvent(const sf::Event&, const sf::Vector2f&);
-        void setPalette(const Palette&);
-        void setTitle(const std::string&);
-
-        void addControl(Control::Ptr);
-
-    private:
-        class BackgroundShape final : public sf::Shape
+        class Window final : public sf::Drawable, public sf::Transformable
         {
         public:
-            explicit BackgroundShape(const sf::Vector2f& size);
-            ~BackgroundShape() = default;
-            BackgroundShape(const BackgroundShape&) = delete;
-            BackgroundShape& operator = (const BackgroundShape&) = delete;
+            using Ptr = std::unique_ptr<Window>;
+            struct Palette
+            {
+                sf::Color borderNormal;
+                sf::Color borderActive;
+                sf::Color background;
+            };
 
-            void setSize(const sf::Vector2f&);
-            void setMinimumSize(const sf::Vector2f&);
-            const sf::Vector2f& getSize() const;
-            std::size_t getPointCount() const override;
-            sf::Vector2f getPoint(std::size_t) const override;
+            Window(const sf::Font&, sf::Uint16 width, sf::Uint16 height, const Palette& = Palette());
+            ~Window() = default;
+            Window(const Window&) = delete;
+            Window& operator = (const Window&) = delete;
+
+            void update(float);
+            void handleEvent(const sf::Event&, const sf::Vector2f&);
+            void setPalette(const Palette&);
+            void setTitle(const std::string&);
+
+            void addControl(Control::Ptr);
 
         private:
-            sf::Vector2f m_size;
-            sf::Vector2f m_minimumSize;
+            class BackgroundShape final : public sf::Shape
+            {
+            public:
+                explicit BackgroundShape(const sf::Vector2f& size);
+                ~BackgroundShape() = default;
+                BackgroundShape(const BackgroundShape&) = delete;
+                BackgroundShape& operator = (const BackgroundShape&) = delete;
 
-            void clampSize();
-        }m_backgroundShape;
+                void setSize(const sf::Vector2f&);
+                void setMinimumSize(const sf::Vector2f&);
+                const sf::Vector2f& getSize() const;
+                std::size_t getPointCount() const override;
+                sf::Vector2f getPoint(std::size_t) const override;
 
-        sf::RectangleShape m_titleBar;
-        sf::Text m_titleText;
-        sf::CircleShape m_resizeHandle;
-        Palette m_palette;
-        sf::Vector2f m_lastMousePos;
+            private:
+                sf::Vector2f m_size;
+                sf::Vector2f m_minimumSize;
 
-        Container m_container;
+                void clampSize();
+            }m_backgroundShape;
 
-        enum Drag
-        {
-            All    = 0x1,
-            Right  = 0x2,
-            Bottom = 0x4,
-            Corner = 0x8
+            sf::RectangleShape m_titleBar;
+            sf::Text m_titleText;
+            sf::CircleShape m_resizeHandle;
+            Palette m_palette;
+            sf::Vector2f m_lastMousePos;
+
+            Container m_container;
+
+            enum Drag
+            {
+                All = 0x1,
+                Right = 0x2,
+                Bottom = 0x4,
+                Corner = 0x8
+            };
+            sf::Int16 m_dragMask;
+
+            void draw(sf::RenderTarget&, sf::RenderStates) const override;
         };
-        sf::Int16 m_dragMask;
-
-        void draw(sf::RenderTarget&, sf::RenderStates) const override;
-    };
+    }
 }
-
 #endif //UI_WINDOW_HPP_

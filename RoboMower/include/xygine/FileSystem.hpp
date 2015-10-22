@@ -33,15 +33,17 @@ source distribution.
 #include <string>
 #include <vector>
 
-class FileSystem final
+namespace xy
 {
-public:
+    class FileSystem final
+    {
+    public:
 
-    static std::vector<std::string> listFiles(std::string path);
-    static std::string getFileExtension(const std::string& path);
+        static std::vector<std::string> listFiles(std::string path);
+        static std::string getFileExtension(const std::string& path);
 
-private:
+    private:
 
-};
-
-#endif //FILE_SYS_H_
+    };
+}
+#endif //FILE_SYS_HPP_

@@ -27,6 +27,8 @@ source distribution.
 
 #include <xygine/TextDrawable.hpp>
 
+using namespace xy;
+
 TextDrawable::TextDrawable(MessageBus& mb)
     : Component(mb){}
 

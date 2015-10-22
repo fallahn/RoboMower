@@ -48,6 +48,7 @@ source distribution.
 #include <cstring>
 
 using namespace std::placeholders;
+using namespace xy;
 
 namespace
 {

@@ -34,28 +34,30 @@ source distribution.
 
 #include <string>
 
-class MusicPlayer final : private sf::NonCopyable
+namespace xy
 {
-public:
-    MusicPlayer();
-    ~MusicPlayer() = default;
-    MusicPlayer(const MusicPlayer&) = delete;
-    const MusicPlayer& operator = (const MusicPlayer&) = delete;
+    class MusicPlayer final : private sf::NonCopyable
+    {
+    public:
+        MusicPlayer();
+        ~MusicPlayer() = default;
+        MusicPlayer(const MusicPlayer&) = delete;
+        const MusicPlayer& operator = (const MusicPlayer&) = delete;
 
-    void play(const std::string& file, bool loop = false);
-    void stop();
-    void setPaused(bool paused);
-    bool playing() const;
-    void setVolume(float volume);
-    float getVolume() const;
+        void play(const std::string& file, bool loop = false);
+        void stop();
+        void setPaused(bool paused);
+        bool playing() const;
+        void setVolume(float volume);
+        float getVolume() const;
 
-    void update(float);
+        void update(float);
 
-private:
+    private:
 
-    float m_volume;
-    sf::Music m_music;
-};
-
+        float m_volume;
+        sf::Music m_music;
+    };
+}
 
 #endif //MUSIC_HPP_

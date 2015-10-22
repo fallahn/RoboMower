@@ -50,6 +50,8 @@ namespace
     };
 }
 
+using namespace xy;
+
 ParticleController::ParticleController(MessageBus& mb)
     : Component (mb),
     m_entity    (nullptr)

@@ -37,76 +37,78 @@ source distribution.
 #include <memory>
 #include <array>
 
-template <class T>
-class BaseResource
+namespace xy
 {
-public:
-    BaseResource()
+    template <class T>
+    class BaseResource
     {
-    }
-    virtual ~BaseResource() = default;
-    BaseResource(const BaseResource&) = delete;
-    const BaseResource& operator = (const BaseResource&) = delete;
-
-    T& get(const std::string& path = "default")
-    {
-        //if we have a valid path check current resources and return if found
-        if (!path.empty())
+    public:
+        BaseResource()
         {
-            auto r = m_resources.find(path);
-            if (r != m_resources.end())
+        }
+        virtual ~BaseResource() = default;
+        BaseResource(const BaseResource&) = delete;
+        const BaseResource& operator = (const BaseResource&) = delete;
+
+        T& get(const std::string& path = "default")
+        {
+            //if we have a valid path check current resources and return if found
+            if (!path.empty())
             {
-                return *r->second;
+                auto r = m_resources.find(path);
+                if (r != m_resources.end())
+                {
+                    return *r->second;
+                }
             }
-        }
-        //else attempt to load from file
-        std::unique_ptr<T> r = std::unique_ptr<T>(new T());
-        if (path.empty() || !r->loadFromFile(path))
-        {
-            m_resources[path] = errorHandle(); //error handle should return message endl
-        }
-        else
-        {
-            m_resources[path] = std::move(r);
-        }
+            //else attempt to load from file
+            std::unique_ptr<T> r = std::unique_ptr<T>(new T());
+            if (path.empty() || !r->loadFromFile(path))
+            {
+                m_resources[path] = errorHandle(); //error handle should return message endl
+            }
+            else
+            {
+                m_resources[path] = std::move(r);
+            }
 
-        return *m_resources[path];
-    }
-protected:
-    virtual std::unique_ptr<T> errorHandle() = 0;
-private:
-    std::map<std::string, std::unique_ptr<T>> m_resources;
-};
+            return *m_resources[path];
+        }
+    protected:
+        virtual std::unique_ptr<T> errorHandle() = 0;
+    private:
+        std::map<std::string, std::unique_ptr<T>> m_resources;
+    };
 
-class TextureResource final : public BaseResource<sf::Texture>
-{
-private:
-    std::unique_ptr<sf::Texture> errorHandle() override
+    class TextureResource final : public BaseResource<sf::Texture>
     {
-        std::unique_ptr<sf::Texture> t(new sf::Texture());
-        sf::Image i;
-        i.create(20u, 20u, sf::Color(127u, 127u, 255u));
-        t->loadFromImage(i);
-        return std::move(t);
-    }
-};
-class ImageResource final : public BaseResource<sf::Image>
-{
-    std::unique_ptr<sf::Image> errorHandle() override
+    private:
+        std::unique_ptr<sf::Texture> errorHandle() override
+        {
+            std::unique_ptr<sf::Texture> t(new sf::Texture());
+            sf::Image i;
+            i.create(20u, 20u, sf::Color(127u, 127u, 255u));
+            t->loadFromImage(i);
+            return std::move(t);
+        }
+    };
+    class ImageResource final : public BaseResource<sf::Image>
     {
-        std::unique_ptr<sf::Image> i(new sf::Image);
-        i->create(20u, 20u, sf::Color::Green);
-        return std::move(i);
-    }
-};
+        std::unique_ptr<sf::Image> errorHandle() override
+        {
+            std::unique_ptr<sf::Image> i(new sf::Image);
+            i->create(20u, 20u, sf::Color::Green);
+            return std::move(i);
+        }
+    };
 
-class FontResource final : public BaseResource<sf::Font>
-{
-public:
-    FontResource();
-private:
-    sf::Font m_font;
-    std::unique_ptr<sf::Font> errorHandle() override;
-};
-
+    class FontResource final : public BaseResource<sf::Font>
+    {
+    public:
+        FontResource();
+    private:
+        sf::Font m_font;
+        std::unique_ptr<sf::Font> errorHandle() override;
+    };
+}
 #endif //RESOURCES_HPP_

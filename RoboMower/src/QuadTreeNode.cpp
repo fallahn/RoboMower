@@ -31,6 +31,8 @@ source distribution.
 
 #include <cassert>
 
+using namespace xy;
+
 QuadTreeNode::QuadTreeNode()
     : m_parent              (nullptr),
     m_quadTree              (nullptr),

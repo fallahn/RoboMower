@@ -31,37 +31,39 @@ source distribution.
 #include <xygine/SoundPlayer.hpp>
 #include <xygine/Music.hpp>
 
-class Message;
-class AudioManager final
+namespace xy
 {
-public:
-    AudioManager();
-    ~AudioManager() = default;
-    AudioManager(const AudioManager&) = delete;
-    const AudioManager& operator = (const AudioManager&) = delete;
-
-    void update(float);
-    void handleMessage(const Message&);
-
-    void mute(bool);
-
-private:
-
-    float m_fadeInTime;
-    float m_currentFadeTime;
-
-    MusicPlayer m_musicPlayer;
-    SoundPlayer m_soundPlayer;
-
-    enum SoundIds
+    class Message;
+    class AudioManager final
     {
-        Size
+    public:
+        AudioManager();
+        ~AudioManager() = default;
+        AudioManager(const AudioManager&) = delete;
+        const AudioManager& operator = (const AudioManager&) = delete;
+
+        void update(float);
+        void handleMessage(const Message&);
+
+        void mute(bool);
+
+    private:
+
+        float m_fadeInTime;
+        float m_currentFadeTime;
+
+        MusicPlayer m_musicPlayer;
+        SoundPlayer m_soundPlayer;
+
+        enum SoundIds
+        {
+            Size
+        };
+
+        std::vector<sf::SoundBuffer> m_impactSounds;
+        std::vector<sf::SoundBuffer> m_fxSounds;
+
+        bool m_muted;
     };
-
-    std::vector<sf::SoundBuffer> m_impactSounds;
-    std::vector<sf::SoundBuffer> m_fxSounds;
-
-    bool m_muted;
-};
-
+}
 #endif //AUDIO_MANAGER_HPP_

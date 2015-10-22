@@ -34,24 +34,27 @@ source distribution.
 
 #include <vector>
 
-class StatsOverlayState final : public State
+namespace xy
 {
-public:
-    StatsOverlayState(StateStack&, Context);
-    ~StatsOverlayState(); //hide cursor
-
-    bool update(float) override;
-    void draw() override;
-    bool handleEvent(const sf::Event&) override;
-    void handleMessage(const Message&) override;
-    States::ID stateID() const override
+    class StatsOverlayState final : public State
     {
-        return States::ID::Stats;
-    }
-private:
-    std::vector<ui::Window::Ptr> m_windows;
-    ui::Label::Ptr m_statsText;
-    ui::Label::Ptr m_consoleText;
+    public:
+        StatsOverlayState(StateStack&, Context);
+        ~StatsOverlayState(); //hide cursor
 
-};
+        bool update(float) override;
+        void draw() override;
+        bool handleEvent(const sf::Event&) override;
+        void handleMessage(const Message&) override;
+        States::ID stateID() const override
+        {
+            return States::ID::Stats;
+        }
+    private:
+        std::vector<ui::Window::Ptr> m_windows;
+        ui::Label::Ptr m_statsText;
+        ui::Label::Ptr m_consoleText;
+
+    };
+}
 #endif //STATS_OVERLAY_HPP_

@@ -41,6 +41,8 @@ namespace
     sf::Uint64 uid = 1u; //use 0 for no entity
 }
 
+using namespace xy;
+
 Entity::Entity(MessageBus& mb)
  : m_destroyed          (false),
  m_uid                  (uid++),

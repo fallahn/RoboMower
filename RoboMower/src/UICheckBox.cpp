@@ -29,6 +29,7 @@ source distribution.
 
 #include <SFML/Graphics/RenderTarget.hpp>
 
+using namespace xy;
 using namespace ui;
 
 namespace

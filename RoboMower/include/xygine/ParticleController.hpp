@@ -36,23 +36,25 @@ source distribution.
 
 #include <vector>
 
-class ParticleSystem;
-class ParticleController final : public Component
+namespace xy
 {
-public:
-    explicit ParticleController(MessageBus&);
-    ~ParticleController() = default;
+    class ParticleSystem;
+    class ParticleController final : public Component
+    {
+    public:
+        explicit ParticleController(MessageBus&);
+        ~ParticleController() = default;
 
-    Component::Type type() const override;
-    Component::UniqueType uniqueType() const override;
-    void entityUpdate(Entity&, float) override;
-    void handleMessage(const Message&) override;
-    void onStart(Entity&);
+        Component::Type type() const override;
+        Component::UniqueType uniqueType() const override;
+        void entityUpdate(Entity&, float) override;
+        void handleMessage(const Message&) override;
+        void onStart(Entity&);
 
-    void explosion(const sf::Vector2f&, const sf::Color&  = sf::Color::White);
-private:
+        void explosion(const sf::Vector2f&, const sf::Color& = sf::Color::White);
+    private:
 
-    Entity* m_entity;
-};
-
+        Entity* m_entity;
+    };
+}
 #endif //PARTICLE_CONTROLLER_HPP_

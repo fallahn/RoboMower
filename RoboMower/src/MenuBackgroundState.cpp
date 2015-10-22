@@ -33,6 +33,8 @@ namespace
     const std::string version("version 0.0.1");
 }
 
+using namespace xy;
+
 MenuBackgroundState::MenuBackgroundState(StateStack& stack, Context context)
     : State     (stack, context),
     m_messageBus(context.appInstance.getMessageBus())

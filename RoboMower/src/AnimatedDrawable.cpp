@@ -40,6 +40,8 @@ source distribution.
 #include <cassert>
 #include <fstream>
 
+using namespace xy;
+
 AnimatedDrawable::AnimatedDrawable(MessageBus& mb)
     : Component     (mb),
     m_shader        (nullptr),

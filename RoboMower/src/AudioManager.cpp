@@ -44,6 +44,8 @@ namespace
     const std::string impactSoundPath = "";
 }
 
+using namespace xy;
+
 AudioManager::AudioManager()
     : m_fadeInTime      (4.f),
     m_currentFadeTime   (0.f),

@@ -28,30 +28,32 @@ source distribution.
 #ifndef STATE_IDS_HPP_
 #define STATE_IDS_HPP_
 
-namespace States
+namespace xy
 {
-    enum class ID
+    namespace States
     {
-        None,
-        Game,
-        MenuBackground,
-        MenuMain,
-        MenuLobby,
-        MenuJoin,
-        MenuOptions,
-        MenuPaused,
-        Score,
-        Stats,
-        Title
+        enum class ID
+        {
+            None,
+            Game,
+            MenuBackground,
+            MenuMain,
+            MenuLobby,
+            MenuJoin,
+            MenuOptions,
+            MenuPaused,
+            Score,
+            Stats,
+            Title
+        };
+    }
+
+    //TODO there should be a more intuitive place to put these
+    enum class Difficulty
+    {
+        Easy,
+        Medium,
+        Hard
     };
 }
-
-//TODO there should be a more intuitive place to put these
-enum class Difficulty
-{
-    Easy,
-    Medium,
-    Hard
-};
-
 #endif //STATE_IDS_HPP_

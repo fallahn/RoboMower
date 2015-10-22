@@ -41,6 +41,8 @@ namespace
     const sf::Int32 maximumLevels = 20u;
 }
 
+using namespace xy;
+
 QuadTree::QuadTree()
 {
 

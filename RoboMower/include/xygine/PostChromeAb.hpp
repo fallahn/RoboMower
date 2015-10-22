@@ -33,16 +33,18 @@ source distribution.
 #include <xygine/PostProcess.hpp>
 #include <xygine/ShaderResource.hpp>
 
-class PostChromeAb final : public PostProcess
+namespace xy
 {
-public:
-    PostChromeAb();
+    class PostChromeAb final : public PostProcess
+    {
+    public:
+        PostChromeAb();
 
-    void apply(const sf::RenderTexture&, sf::RenderTarget&) override;
-    void update(float);
+        void apply(const sf::RenderTexture&, sf::RenderTarget&) override;
+        void update(float);
 
-private:
-    ShaderResource m_shaderResource;
-};
-
+    private:
+        ShaderResource m_shaderResource;
+    };
+}
 #endif //POST_CHROMEAB_HPP_

@@ -37,30 +37,32 @@ source distribution.
 
 #include <SFML/Graphics/Sprite.hpp>
 
-class MessageBus;
-class MenuJoinState final : public State
+namespace xy
 {
-public:
-    MenuJoinState(StateStack&, Context);
-    ~MenuJoinState() = default;
-
-    bool update(float) override;
-    void draw() override;
-    bool handleEvent(const sf::Event&) override;
-    void handleMessage(const Message&) override;
-    States::ID stateID() const override
+    class MessageBus;
+    class MenuJoinState final : public State
     {
-        return States::ID::MenuJoin;
-    }
-private:
-    MessageBus& m_messageBus;
-    ui::Container m_uiContainer;
-    sf::Sprite m_cursorSprite;
+    public:
+        MenuJoinState(StateStack&, Context);
+        ~MenuJoinState() = default;
 
-    ui::Label::Ptr m_statusLabel;
+        bool update(float) override;
+        void draw() override;
+        bool handleEvent(const sf::Event&) override;
+        void handleMessage(const Message&) override;
+        States::ID stateID() const override
+        {
+            return States::ID::MenuJoin;
+        }
+    private:
+        MessageBus& m_messageBus;
+        ui::Container m_uiContainer;
+        sf::Sprite m_cursorSprite;
 
-    void buildMenu();
-    void sendCloseMessage();
-};
+        ui::Label::Ptr m_statusLabel;
 
+        void buildMenu();
+        void sendCloseMessage();
+    };
+}
 #endif //MENU_JION_STATE_HPP_

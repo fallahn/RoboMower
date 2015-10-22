@@ -31,6 +31,8 @@ source distribution.
 
 #include <cassert>
 
+using namespace xy;
+
 ShaderResource::ShaderResource(){}
 
 //public

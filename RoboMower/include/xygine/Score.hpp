@@ -35,44 +35,46 @@ source distribution.
 #include <vector>
 #include <string>
 
-class Scores final
+namespace xy
 {
-public:
-    struct Chunk
+    class Scores final
     {
-        unsigned int offset;
-        unsigned int size;
+    public:
+        struct Chunk
+        {
+            unsigned int offset;
+            unsigned int size;
+        };
+
+        struct Header
+        {
+            int ident;
+            int version;
+            Chunk chunks[3];
+        };
+
+        struct Item
+        {
+            char name[21];
+            float score;
+            std::size_t hash;
+        };
+
+        Scores() = default;
+        ~Scores() = default;
+        Scores(const Scores&) = delete;
+        const Scores& operator = (const Scores&) = delete;
+
+        void load();
+        void save();
+        int add(const std::string&, float, Difficulty);
+
+        const std::vector<Item>& getScores(Difficulty) const;
+
+    private:
+        std::vector<Item> m_easyScores;
+        std::vector<Item> m_mediumScores;
+        std::vector<Item> m_hardScores;
     };
-
-    struct Header
-    {
-        int ident;
-        int version;
-        Chunk chunks[3];
-    };
-
-    struct Item
-    {
-        char name[21];
-        float score;
-        std::size_t hash;
-    };
-
-    Scores() = default;
-    ~Scores() = default;
-    Scores(const Scores&) = delete;
-    const Scores& operator = (const Scores&) = delete;
-
-    void load();
-    void save();
-    int add(const std::string&, float, Difficulty);
-
-    const std::vector<Item>& getScores(Difficulty) const;
-
-private:
-    std::vector<Item> m_easyScores;
-    std::vector<Item> m_mediumScores;
-    std::vector<Item> m_hardScores;
-};
-
+}
 #endif //SCORES_HPP_

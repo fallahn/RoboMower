@@ -50,68 +50,70 @@ source distribution.
 #include <vector>
 #include <queue>
 
-class GameServer final
+namespace xy
 {
-public:
-    GameServer();
-    ~GameServer();
-
-    GameServer(const GameServer&) = delete;
-    GameServer& operator = (const GameServer&) = delete;
-
-    static sf::Uint16 getPort();
-    void setPort(sf::Uint16);
-
-    void setMaxPlayers(sf::Uint32);
-
-private:
-    struct RemoteConnection
+    class GameServer final
     {
-        using Ptr = std::unique_ptr<RemoteConnection>;
-        RemoteConnection();
+    public:
+        GameServer();
+        ~GameServer();
 
-        sf::TcpSocket socket;
-        float lastPacketTime;
-        bool ready;
-        bool timeout;
-        sf::Int16 uid;
+        GameServer(const GameServer&) = delete;
+        GameServer& operator = (const GameServer&) = delete;
+
+        static sf::Uint16 getPort();
+        void setPort(sf::Uint16);
+
+        void setMaxPlayers(sf::Uint32);
+
+    private:
+        struct RemoteConnection
+        {
+            using Ptr = std::unique_ptr<RemoteConnection>;
+            RemoteConnection();
+
+            sf::TcpSocket socket;
+            float lastPacketTime;
+            bool ready;
+            bool timeout;
+            sf::Int16 uid;
+        };
+
+        sf::Thread m_thread;
+        sf::Clock m_clock;
+        sf::TcpListener m_listener;
+        bool m_listening;
+        float m_clientTimeoutTime;
+        sf::Uint32 m_maxPlayers;
+        sf::Uint32 m_connectedPlayers;
+        std::vector<RemoteConnection::Ptr> m_connections;
+        bool m_waitingThreadEnd;
+        sf::Mutex m_mutex;
+
+        MessageBus m_messageBus;
+        Scene m_scene;
+
+        void setListening(bool);
+        void executionThread();
+        void update(float);
+        void tick();
+        float now() const;
+
+        void handlePackets();
+        void handlePacket(sf::Packet&, RemoteConnection&, bool&);
+
+        void createConnection();
+        void handleConnections();
+        void handleDisconnections();
+
+        void sendToAll(sf::Packet&);
+        void pingClients();
+
+        void handleMessage(const Message&);
+
+        std::function<void()> updateClientState;
+        void updateClientGameState();
+        void updateClientLobbyState();
     };
-
-    sf::Thread m_thread;
-    sf::Clock m_clock;
-    sf::TcpListener m_listener;
-    bool m_listening;
-    float m_clientTimeoutTime;
-    sf::Uint32 m_maxPlayers;
-    sf::Uint32 m_connectedPlayers;
-    std::vector<RemoteConnection::Ptr> m_connections;
-    bool m_waitingThreadEnd;
-    sf::Mutex m_mutex;
-
-    MessageBus m_messageBus;
-    Scene m_scene;
-
-    void setListening(bool);
-    void executionThread();
-    void update(float);
-    void tick();
-    float now() const;
-
-    void handlePackets();
-    void handlePacket(sf::Packet&, RemoteConnection&, bool&);
-
-    void createConnection();
-    void handleConnections();
-    void handleDisconnections();
-
-    void sendToAll(sf::Packet&);
-    void pingClients();
-
-    void handleMessage(const Message&);
-
-    std::function<void()> updateClientState;
-    void updateClientGameState();
-    void updateClientLobbyState();
-};
-
+}
 #endif //SERVER_HPP_

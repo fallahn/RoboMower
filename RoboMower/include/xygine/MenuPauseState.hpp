@@ -38,30 +38,32 @@ source distribution.
 
 #include <vector>
 
-class MessageBus;
-class MenuPauseState final : public State
+namespace xy
 {
-public:
-    MenuPauseState(StateStack&, Context);
-    ~MenuPauseState() = default;
-
-    bool update(float) override;
-    void draw() override;
-    bool handleEvent(const sf::Event&) override;
-    void handleMessage(const Message&) override;
-    States::ID stateID() const override
+    class MessageBus;
+    class MenuPauseState final : public State
     {
-        return States::ID::MenuPaused;
-    }
-private:
-    MessageBus& m_messageBus;
-    ui::Container m_uiContainer;
-    sf::Sprite m_cursorSprite;
+    public:
+        MenuPauseState(StateStack&, Context);
+        ~MenuPauseState() = default;
 
-    std::vector<sf::Text> m_texts;
+        bool update(float) override;
+        void draw() override;
+        bool handleEvent(const sf::Event&) override;
+        void handleMessage(const Message&) override;
+        States::ID stateID() const override
+        {
+            return States::ID::MenuPaused;
+        }
+    private:
+        MessageBus& m_messageBus;
+        ui::Container m_uiContainer;
+        sf::Sprite m_cursorSprite;
 
-    void buildMenu(const sf::Font&);
-    void sendCloseMessage();
-};
+        std::vector<sf::Text> m_texts;
 
+        void buildMenu(const sf::Font&);
+        void sendCloseMessage();
+    };
+}
 #endif //PAUSE_STATE_HPP_

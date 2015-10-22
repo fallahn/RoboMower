@@ -35,37 +35,39 @@ source distribution.
 #include <functional>
 #include <queue>
 
-class Entity;
-struct Command final
+namespace xy
 {
-    std::function<void(Entity&, float)> action;
-    sf::Uint64 entityID = 0u;
-    enum
+    class Entity;
+    struct Command final
     {
-        None      = 0,
-        Player    = 0x1,
-        Alien     = 0x2,
-        Particle  = 0x4,
-        GameRules = 0x8,
-        Human     = 0x10,
-        All = Player | Alien | Particle | GameRules | Human
-    }category = None;
-};
+        std::function<void(Entity&, float)> action;
+        sf::Uint64 entityID = 0u;
+        enum
+        {
+            None = 0,
+            Player = 0x1,
+            Alien = 0x2,
+            Particle = 0x4,
+            GameRules = 0x8,
+            Human = 0x10,
+            All = Player | Alien | Particle | GameRules | Human
+        }category = None;
+    };
 
-class CommandQueue final
-{
-public:
-    CommandQueue() = default;
-    ~CommandQueue() = default;
-    CommandQueue(const CommandQueue&) = delete;
-    CommandQueue& operator = (const CommandQueue&) = delete;
+    class CommandQueue final
+    {
+    public:
+        CommandQueue() = default;
+        ~CommandQueue() = default;
+        CommandQueue(const CommandQueue&) = delete;
+        CommandQueue& operator = (const CommandQueue&) = delete;
 
-    void push(const Command&);
-    Command pop();
-    bool empty() const;
+        void push(const Command&);
+        Command pop();
+        bool empty() const;
 
-private:
-    std::queue<Command> m_queue;
-};
-
+    private:
+        std::queue<Command> m_queue;
+    };
+}
 #endif //COMMAND_HPP_

@@ -41,6 +41,8 @@ namespace
     const float tickRate = 1.f / 20.f;
 }
 
+using namespace xy;
+
 MenuLobbyState::MenuLobbyState(StateStack& stack, Context context)
     : State                 (stack, context),
     m_messageBus            (context.appInstance.getMessageBus()),

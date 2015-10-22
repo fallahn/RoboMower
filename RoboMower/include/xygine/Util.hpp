@@ -47,213 +47,215 @@ namespace //is this not moot here as the anonymous namespace gets included in an
     const float TAU = PI * 2.f;
 }
 
-namespace Util
+namespace xy
 {
-    namespace Wavetable
+    namespace Util
     {
-        static inline std::vector<float> sine(float frequency, float amplitude = 1.f, float updateRate = 60.f)
+        namespace Wavetable
         {
-            assert(frequency > 0 && amplitude > 0 && updateRate > 0);
-
-            float stepCount = updateRate / frequency;
-            float step = TAU / stepCount;
-            std::vector<float> wavetable;
-            for (float i = 0.f; i < stepCount; ++i)
+            static inline std::vector<float> sine(float frequency, float amplitude = 1.f, float updateRate = 60.f)
             {
-                wavetable.push_back(std::sin(step * i) * amplitude);
-            }
+                assert(frequency > 0 && amplitude > 0 && updateRate > 0);
 
-            return std::move(wavetable);
-        }
-    }
-
-    namespace String
-    {
-        //converts a comma delimited string of floats into an array
-        static inline std::vector<float> toFloatArray(const std::string& str)
-        {
-            std::vector<float> values;
-            auto start = 0u;
-            auto next = str.find_first_of(',');
-            while (next != std::string::npos && start < str.length())
-            {
-                try
+                float stepCount = updateRate / frequency;
+                float step = TAU / stepCount;
+                std::vector<float> wavetable;
+                for (float i = 0.f; i < stepCount; ++i)
                 {
-                    values.push_back(std::stof(str.substr(start, next)));
+                    wavetable.push_back(std::sin(step * i) * amplitude);
                 }
-                catch (...)
-                {
-                    values.push_back(0.f);
-                }
-                start = ++next;
-                next = str.find_first_of(',', start);
-                if (next > str.length()) next = str.length();
+
+                return std::move(wavetable);
             }
-            return values;
         }
 
-        //splits a soring with a given token and returns a vector of results
-        static inline std::vector<std::string> tokenize(const std::string& str, char delim, bool keepEmpty = false)
+        namespace String
         {
-            assert(!str.empty());
-            std::stringstream ss(str);
-            std::string token;
-            std::vector<std::string> output;
-            while (std::getline(ss, token, delim))
+            //converts a comma delimited string of floats into an array
+            static inline std::vector<float> toFloatArray(const std::string& str)
             {
-                if (!token.empty() ||
-                    (token.empty() && keepEmpty))
+                std::vector<float> values;
+                auto start = 0u;
+                auto next = str.find_first_of(',');
+                while (next != std::string::npos && start < str.length())
                 {
-                    output.push_back(token);
+                    try
+                    {
+                        values.push_back(std::stof(str.substr(start, next)));
+                    }
+                    catch (...)
+                    {
+                        values.push_back(0.f);
+                    }
+                    start = ++next;
+                    next = str.find_first_of(',', start);
+                    if (next > str.length()) next = str.length();
                 }
+                return values;
             }
-            return output;
-        }
 
-        //returns string as all lower case
-        static inline std::string toLower(const std::string& str)
-        {
-            std::string result = str;
-            std::transform(result.begin(), result.end(), result.begin(), ::tolower);
-            return result;
-        }
-    }
-
-    namespace Vector
-    {
-        //calculates dot product of 2 vectors
-        static inline float dot(const sf::Vector2f& lv, const sf::Vector2f& rv)
-        {
-            return lv.x * rv.x + lv.y * rv.y;
-        }
-        //Returns a given vector with its length normalized to 1
-        static inline sf::Vector2f normalise(sf::Vector2f source)
-        {
-            float length = std::sqrt(dot(source, source));
-            if (length != 0) source /= length;
-            return source;
-        }
-        //returns length squared
-        static inline float lengthSquared(const sf::Vector2f& source)
-        {
-            return dot(source, source);
-        }
-        //Returns length of a given vector
-        static inline float length(const sf::Vector2f& source)
-        {
-            return std::sqrt(lengthSquared(source));
-        }
-
-        static inline sf::Vector2f reflect(const sf::Vector2f& velocity, const sf::Vector2f& normal)
-        {
-            return -2.f * dot(velocity, normal) * normal + velocity;
-        }
-
-        //rotates a vector (not very accurately)
-        static inline sf::Vector2f rotate(const sf::Vector2f& v, float degrees)
-        {
-            const float rads = degrees * degToRad;
-            auto ca = std::cos(rads);
-            auto sa = std::sin(rads);
-            return{ ca*v.x - sa*v.y, sa*v.x + ca*v.y };
-        }
-
-        //gets the rotation (in degrees) of a vector
-        static inline float rotation(const sf::Vector2f v)
-        {
-            return std::atan2(v.y, v.x) * radToDeg;
-        }
-
-        //converts a comma delimited string to vector 2
-        template <typename T>
-        static inline sf::Vector2<T> vec2FromString(const std::string& str)
-        {
-            sf::Vector2<T> retVec;
-            auto values = String::toFloatArray(str);
-            switch (values.size())
+            //splits a soring with a given token and returns a vector of results
+            static inline std::vector<std::string> tokenize(const std::string& str, char delim, bool keepEmpty = false)
             {
-            case 2:
-                retVec.y = static_cast<T>(values[1]);
-            case 1:
-                retVec.x = static_cast<T>(values[0]);
-                break;
-            default: break;
+                assert(!str.empty());
+                std::stringstream ss(str);
+                std::string token;
+                std::vector<std::string> output;
+                while (std::getline(ss, token, delim))
+                {
+                    if (!token.empty() ||
+                        (token.empty() && keepEmpty))
+                    {
+                        output.push_back(token);
+                    }
+                }
+                return output;
             }
-            return retVec;
-        }
-    }
 
-    namespace Position
-    {
-        template <typename T>
-        static inline void centreOrigin(T& transformable)
-        {
-            sf::FloatRect bounds = transformable.getLocalBounds();
-            transformable.setOrigin(std::floor(bounds.width / 2.f), std::floor(bounds.height / 2.f));
-        }
-    }
-
-    namespace Random
-    {
-        static inline float value(float begin, float end)
-        {
-            assert(begin < end);
-            std::uniform_real_distribution<float> dist(begin, end);
-            return dist(rndEngine);
+            //returns string as all lower case
+            static inline std::string toLower(const std::string& str)
+            {
+                std::string result = str;
+                std::transform(result.begin(), result.end(), result.begin(), ::tolower);
+                return result;
+            }
         }
 
-        static inline int value(int begin, int end)
+        namespace Vector
         {
-            assert(begin < end);
-            std::uniform_int_distribution<int> dist(begin, end);
-            return dist(rndEngine);
+            //calculates dot product of 2 vectors
+            static inline float dot(const sf::Vector2f& lv, const sf::Vector2f& rv)
+            {
+                return lv.x * rv.x + lv.y * rv.y;
+            }
+            //Returns a given vector with its length normalized to 1
+            static inline sf::Vector2f normalise(sf::Vector2f source)
+            {
+                float length = std::sqrt(dot(source, source));
+                if (length != 0) source /= length;
+                return source;
+            }
+            //returns length squared
+            static inline float lengthSquared(const sf::Vector2f& source)
+            {
+                return dot(source, source);
+            }
+            //Returns length of a given vector
+            static inline float length(const sf::Vector2f& source)
+            {
+                return std::sqrt(lengthSquared(source));
+            }
+
+            static inline sf::Vector2f reflect(const sf::Vector2f& velocity, const sf::Vector2f& normal)
+            {
+                return -2.f * dot(velocity, normal) * normal + velocity;
+            }
+
+            //rotates a vector (not very accurately)
+            static inline sf::Vector2f rotate(const sf::Vector2f& v, float degrees)
+            {
+                const float rads = degrees * degToRad;
+                auto ca = std::cos(rads);
+                auto sa = std::sin(rads);
+                return{ ca*v.x - sa*v.y, sa*v.x + ca*v.y };
+            }
+
+            //gets the rotation (in degrees) of a vector
+            static inline float rotation(const sf::Vector2f v)
+            {
+                return std::atan2(v.y, v.x) * radToDeg;
+            }
+
+            //converts a comma delimited string to vector 2
+            template <typename T>
+            static inline sf::Vector2<T> vec2FromString(const std::string& str)
+            {
+                sf::Vector2<T> retVec;
+                auto values = String::toFloatArray(str);
+                switch (values.size())
+                {
+                case 2:
+                    retVec.y = static_cast<T>(values[1]);
+                case 1:
+                    retVec.x = static_cast<T>(values[0]);
+                    break;
+                default: break;
+                }
+                return retVec;
+            }
         }
-    }
 
-    namespace Math
-    {
-        template <typename T>
-        static inline T clamp(const T& n, const T& lower, const T& upper)
+        namespace Position
         {
-            return std::max(lower, std::min(n, upper));
+            template <typename T>
+            static inline void centreOrigin(T& transformable)
+            {
+                sf::FloatRect bounds = transformable.getLocalBounds();
+                transformable.setOrigin(std::floor(bounds.width / 2.f), std::floor(bounds.height / 2.f));
+            }
         }
 
-        static inline float round(float v)
+        namespace Random
         {
-            return std::floor(v + 0.5f);
+            static inline float value(float begin, float end)
+            {
+                assert(begin < end);
+                std::uniform_real_distribution<float> dist(begin, end);
+                return dist(rndEngine);
+            }
+
+            static inline int value(int begin, int end)
+            {
+                assert(begin < end);
+                std::uniform_int_distribution<int> dist(begin, end);
+                return dist(rndEngine);
+            }
         }
 
-        static inline float shortestRotation(float start, float end)
+        namespace Math
         {
-            float diff = end - start;
-            if (diff > 180.f) diff -= 360.f;
-            else if (diff < -180.f) diff += 360.f;
-            return diff;
-        }
-    }
+            template <typename T>
+            static inline T clamp(const T& n, const T& lower, const T& upper)
+            {
+                return std::max(lower, std::min(n, upper));
+            }
 
-    namespace Rectangle
-    {
-        static inline bool contains(const sf::FloatRect& first, const sf::FloatRect& second)
-        {
-            if (second.left < first.left) return false;
-            if (second.top < first.top) return false;
-            if (second.left + second.width > first.left + first.width) return false;
-            if (second.top + second.height > first.top + first.height) return false;
+            static inline float round(float v)
+            {
+                return std::floor(v + 0.5f);
+            }
 
-            return true;
-        }
-
-        static inline sf::Vector2f centre(const sf::FloatRect& rect)
-        {
-            return sf::Vector2f(rect.left + (rect.width / 2.f), rect.top + (rect.height / 2.f));
+            static inline float shortestRotation(float start, float end)
+            {
+                float diff = end - start;
+                if (diff > 180.f) diff -= 360.f;
+                else if (diff < -180.f) diff += 360.f;
+                return diff;
+            }
         }
 
-        static inline sf::FloatRect fromBounds(const sf::Vector2f& lower, const sf::Vector2f& upper)
+        namespace Rectangle
         {
-            return sf::FloatRect(lower.x, lower.y, upper.x - lower.x, upper.y - lower.y);
+            static inline bool contains(const sf::FloatRect& first, const sf::FloatRect& second)
+            {
+                if (second.left < first.left) return false;
+                if (second.top < first.top) return false;
+                if (second.left + second.width > first.left + first.width) return false;
+                if (second.top + second.height > first.top + first.height) return false;
+
+                return true;
+            }
+
+            static inline sf::Vector2f centre(const sf::FloatRect& rect)
+            {
+                return sf::Vector2f(rect.left + (rect.width / 2.f), rect.top + (rect.height / 2.f));
+            }
+
+            static inline sf::FloatRect fromBounds(const sf::Vector2f& lower, const sf::Vector2f& upper)
+            {
+                return sf::FloatRect(lower.x, lower.y, upper.x - lower.x, upper.y - lower.y);
+            }
         }
     }
 }
-
 #endif //UTIL_HPP_

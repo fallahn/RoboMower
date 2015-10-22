@@ -39,6 +39,8 @@ namespace
 }
 
 //------------------------------------
+using namespace xy;
+
 ForceAffector::ForceAffector(const sf::Vector2f& force) 
     : m_force   (force),
     m_random    (false){}

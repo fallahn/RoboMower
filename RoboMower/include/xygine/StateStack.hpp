@@ -42,60 +42,62 @@ namespace sf
     class Event;
 }
 
-class StateStack final
+namespace xy
 {
-public:
-    enum class Action
+    class StateStack final
     {
-        Push,
-        Pop,
-        Clear
-    };
-
-    explicit StateStack(State::Context context);
-    ~StateStack() = default;
-    StateStack(const StateStack&) = delete;
-    const StateStack& operator = (const StateStack&) = delete;
-
-    template <typename T>
-    void registerState(States::ID id)
-    {
-        m_factories[id] = [this]()
+    public:
+        enum class Action
         {
-            return std::make_unique<T>(*this, m_context);
+            Push,
+            Pop,
+            Clear
         };
-    }
 
-    void update(float dt);
-    void draw();
-    void handleEvent(const sf::Event& evt);
-    void handleMessage(const Message&);
+        explicit StateStack(State::Context context);
+        ~StateStack() = default;
+        StateStack(const StateStack&) = delete;
+        const StateStack& operator = (const StateStack&) = delete;
 
-    void pushState(States::ID id);
-    void popState();
-    void clearStates();
+        template <typename T>
+        void registerState(States::ID id)
+        {
+            m_factories[id] = [this]()
+            {
+                return std::make_unique<T>(*this, m_context);
+            };
+        }
 
-    bool empty() const;
+        void update(float dt);
+        void draw();
+        void handleEvent(const sf::Event& evt);
+        void handleMessage(const Message&);
 
-    sf::View updateView();
+        void pushState(States::ID id);
+        void popState();
+        void clearStates();
 
-    void applyPendingChanges();
+        bool empty() const;
 
-private:
+        sf::View updateView();
 
-    struct Pendingchange
-    {
-        explicit Pendingchange(Action, States::ID id = States::ID::None);
-        Action action;
-        States::ID id;
+        void applyPendingChanges();
+
+    private:
+
+        struct Pendingchange
+        {
+            explicit Pendingchange(Action, States::ID id = States::ID::None);
+            Action action;
+            States::ID id;
+        };
+
+        std::vector<State::Ptr> m_stack;
+        std::vector<Pendingchange> m_pendingChanges;
+        State::Context m_context;
+        std::map<States::ID, std::function<State::Ptr()>> m_factories;
+        State::Ptr createState(States::ID id);
+
     };
-
-    std::vector<State::Ptr> m_stack;
-    std::vector<Pendingchange> m_pendingChanges;
-    State::Context m_context;
-    std::map<States::ID, std::function<State::Ptr()>> m_factories;
-    State::Ptr createState(States::ID id);
-
-};
-
+}
 #endif //STATESTACK_HPP_

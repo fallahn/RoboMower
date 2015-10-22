@@ -40,20 +40,22 @@ namespace sf
     class Shader;
 }
 
-class ShaderResource final
+namespace xy
 {
-public:
+    class ShaderResource final
+    {
+    public:
 
-    ShaderResource();
-    ~ShaderResource() = default;
-    ShaderResource(const ShaderResource&) = delete;
-    const ShaderResource& operator = (const ShaderResource&) = delete;
+        ShaderResource();
+        ~ShaderResource() = default;
+        ShaderResource(const ShaderResource&) = delete;
+        const ShaderResource& operator = (const ShaderResource&) = delete;
 
-    sf::Shader& get(Shader::Type);
-    void preload(Shader::Type, const std::string&, const std::string&);
+        sf::Shader& get(Shader::Type);
+        void preload(Shader::Type, const std::string&, const std::string&);
 
-private:
-    std::map<Shader::Type, std::unique_ptr<sf::Shader>> m_shaders;
-};
-
+    private:
+        std::map<Shader::Type, std::unique_ptr<sf::Shader>> m_shaders;
+    };
+}
 #endif //SHADER_RESOURCE_HPP_

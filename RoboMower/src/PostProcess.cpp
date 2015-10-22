@@ -31,6 +31,8 @@ source distribution.
 #include <SFML/Graphics/Shader.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
 
+using namespace xy;
+
 PostProcess::PostProcess(){}
 
 //protected

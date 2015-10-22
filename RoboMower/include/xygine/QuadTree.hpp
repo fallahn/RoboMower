@@ -36,35 +36,37 @@ source distribution.
 
 #include <vector>
 
-class QuadTree final : public sf::Drawable
+namespace xy
 {
-public:
-    QuadTree();
-    QuadTree(const QuadTree&) = delete;
-    QuadTree& operator = (const QuadTree&) = delete;
-    ~QuadTree() = default;
+    class QuadTree final : public sf::Drawable
+    {
+    public:
+        QuadTree();
+        QuadTree(const QuadTree&) = delete;
+        QuadTree& operator = (const QuadTree&) = delete;
+        ~QuadTree() = default;
 
-    void create(const sf::FloatRect&);
-    bool created() const;
-    void reset();
-    void add(QuadTreeComponent*);
-    const sf::FloatRect& getRootArea() const;
+        void create(const sf::FloatRect&);
+        bool created() const;
+        void reset();
+        void add(QuadTreeComponent*);
+        const sf::FloatRect& getRootArea() const;
 
-    //std::vector<QuadTreeComponent*> queryPosition(const sf::Vector2f&);
-    std::vector<QuadTreeComponent*> queryArea(const sf::FloatRect&);
-    
-    QuadTreeNode::Set& getOutsideRootSet();
+        //std::vector<QuadTreeComponent*> queryPosition(const sf::Vector2f&);
+        std::vector<QuadTreeComponent*> queryArea(const sf::FloatRect&);
 
-    sf::Int32 minNodeComponents() const;
-    sf::Uint32 maxNodeComponents() const;
-    sf::Int32 maxLevels() const;
+        QuadTreeNode::Set& getOutsideRootSet();
 
-private:
-    //store components which move outside of the root area here
-    QuadTreeNode::Set m_outsideRootSet;
-    QuadTreeNode::Ptr m_rootNode;
+        sf::Int32 minNodeComponents() const;
+        sf::Uint32 maxNodeComponents() const;
+        sf::Int32 maxLevels() const;
 
-    void draw(sf::RenderTarget&, sf::RenderStates) const override;
-};
+    private:
+        //store components which move outside of the root area here
+        QuadTreeNode::Set m_outsideRootSet;
+        QuadTreeNode::Ptr m_rootNode;
 
+        void draw(sf::RenderTarget&, sf::RenderStates) const override;
+    };
+}
 #endif //QUADTREE_HPP_

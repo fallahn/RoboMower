@@ -27,6 +27,8 @@ source distribution.
 
 #include <xygine/PostBloom.hpp>
 
+using namespace xy;
+
 PostBloom::PostBloom()
 {
     m_shaderResource.preload(Shader::Type::PostAdditiveBlend, Shader::FullPass::vertex, Shader::PostAdditiveBlend::fragment);

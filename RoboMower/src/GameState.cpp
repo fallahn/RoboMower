@@ -52,6 +52,8 @@ namespace
     const float joyMaxAxis = 100.f;
 }
 
+using namespace xy;
+
 GameState::GameState(StateStack& stateStack, Context context)
     : State                 (stateStack, context),
     m_messageBus            (context.appInstance.getMessageBus()),

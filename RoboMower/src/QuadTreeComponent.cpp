@@ -36,6 +36,8 @@ namespace
     const std::size_t maxBuffer = 37u; //should allow ~600ms input lag
 }
 
+using namespace xy;
+
 QuadTreeComponent::QuadTreeComponent(MessageBus& mb, const sf::FloatRect& bounds)
     : Component     (mb),
     m_bounds        (bounds),

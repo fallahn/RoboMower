@@ -44,6 +44,8 @@ namespace
     const std::size_t maxSounds = 160u;
 }
 
+using namespace xy;
+
 SoundPlayer::SoundPlayer()
 {
 

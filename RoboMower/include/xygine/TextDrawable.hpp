@@ -34,23 +34,25 @@ source distribution.
 
 #include <SFML/Graphics/Text.hpp>
 
-class TextDrawable final : public Component, public sf::Text
+namespace xy
 {
-public:
-    explicit TextDrawable(MessageBus&);
-    ~TextDrawable() = default;
+    class TextDrawable final : public Component, public sf::Text
+    {
+    public:
+        explicit TextDrawable(MessageBus&);
+        ~TextDrawable() = default;
 
-    Component::Type type() const override;
-    Component::UniqueType uniqueType() const override;
-    void entityUpdate(Entity&, float) override;
-    void handleMessage(const Message&) override;
+        Component::Type type() const override;
+        Component::UniqueType uniqueType() const override;
+        void entityUpdate(Entity&, float) override;
+        void handleMessage(const Message&) override;
 
-    sf::FloatRect localBounds() const override;
-    sf::FloatRect globalBounds() const override;
+        sf::FloatRect localBounds() const override;
+        sf::FloatRect globalBounds() const override;
 
-private:
+    private:
 
-};
-
+    };
+}
 
 #endif //TEXT_DRAWABLE_HPP_

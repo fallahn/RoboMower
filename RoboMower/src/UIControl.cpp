@@ -27,6 +27,7 @@ source distribution.
 
 #include <xygine/ui/Control.hpp>
 
+using namespace xy;
 using namespace ui;
 
 Control::Control()

@@ -37,66 +37,68 @@ source distribution.
 
 #include <fstream>
 
-namespace Util
+namespace xy
 {
-    namespace Json
+    namespace Util
     {
-
-        static inline void parseJsonObject(const picojson::object& o, sf::FloatRect& rect)
+        namespace Json
         {
-            for (const auto& p : o)
+
+            static inline void parseJsonObject(const picojson::object& o, sf::FloatRect& rect)
             {
-                if (p.first == "x")
+                for (const auto& p : o)
                 {
-                    rect.left = (p.second.is<double>()) ?
-                        static_cast<float>(p.second.get<double>()) : 0;
+                    if (p.first == "x")
+                    {
+                        rect.left = (p.second.is<double>()) ?
+                            static_cast<float>(p.second.get<double>()) : 0;
+                    }
+                    else if (p.first == "y")
+                    {
+                        rect.top = (p.second.is<double>()) ?
+                            static_cast<float>(p.second.get<double>()) : 0;
+                    }
+                    else if (p.first == "w")
+                    {
+                        rect.width = (p.second.is<double>()) ?
+                            static_cast<float>(p.second.get<double>()) : 0;
+                    }
+                    else if (p.first == "h")
+                    {
+                        rect.height = (p.second.is<double>()) ?
+                            static_cast<float>(p.second.get<double>()) : 0;
+                    }
                 }
-                else if (p.first == "y")
+            }
+
+            static inline void parseJsonObject(const picojson::object& o, sf::Vector2f& v)
+            {
+                for (const auto& p : o)
                 {
-                    rect.top = (p.second.is<double>()) ?
-                        static_cast<float>(p.second.get<double>()) : 0;
-                }
-                else if (p.first == "w")
-                {
-                    rect.width = (p.second.is<double>()) ?
-                        static_cast<float>(p.second.get<double>()) : 0;
-                }
-                else if (p.first == "h")
-                {
-                    rect.height = (p.second.is<double>()) ?
-                        static_cast<float>(p.second.get<double>()) : 0;
+                    if (p.first == "x" || p.first == "w")
+                    {
+                        v.x = (p.second.is<double>()) ?
+                            static_cast<float>(p.second.get<double>()) : 0;
+                    }
+                    else if (p.first == "y" || p.first == "h")
+                    {
+                        v.y = (p.second.is<double>()) ?
+                            static_cast<float>(p.second.get<double>()) : 0;
+                    }
                 }
             }
         }
 
-        static inline void parseJsonObject(const picojson::object& o, sf::Vector2f& v)
+        namespace File
         {
-            for (const auto& p : o)
+            static inline bool validLength(std::ifstream& file)
             {
-                if (p.first == "x" || p.first == "w")
-                {
-                    v.x = (p.second.is<double>()) ?
-                        static_cast<float>(p.second.get<double>()) : 0;
-                }
-                else if (p.first == "y" || p.first == "h")
-                {
-                    v.y = (p.second.is<double>()) ?
-                        static_cast<float>(p.second.get<double>()) : 0;
-                }
+                file.seekg(0, file.end);
+                sf::Int32 fileLength = static_cast<sf::Int32>(file.tellg());
+                file.seekg(0, file.beg);
+                return (fileLength > 0);
             }
         }
-    }
-
-    namespace File
-    {
-        static inline bool validLength(std::ifstream& file)
-        {
-            file.seekg(0, file.end);
-            sf::Int32 fileLength = static_cast<sf::Int32>(file.tellg());
-            file.seekg(0, file.beg);
-            return (fileLength > 0);
-        }
-    }
-}
-
-#endif //JSON_UTIL_H_
+    } //UTIL
+} //xy
+#endif //JSON_UTIL_HPP_

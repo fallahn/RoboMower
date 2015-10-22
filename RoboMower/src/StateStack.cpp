@@ -33,6 +33,8 @@ source distribution.
 
 #include <cassert>
 
+using namespace xy;
+
 StateStack::StateStack(State::Context context)
     : m_context (context)
 {

@@ -31,6 +31,7 @@ source distribution.
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
 
+using namespace xy;
 using namespace ui;
 
 Label::Label(const sf::Font& font)

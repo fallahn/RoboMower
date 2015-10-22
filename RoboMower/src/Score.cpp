@@ -42,6 +42,8 @@ namespace
     const std::size_t maxScores = 100;
 }
 
+using namespace xy;
+
 void Scores::load()
 {
     std::fstream file(scoreFile, std::ios::binary | std::ios::in);

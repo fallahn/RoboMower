@@ -36,6 +36,8 @@ namespace
     const float scanlineCount = 5500.f;
 }
 
+using namespace xy;
+
 PostChromeAb::PostChromeAb()
 {
     m_shaderResource.preload(Shader::Type::PostChromeAb, Shader::FullPass::vertex, Shader::PostChromeAb::fragment);

@@ -39,55 +39,57 @@ source distribution.
 #include <memory>
 #include <functional>
 
-namespace ui
+namespace xy
 {
-    class Button final : public Control
+    namespace ui
     {
-    public:
-        using Ptr = std::shared_ptr<Button>;
-        using Callback = std::function<void()>;
-
-        Button(const sf::Font& font, const sf::Texture& texture);
-        ~Button() = default;
-
-        bool selectable() const override;
-        void select() override;
-        void deselect() override;
-
-        void activate() override;
-        void deactivate() override;
-
-        void handleEvent(const sf::Event& e, const sf::Vector2f& mousePos) override;
-
-        void setAlignment(Alignment a) override;
-        bool contains(const sf::Vector2f& mousePos)const override;
-
-        void setCallback(Callback c);
-        void setText(const std::string& text);
-        void setTextColour(const sf::Color& c);
-        void setFontSize(sf::Uint16 size);
-        void setTogglable(bool b);
-
-
-    private:
-        enum State
+        class Button final : public Control
         {
-            Normal = 0,
-            Selected,
-            Active,
-            Count
+        public:
+            using Ptr = std::shared_ptr<Button>;
+            using Callback = std::function<void()>;
+
+            Button(const sf::Font& font, const sf::Texture& texture);
+            ~Button() = default;
+
+            bool selectable() const override;
+            void select() override;
+            void deselect() override;
+
+            void activate() override;
+            void deactivate() override;
+
+            void handleEvent(const sf::Event& e, const sf::Vector2f& mousePos) override;
+
+            void setAlignment(Alignment a) override;
+            bool contains(const sf::Vector2f& mousePos)const override;
+
+            void setCallback(Callback c);
+            void setText(const std::string& text);
+            void setTextColour(const sf::Color& c);
+            void setFontSize(sf::Uint16 size);
+            void setTogglable(bool b);
+
+
+        private:
+            enum State
+            {
+                Normal = 0,
+                Selected,
+                Active,
+                Count
+            };
+
+            Callback m_callback;
+            const sf::Texture& m_texture;
+            sf::Sprite m_sprite;
+            sf::Text m_text;
+            bool m_toggleButton;
+
+            std::vector<sf::IntRect> m_subRects;
+
+            void draw(sf::RenderTarget& rt, sf::RenderStates states) const override;
         };
-
-        Callback m_callback;
-        const sf::Texture& m_texture;
-        sf::Sprite m_sprite;
-        sf::Text m_text;
-        bool m_toggleButton;
-
-        std::vector<sf::IntRect> m_subRects;
-
-        void draw(sf::RenderTarget& rt, sf::RenderStates states) const override;
-    };
+    }
 }
-
 #endif //UI_BUTTON_HPP_

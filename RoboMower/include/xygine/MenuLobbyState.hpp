@@ -45,37 +45,39 @@ namespace sf
     class Packet;
 }
 
-class MessageBus;
-class MenuLobbyState final : public State
+namespace xy
 {
-public:
-    MenuLobbyState(StateStack&, Context);
-    ~MenuLobbyState() = default;
-
-    bool update(float) override;
-    void draw() override;
-    bool handleEvent(const sf::Event&) override;
-    void handleMessage(const Message&) override;
-    States::ID stateID() const override
+    class MessageBus;
+    class MenuLobbyState final : public State
     {
-        return States::ID::MenuLobby;
-    }
+    public:
+        MenuLobbyState(StateStack&, Context);
+        ~MenuLobbyState() = default;
 
-private:
-    MessageBus& m_messageBus;
-    ui::Container m_uiContainer;
+        bool update(float) override;
+        void draw() override;
+        bool handleEvent(const sf::Event&) override;
+        void handleMessage(const Message&) override;
+        States::ID stateID() const override
+        {
+            return States::ID::MenuLobby;
+        }
 
-    std::map<sf::Int16, sf::Text> m_texts;
-    sf::Sprite m_cursorSprite;
+    private:
+        MessageBus& m_messageBus;
+        ui::Container m_uiContainer;
 
-    sf::Font& m_font;
+        std::map<sf::Int16, sf::Text> m_texts;
+        sf::Sprite m_cursorSprite;
 
-    sf::TcpSocket* m_socket;
-    float m_timeSinceLastPacket;
-    sf::Clock m_tickClock;
-    void handlePacket(sf::Packet&);
+        sf::Font& m_font;
 
-    void buildMenu();
-};
+        sf::TcpSocket* m_socket;
+        float m_timeSinceLastPacket;
+        sf::Clock m_tickClock;
+        void handlePacket(sf::Packet&);
 
+        void buildMenu();
+    };
+}
 #endif //MENU_LOBBY_STATE_HPP_

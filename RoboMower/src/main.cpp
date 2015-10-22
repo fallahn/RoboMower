@@ -17,7 +17,7 @@ int main()
     XInitThreads();
 #endif //__linux
 
-    App app;
+    xy::App app;
     app.run();
 
     return 0;

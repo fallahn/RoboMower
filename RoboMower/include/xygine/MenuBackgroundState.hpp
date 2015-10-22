@@ -37,26 +37,28 @@ source distribution.
 
 #include <vector>
 
-class MessageBus;
-class MenuBackgroundState final : public State
+namespace xy
 {
-public:
-    MenuBackgroundState(StateStack&, Context);
-    ~MenuBackgroundState() = default;
-
-    bool update(float) override;
-    void draw() override;
-    bool handleEvent(const sf::Event&) override;
-    void handleMessage(const Message&) override;
-    States::ID stateID() const override
+    class MessageBus;
+    class MenuBackgroundState final : public State
     {
-        return States::ID::MenuBackground;
-    }
-private:
-    MessageBus& m_messageBus;
-    ui::Container m_uiContainer;
+    public:
+        MenuBackgroundState(StateStack&, Context);
+        ~MenuBackgroundState() = default;
 
-    std::vector<sf::Text> m_texts;
-};
+        bool update(float) override;
+        void draw() override;
+        bool handleEvent(const sf::Event&) override;
+        void handleMessage(const Message&) override;
+        States::ID stateID() const override
+        {
+            return States::ID::MenuBackground;
+        }
+    private:
+        MessageBus& m_messageBus;
+        ui::Container m_uiContainer;
 
+        std::vector<sf::Text> m_texts;
+    };
+}
 #endif //MENU_BACKGROUND_STATE_HPP_

@@ -37,29 +37,31 @@ source distribution.
 #include <map>
 #include <list>
 
-class SoundPlayer final
+namespace xy
 {
-public:
+    class SoundPlayer final
+    {
+    public:
 
-    SoundPlayer();
-    ~SoundPlayer() = default;
-    SoundPlayer(const SoundPlayer&) = delete;
-    const SoundPlayer& operator = (const SoundPlayer&) = delete;
+        SoundPlayer();
+        ~SoundPlayer() = default;
+        SoundPlayer(const SoundPlayer&) = delete;
+        const SoundPlayer& operator = (const SoundPlayer&) = delete;
 
-    void update();
-    void play(const sf::SoundBuffer&, bool = false);
-    
-    void setListenerPosition(const sf::Vector2f& position);
-    sf::Vector2f getListenerPosition() const;
+        void update();
+        void play(const sf::SoundBuffer&, bool = false);
 
-    static void setVolume(float volume);
-    static float getVolume();
+        void setListenerPosition(const sf::Vector2f& position);
+        sf::Vector2f getListenerPosition() const;
 
-private:
+        static void setVolume(float volume);
+        static float getVolume();
 
-    std::list<sf::Sound> m_sounds;
+    private:
 
-    void flushSounds();
-};
+        std::list<sf::Sound> m_sounds;
 
+        void flushSounds();
+    };
+}
 #endif //SOUND_PLAYER_HPP_

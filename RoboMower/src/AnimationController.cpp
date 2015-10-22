@@ -32,6 +32,8 @@ source distribution.
 
 #include <cassert>
 
+using namespace xy;
+
 AnimationController::AnimationController(MessageBus& mb)
     : Component (mb),
     m_drawable  (nullptr)

@@ -28,6 +28,8 @@ source distribution.
 #include <xygine/Command.hpp>
 #include <xygine/Entity.hpp>
 
+using namespace xy;
+
 void CommandQueue::push(const Command& command)
 {
     m_queue.push(command);

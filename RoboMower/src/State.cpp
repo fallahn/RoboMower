@@ -30,6 +30,8 @@ source distribution.
 
 #include <SFML/Graphics/RenderWindow.hpp>
 
+using namespace xy;
+
 State::Context::Context(sf::RenderWindow& rw, App& app)
     : renderWindow(rw), appInstance(app){}
 

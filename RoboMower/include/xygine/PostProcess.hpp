@@ -37,19 +37,21 @@ namespace sf
     class Shader;
 }
 
-class PostProcess
+namespace xy
 {
-public:
-    PostProcess();
-    virtual ~PostProcess() = default;
-    PostProcess(const PostProcess&) = delete;
-    const PostProcess& operator = (const PostProcess&) = delete;
+    class PostProcess
+    {
+    public:
+        PostProcess();
+        virtual ~PostProcess() = default;
+        PostProcess(const PostProcess&) = delete;
+        const PostProcess& operator = (const PostProcess&) = delete;
 
-    virtual void apply(const sf::RenderTexture&, sf::RenderTarget&) = 0;
+        virtual void apply(const sf::RenderTexture&, sf::RenderTarget&) = 0;
 
-protected:
-    static void applyShader(const sf::Shader&, sf::RenderTarget&);
-};
-
+    protected:
+        static void applyShader(const sf::Shader&, sf::RenderTarget&);
+    };
+}
 
 #endif //POST_PROCESS_HPP_

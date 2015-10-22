@@ -45,26 +45,28 @@ namespace sf
     class Color;
 }
 
-class NetworkController;
-class GameState final : public State
+namespace xy
 {
-public:
-    GameState(StateStack& stateStack, Context context);
-    ~GameState() = default;
-
-    bool update(float dt) override;
-    void draw() override;
-    bool handleEvent(const sf::Event& evt) override;
-    void handleMessage(const Message&) override;
-    States::ID stateID() const override
+    class NetworkController;
+    class GameState final : public State
     {
-        return States::ID::Game;
-    }
-private :
+    public:
+        GameState(StateStack& stateStack, Context context);
+        ~GameState() = default;
 
-    MessageBus& m_messageBus;
-    Scene m_scene;
-    AudioManager m_audioManager;
-};
+        bool update(float dt) override;
+        void draw() override;
+        bool handleEvent(const sf::Event& evt) override;
+        void handleMessage(const Message&) override;
+        States::ID stateID() const override
+        {
+            return States::ID::Game;
+        }
+    private:
 
+        MessageBus& m_messageBus;
+        Scene m_scene;
+        AudioManager m_audioManager;
+    };
+}
 #endif //GAME_STATE_HPP_

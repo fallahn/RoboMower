@@ -30,6 +30,7 @@ source distribution.
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Window/Event.hpp>
 
+using namespace xy;
 using namespace ui;
 
 namespace

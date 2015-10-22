@@ -28,6 +28,8 @@ source distribution.
 #include <xygine/MessageBus.hpp>
 #include <xygine/Log.hpp>
 
+using namespace xy;
+
 Message MessageBus::poll()
 {
     Message m = m_currentMessages.front();

@@ -33,6 +33,8 @@ source distribution.
 
 #include <SFML/Window/Mouse.hpp>
 
+using namespace xy;
+
 MenuPauseState::MenuPauseState(StateStack& stack, Context context)
     : State     (stack, context),
     m_messageBus(context.appInstance.getMessageBus())

@@ -35,6 +35,7 @@ source distribution.
 
 #include <cassert>
 
+using namespace xy;
 using namespace ui;
 
 namespace

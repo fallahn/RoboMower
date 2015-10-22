@@ -39,6 +39,8 @@ namespace
 
 }
 
+using namespace xy;
+
 ParticleSystem::ParticleSystem(MessageBus& mb)
     : Component         (mb),
     m_texture           (nullptr),

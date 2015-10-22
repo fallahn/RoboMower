@@ -40,53 +40,55 @@ namespace sf
     class Event;
 }
 
-namespace ui
+namespace xy
 {
-    enum class Alignment
+    namespace ui
     {
-        TopLeft,
-        BottomLeft,
-        Centre,
-        TopRight,
-        BottomRight
-    };
+        enum class Alignment
+        {
+            TopLeft,
+            BottomLeft,
+            Centre,
+            TopRight,
+            BottomRight
+        };
 
-    class Control : public sf::Drawable, public sf::Transformable
-    {
-    public:
-        using Ptr = std::shared_ptr<Control>;
+        class Control : public sf::Drawable, public sf::Transformable
+        {
+        public:
+            using Ptr = std::shared_ptr<Control>;
 
-        Control();
-        virtual ~Control() = default;
-        Control(const Control&) = delete;
-        const Control& operator = (const Control&) = delete;
+            Control();
+            virtual ~Control() = default;
+            Control(const Control&) = delete;
+            const Control& operator = (const Control&) = delete;
 
-        virtual bool selectable() const = 0;
-        bool selected() const;
+            virtual bool selectable() const = 0;
+            bool selected() const;
 
-        virtual void select();
-        virtual void deselect();
+            virtual void select();
+            virtual void deselect();
 
-        virtual bool active() const;
-        virtual void activate();
-        virtual void deactivate();
+            virtual bool active() const;
+            virtual void activate();
+            virtual void deactivate();
 
-        virtual void handleEvent(const sf::Event&, const sf::Vector2f&) = 0;
-        virtual void update(float dt){};
+            virtual void handleEvent(const sf::Event&, const sf::Vector2f&) = 0;
+            virtual void update(float dt){};
 
-        virtual void setAlignment(Alignment) = 0;
-        virtual bool contains(const sf::Vector2f& mousePos) const;
+            virtual void setAlignment(Alignment) = 0;
+            virtual bool contains(const sf::Vector2f& mousePos) const;
 
-        void setVisible(bool visible);
-        bool visible() const;
+            void setVisible(bool visible);
+            bool visible() const;
 
-    private:
+        private:
 
-        bool m_selected;
-        bool m_active;
-        bool m_visible;
-        sf::Uint16 m_index;
-    };
+            bool m_selected;
+            bool m_active;
+            bool m_visible;
+            sf::Uint16 m_index;
+        };
+    }
 }
-
 #endif //UI_CONTROL_H_

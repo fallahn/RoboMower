@@ -34,31 +34,33 @@ source distribution.
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
 
-class MessageBus;
-class MenuOptionState final : public State
+namespace xy
 {
-public:
-    MenuOptionState(StateStack& stateStack, Context context);
-    ~MenuOptionState() = default;
-
-    bool update(float dt) override;
-    void draw() override;
-    bool handleEvent(const sf::Event& evt) override;
-    void handleMessage(const Message&) override;
-    States::ID stateID() const override
+    class MessageBus;
+    class MenuOptionState final : public State
     {
-        return States::ID::MenuOptions;
-    }
-private:
-    MessageBus& m_messageBus;
-    sf::Sprite m_menuSprite;
-    sf::Sprite m_cursorSprite;
-    std::vector<sf::Text> m_texts;
+    public:
+        MenuOptionState(StateStack& stateStack, Context context);
+        ~MenuOptionState() = default;
 
-    ui::Container m_uiContainer;
+        bool update(float dt) override;
+        void draw() override;
+        bool handleEvent(const sf::Event& evt) override;
+        void handleMessage(const Message&) override;
+        States::ID stateID() const override
+        {
+            return States::ID::MenuOptions;
+        }
+    private:
+        MessageBus& m_messageBus;
+        sf::Sprite m_menuSprite;
+        sf::Sprite m_cursorSprite;
+        std::vector<sf::Text> m_texts;
 
-    void buildMenu(const sf::Font&);
-    void close();
-};
+        ui::Container m_uiContainer;
 
+        void buildMenu(const sf::Font&);
+        void close();
+    };
+}
 #endif //MENU_OPTION_STATE_HPP_

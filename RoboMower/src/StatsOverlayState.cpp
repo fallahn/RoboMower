@@ -33,6 +33,8 @@ source distribution.
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 
+using namespace xy;
+
 StatsOverlayState::StatsOverlayState(StateStack& ss, Context c)
     : State(ss, c)
 {

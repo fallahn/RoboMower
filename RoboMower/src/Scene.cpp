@@ -38,6 +38,8 @@ namespace
 
 }
 
+using namespace xy;
+
 Scene::Scene(MessageBus& mb, bool createBuffers)
     : m_sceneWidth  (0.f),
     m_messageBus    (mb),

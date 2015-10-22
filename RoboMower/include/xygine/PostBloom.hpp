@@ -38,27 +38,29 @@ source distribution.
 
 #include <array>
 
-class PostBloom final : public PostProcess
+namespace xy
 {
-public:
-    PostBloom();
+    class PostBloom final : public PostProcess
+    {
+    public:
+        PostBloom();
 
-    void apply(const sf::RenderTexture&, sf::RenderTarget&) override;
+        void apply(const sf::RenderTexture&, sf::RenderTarget&) override;
 
-private:
-    using RenderTextureArray = std::array<sf::RenderTexture, 2>;
+    private:
+        using RenderTextureArray = std::array<sf::RenderTexture, 2>;
 
-    ShaderResource m_shaderResource;
-    sf::RenderTexture m_brightnessTexture;
-    RenderTextureArray m_firstPassTextures;
-    RenderTextureArray m_secondPassTextures;
+        ShaderResource m_shaderResource;
+        sf::RenderTexture m_brightnessTexture;
+        RenderTextureArray m_firstPassTextures;
+        RenderTextureArray m_secondPassTextures;
 
-    void initTextures(const sf::Vector2u&);
-    void filterBright(const sf::RenderTexture&, sf::RenderTexture&);
-    void blurMultipass(RenderTextureArray&);
-    void blur(const sf::RenderTexture&, sf::RenderTexture&, const sf::Vector2f&);
-    void downSample(const sf::RenderTexture&, sf::RenderTexture&);
-    void add(const sf::RenderTexture&, const sf::RenderTexture&, sf::RenderTarget&);
-};
-
+        void initTextures(const sf::Vector2u&);
+        void filterBright(const sf::RenderTexture&, sf::RenderTexture&);
+        void blurMultipass(RenderTextureArray&);
+        void blur(const sf::RenderTexture&, sf::RenderTexture&, const sf::Vector2f&);
+        void downSample(const sf::RenderTexture&, sf::RenderTexture&);
+        void add(const sf::RenderTexture&, const sf::RenderTexture&, sf::RenderTarget&);
+    };
+}
 #endif //POST_BLOOM_HPP_
