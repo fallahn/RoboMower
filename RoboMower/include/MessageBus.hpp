@@ -130,7 +130,7 @@ public:
 class MessageBus final
 {
 public:
-    MessageBus();
+    MessageBus() = default;
     ~MessageBus() = default;
     MessageBus(const MessageBus&) = delete;
     const MessageBus& operator = (const MessageBus&) = delete;
@@ -147,7 +147,6 @@ public:
 private:
     std::queue<Message> m_currentMessages;
     std::queue<Message> m_pendingMessages;
-    //bool m_polling;
 };
 
 #endif

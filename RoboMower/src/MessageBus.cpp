@@ -8,13 +8,8 @@
 #include <MessageBus.hpp>
 #include <Log.hpp>
 
-MessageBus::MessageBus()
-//: m_polling(false){}
-{}
-
 Message MessageBus::poll()
 {
-    //m_polling = true;
     Message m = m_currentMessages.front();
     m_currentMessages.pop();
 

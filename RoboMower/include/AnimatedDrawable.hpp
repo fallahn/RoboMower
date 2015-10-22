@@ -119,4 +119,4 @@ private:
     void setFrame(sf::Uint8 frame);
 };
 
-#endif //ANISPRITE_H_
+#endif //ANISPRITE_HPP_
