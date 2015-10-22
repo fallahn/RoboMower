@@ -236,9 +236,6 @@
     <ClInclude Include="include\xygine\ParticleSystem.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\xygine\picojson.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\xygine\PostBloom.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -302,43 +299,38 @@
     <ClInclude Include="include\xygine\Util.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\xygine\ui\UIButton.hpp">
+    <ClInclude Include="include\xygine\ui\Button.hpp">
       <Filter>Header Files\ui</Filter>
     </ClInclude>
-    <ClInclude Include="include\xygine\ui\UICheckBox.hpp">
+    <ClInclude Include="include\xygine\ui\CheckBox.hpp">
       <Filter>Header Files\ui</Filter>
     </ClInclude>
-    <ClInclude Include="include\xygine\ui\UIComboBox.hpp">
+    <ClInclude Include="include\xygine\ui\ComboBox.hpp">
       <Filter>Header Files\ui</Filter>
     </ClInclude>
-    <ClInclude Include="include\xygine\ui\UIContainer.hpp">
+    <ClInclude Include="include\xygine\ui\Container.hpp">
       <Filter>Header Files\ui</Filter>
     </ClInclude>
-    <ClInclude Include="include\xygine\ui\UIControl.hpp">
+    <ClInclude Include="include\xygine\ui\Control.hpp">
       <Filter>Header Files\ui</Filter>
     </ClInclude>
-    <ClInclude Include="include\xygine\ui\UILabel.hpp">
+    <ClInclude Include="include\xygine\ui\Label.hpp">
       <Filter>Header Files\ui</Filter>
     </ClInclude>
-    <ClInclude Include="include\xygine\ui\UIScoreList.hpp">
+    <ClInclude Include="include\xygine\ui\ScoreList.hpp">
       <Filter>Header Files\ui</Filter>
     </ClInclude>
-    <ClInclude Include="include\xygine\ui\UISelection.hpp">
+    <ClInclude Include="include\xygine\ui\Selection.hpp">
       <Filter>Header Files\ui</Filter>
     </ClInclude>
-    <ClInclude Include="include\xygine\ui\UISlider.hpp">
+    <ClInclude Include="include\xygine\ui\Slider.hpp">
       <Filter>Header Files\ui</Filter>
     </ClInclude>
-    <ClInclude Include="include\xygine\ui\UITextBox.hpp">
+    <ClInclude Include="include\xygine\ui\TextBox.hpp">
       <Filter>Header Files\ui</Filter>
     </ClInclude>
-    <ClInclude Include="include\xygine\ui\UIWindow.hpp">
+    <ClInclude Include="include\xygine\ui\Window.hpp">
       <Filter>Header Files\ui</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="include\xygine\picojson.LICENSE">
-      <Filter>Header Files</Filter>
-    </None>
   </ItemGroup>
 </Project>

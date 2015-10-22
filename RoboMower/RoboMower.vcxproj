@@ -147,7 +147,6 @@
     <ClInclude Include="include\xygine\Particle.hpp" />
     <ClInclude Include="include\xygine\ParticleController.hpp" />
     <ClInclude Include="include\xygine\ParticleSystem.hpp" />
-    <ClInclude Include="include\xygine\picojson.h" />
     <ClInclude Include="include\xygine\PostBloom.hpp" />
     <ClInclude Include="include\xygine\PostChromeAb.hpp" />
     <ClInclude Include="include\xygine\PostProcess.hpp" />
@@ -168,21 +167,18 @@
     <ClInclude Include="include\xygine\StateStack.hpp" />
     <ClInclude Include="include\xygine\StatsOverlayState.hpp" />
     <ClInclude Include="include\xygine\TextDrawable.hpp" />
-    <ClInclude Include="include\xygine\ui\UIButton.hpp" />
-    <ClInclude Include="include\xygine\ui\UICheckBox.hpp" />
-    <ClInclude Include="include\xygine\ui\UIComboBox.hpp" />
-    <ClInclude Include="include\xygine\ui\UIContainer.hpp" />
-    <ClInclude Include="include\xygine\ui\UIControl.hpp" />
-    <ClInclude Include="include\xygine\ui\UILabel.hpp" />
-    <ClInclude Include="include\xygine\ui\UIScoreList.hpp" />
-    <ClInclude Include="include\xygine\ui\UISelection.hpp" />
-    <ClInclude Include="include\xygine\ui\UISlider.hpp" />
-    <ClInclude Include="include\xygine\ui\UITextBox.hpp" />
-    <ClInclude Include="include\xygine\ui\UIWindow.hpp" />
+    <ClInclude Include="include\xygine\ui\Button.hpp" />
+    <ClInclude Include="include\xygine\ui\CheckBox.hpp" />
+    <ClInclude Include="include\xygine\ui\ComboBox.hpp" />
+    <ClInclude Include="include\xygine\ui\Container.hpp" />
+    <ClInclude Include="include\xygine\ui\Control.hpp" />
+    <ClInclude Include="include\xygine\ui\Label.hpp" />
+    <ClInclude Include="include\xygine\ui\ScoreList.hpp" />
+    <ClInclude Include="include\xygine\ui\Selection.hpp" />
+    <ClInclude Include="include\xygine\ui\Slider.hpp" />
+    <ClInclude Include="include\xygine\ui\TextBox.hpp" />
+    <ClInclude Include="include\xygine\ui\Window.hpp" />
     <ClInclude Include="include\xygine\Util.hpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="include\xygine\picojson.LICENSE" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

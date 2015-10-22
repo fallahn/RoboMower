@@ -25,23 +25,38 @@ and must not be misrepresented as being the original software.
 source distribution.
 *********************************************************************/
 
-//static functions for cross platform file handling
+#ifndef UI_LABEL_HPP_
+#define UI_LABEL_HPP_
 
-#ifndef FILE_SYS_HPP_
-#define FILE_SYS_HPP_
+#include <xygine/ui/Control.hpp>
 
-#include <string>
-#include <vector>
+#include <SFML/Graphics/Text.hpp>
 
-class FileSystem final
+namespace ui
 {
-public:
+    class Label final : public Control
+    {
+    public:
+        using Ptr = std::shared_ptr<Label>;
 
-    static std::vector<std::string> listFiles(std::string path);
-    static std::string getFileExtension(const std::string& path);
+        explicit Label(const sf::Font&);
 
-private:
+        bool selectable() const override;
+        void handleEvent(const sf::Event&, const sf::Vector2f&) override;
+        void setAlignment(Alignment) override;
 
-};
+        void setString(const std::string&);
+        void setColour(const sf::Color&);
+        void setCharacterSize(sf::Uint32);
 
-#endif //FILE_SYS_H_
+    private:
+
+        sf::Text m_text;
+        Alignment m_currentAlignment;
+
+        void updateText();
+        void draw(sf::RenderTarget&, sf::RenderStates) const override;
+    };
+}
+
+#endif //UI_LABEL_HPP_
