@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{A279F449-8C13-4804-BEA7-21FA0407C9BA}</ProjectGuid>
+    <ProjectGuid>{FE2B5DA6-CA22-4128-A937-32E761D8B84A}</ProjectGuid>
     <RootNamespace>RoboMower</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -44,13 +44,12 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>include;</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG_;_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>include;../xygine/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>extlibs/sfml</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sfml-audio-d.lib;sfml-graphics-d.lib;sfml-network-d.lib;sfml-system-d.lib;sfml-window-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../xygine/extlibs/sfml;../Debug</AdditionalLibraryDirectories>
+      <AdditionalDependencies>xygine-d.lib;sfml-audio-d.lib;sfml-graphics-d.lib;sfml-network-d.lib;sfml-system-d.lib;sfml-window-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -60,125 +59,19 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>include;</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>include;../xygine/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>extlibs/sfml</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sfml-audio.lib;sfml-graphics.lib;sfml-main.lib;sfml-network.lib;sfml-system.lib;sfml-window.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../xygine/extlibs/sfml;../Release</AdditionalLibraryDirectories>
+      <AdditionalDependencies>xygine.lib;sfml-audio.lib;sfml-graphics.lib;sfml-main.lib;sfml-network.lib;sfml-system.lib;sfml-window.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Affectors.cpp" />
-    <ClCompile Include="src\AnimatedDrawable.cpp" />
-    <ClCompile Include="src\AnimationController.cpp" />
-    <ClCompile Include="src\App.cpp" />
-    <ClCompile Include="src\AudioManager.cpp" />
-    <ClCompile Include="src\CommandQueue.cpp" />
-    <ClCompile Include="src\Component.cpp" />
-    <ClCompile Include="src\Entity.cpp" />
-    <ClCompile Include="src\FileSystem.cpp" />
-    <ClCompile Include="src\FontResource.cpp" />
-    <ClCompile Include="src\GameState.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\MenuBackgroundState.cpp" />
-    <ClCompile Include="src\MenuJoinState.cpp" />
-    <ClCompile Include="src\MenuLobbyState.cpp" />
-    <ClCompile Include="src\MenuMainState.cpp" />
-    <ClCompile Include="src\MenuOptionState.cpp" />
-    <ClCompile Include="src\MenuPauseState.cpp" />
-    <ClCompile Include="src\MessageBus.cpp" />
-    <ClCompile Include="src\Music.cpp" />
-    <ClCompile Include="src\ParticleController.cpp" />
-    <ClCompile Include="src\ParticleSystem.cpp" />
-    <ClCompile Include="src\PostBloom.cpp" />
-    <ClCompile Include="src\PostChromeAb.cpp" />
-    <ClCompile Include="src\PostProcess.cpp" />
-    <ClCompile Include="src\QuadTree.cpp" />
-    <ClCompile Include="src\QuadTreeComponent.cpp" />
-    <ClCompile Include="src\QuadTreeNode.cpp" />
-    <ClCompile Include="src\Reports.cpp" />
-    <ClCompile Include="src\Scene.cpp" />
-    <ClCompile Include="src\Score.cpp" />
-    <ClCompile Include="src\Server.cpp" />
-    <ClCompile Include="src\ShaderResource.cpp" />
-    <ClCompile Include="src\SoundPlayer.cpp" />
-    <ClCompile Include="src\State.cpp" />
-    <ClCompile Include="src\StateStack.cpp" />
-    <ClCompile Include="src\StatsOverlayState.cpp" />
-    <ClCompile Include="src\TextDrawable.cpp" />
-    <ClCompile Include="src\UIButton.cpp" />
-    <ClCompile Include="src\UICheckBox.cpp" />
-    <ClCompile Include="src\UIComboBox.cpp" />
-    <ClCompile Include="src\UIContainer.cpp" />
-    <ClCompile Include="src\UIControl.cpp" />
-    <ClCompile Include="src\UILabel.cpp" />
-    <ClCompile Include="src\UIScoreList.cpp" />
-    <ClCompile Include="src\UISelection.cpp" />
-    <ClCompile Include="src\UISlider.cpp" />
-    <ClCompile Include="src\UITextBox.cpp" />
-    <ClCompile Include="src\UIWindow.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="include\xygine\Affectors.hpp" />
-    <ClInclude Include="include\xygine\AnimatedDrawable.hpp" />
-    <ClInclude Include="include\xygine\AnimationController.hpp" />
-    <ClInclude Include="include\xygine\App.hpp" />
-    <ClInclude Include="include\xygine\AudioManager.hpp" />
-    <ClInclude Include="include\xygine\Command.hpp" />
-    <ClInclude Include="include\xygine\Component.hpp" />
-    <ClInclude Include="include\xygine\Entity.hpp" />
-    <ClInclude Include="include\xygine\FileSystem.hpp" />
-    <ClInclude Include="include\xygine\GameState.hpp" />
-    <ClInclude Include="include\xygine\JsonUtil.hpp" />
-    <ClInclude Include="include\xygine\Log.hpp" />
-    <ClInclude Include="include\xygine\MenuBackgroundState.hpp" />
-    <ClInclude Include="include\xygine\MenuJoinState.hpp" />
-    <ClInclude Include="include\xygine\MenuLobbyState.hpp" />
-    <ClInclude Include="include\xygine\MenuMainState.hpp" />
-    <ClInclude Include="include\xygine\MenuOptionState.hpp" />
-    <ClInclude Include="include\xygine\MenuPauseState.hpp" />
-    <ClInclude Include="include\xygine\MessageBus.hpp" />
-    <ClInclude Include="include\xygine\Music.hpp" />
-    <ClInclude Include="include\xygine\Particle.hpp" />
-    <ClInclude Include="include\xygine\ParticleController.hpp" />
-    <ClInclude Include="include\xygine\ParticleSystem.hpp" />
-    <ClInclude Include="include\xygine\PostBloom.hpp" />
-    <ClInclude Include="include\xygine\PostChromeAb.hpp" />
-    <ClInclude Include="include\xygine\PostProcess.hpp" />
-    <ClInclude Include="include\xygine\Protocol.hpp" />
-    <ClInclude Include="include\xygine\QuadTree.hpp" />
-    <ClInclude Include="include\xygine\QuadTreeComponent.hpp" />
-    <ClInclude Include="include\xygine\QuadTreeNode.hpp" />
-    <ClInclude Include="include\xygine\Reports.hpp" />
-    <ClInclude Include="include\xygine\Resource.hpp" />
-    <ClInclude Include="include\xygine\Scene.hpp" />
-    <ClInclude Include="include\xygine\Score.hpp" />
-    <ClInclude Include="include\xygine\Server.hpp" />
-    <ClInclude Include="include\xygine\ShaderResource.hpp" />
-    <ClInclude Include="include\xygine\Shaders.hpp" />
-    <ClInclude Include="include\xygine\SoundPlayer.hpp" />
-    <ClInclude Include="include\xygine\State.hpp" />
-    <ClInclude Include="include\xygine\StateIds.hpp" />
-    <ClInclude Include="include\xygine\StateStack.hpp" />
-    <ClInclude Include="include\xygine\StatsOverlayState.hpp" />
-    <ClInclude Include="include\xygine\TextDrawable.hpp" />
-    <ClInclude Include="include\xygine\ui\Button.hpp" />
-    <ClInclude Include="include\xygine\ui\CheckBox.hpp" />
-    <ClInclude Include="include\xygine\ui\ComboBox.hpp" />
-    <ClInclude Include="include\xygine\ui\Container.hpp" />
-    <ClInclude Include="include\xygine\ui\Control.hpp" />
-    <ClInclude Include="include\xygine\ui\Label.hpp" />
-    <ClInclude Include="include\xygine\ui\ScoreList.hpp" />
-    <ClInclude Include="include\xygine\ui\Selection.hpp" />
-    <ClInclude Include="include\xygine\ui\Slider.hpp" />
-    <ClInclude Include="include\xygine\ui\TextBox.hpp" />
-    <ClInclude Include="include\xygine\ui\Window.hpp" />
-    <ClInclude Include="include\xygine\Util.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,4 +1,4 @@
-project(ROBOMOW)
+project(xygine)
 cmake_minimum_required(VERSION 2.8)
 
 if(NOT CMAKE_BUILD_TYPE)
@@ -6,8 +6,8 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
-SET(ROBOMOW_STATIC_SFML FALSE CACHE BOOL "Choose whether SFML is linked statically or not.")
-SET(ROBOMOW_STATIC_RUNTIME FALSE CACHE BOOL "Use statically linked standard/runtime libraries? This option must match the one used for SFML.")
+SET(xygine_STATIC_SFML FALSE CACHE BOOL "Choose whether SFML is linked statically or not.")
+SET(xygine_STATIC_RUNTIME FALSE CACHE BOOL "Use statically linked standard/runtime libraries? This option must match the one used for SFML.")
 
 #use if you prefer clang, comment out if using g++ (4.9+)
 #SET(CMAKE_C_COMPILER    "/usr/bin/clang")
@@ -19,14 +19,14 @@ SET(ROBOMOW_STATIC_RUNTIME FALSE CACHE BOOL "Use statically linked standard/runt
 #SET(CMAKE_RANLIB        "/usr/bin/llvm-ranlib")
 
 if(CMAKE_COMPILER_IS_GNUCXX)
-  if(ROBOMOW_STATIC_RUNTIME)
+  if(xygine_STATIC_RUNTIME)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++1y -static")
   else()
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++1y")
   endif()
 endif()
 
-if(ROBOMOW_STATIC_SFML)
+if(xygine_STATIC_SFML)
   SET(SFML_STATIC_LIBRARIES TRUE)
 endif()
 
@@ -115,22 +115,22 @@ set(SOURCE
 #  ${RES_FILES})
   
 if(WIN32)
-  add_executable(ROBOMOW WIN32 ${SOURCE})
+  add_library(xygine STATIC WIN32 ${SOURCE})
 else()
-  add_executable(ROBOMOW ${SOURCE})
+  add_library(xygine STATIC ${SOURCE})
 endif()
 
-target_link_libraries(ROBOMOW
+target_link_libraries(xygine
   ${SFML_LIBRARIES}
   ${SFML_DEPENDENCIES})
 
 if(UNIX)
-  target_link_libraries(ROBOMOW
+  target_link_libraries(xygine
     ${X11_LIBRARIES})
 endif()
 
 #install executable
-install(TARGETS ROBOMOW
+install(TARGETS xygine
   RUNTIME DESTINATION .)
 
 #install game data
