@@ -1,4 +1,4 @@
-project(xygine)
+project(robomow)
 cmake_minimum_required(VERSION 2.8)
 
 if(NOT CMAKE_BUILD_TYPE)
@@ -6,8 +6,8 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
-SET(xygine_STATIC_SFML FALSE CACHE BOOL "Choose whether SFML is linked statically or not.")
-SET(xygine_STATIC_RUNTIME FALSE CACHE BOOL "Use statically linked standard/runtime libraries? This option must match the one used for SFML.")
+SET(robomow_STATIC_SFML FALSE CACHE BOOL "Choose whether SFML is linked statically or not.")
+SET(robomow_STATIC_RUNTIME FALSE CACHE BOOL "Use statically linked standard/runtime libraries? This option must match the one used for SFML.")
 
 #use if you prefer clang, comment out if using g++ (4.9+)
 #SET(CMAKE_C_COMPILER    "/usr/bin/clang")
@@ -19,14 +19,14 @@ SET(xygine_STATIC_RUNTIME FALSE CACHE BOOL "Use statically linked standard/runti
 #SET(CMAKE_RANLIB        "/usr/bin/llvm-ranlib")
 
 if(CMAKE_COMPILER_IS_GNUCXX)
-  if(xygine_STATIC_RUNTIME)
+  if(robomow_STATIC_RUNTIME)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++1y -static")
   else()
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++1y")
   endif()
 endif()
 
-if(xygine_STATIC_SFML)
+if(robomow_STATIC_SFML)
   SET(SFML_STATIC_LIBRARIES TRUE)
 endif()
 
@@ -46,11 +46,15 @@ endif()
 
 include_directories(
   ${SFML_INCLUDE_DIR}
-  ${CMAKE_SOURCE_DIR}/include)
+  ${CMAKE_SOURCE_DIR}/include
+  ${CMAKE_SOURCE_DIR}/../xygine/include)
 
 if(X11_FOUND)
   include_directories(${X11_INCLUDE_DIRS})
 endif()
+
+file(GLOB xygine_SRC "../xygine/src/*.cpp")
+add_library(xygine STATIC ${xygine_SRC})
 
 #if using mingw on windows compile the icon / resource files
 #set(RES_FILES "")
@@ -63,74 +67,36 @@ endif()
 #endif()
 
 set(SOURCE
-  src/Affectors.cpp
-  src/AnimatedDrawable.cpp
-  src/AnimationController.cpp
-  src/App.cpp
-  src/AudioManager.cpp
-  src/CommandQueue.cpp
-  src/Component.cpp
-  src/Entity.cpp
-  src/FileSystem.cpp
-  src/FontResource.cpp
+  src/Game.cpp
   src/GameState.cpp
   src/main.cpp
   src/MenuBackgroundState.cpp
   src/MenuJoinState.cpp
-  src/MenuLobbyState.cpp  
+  src/MenuLobbyState.cpp
   src/MenuMainState.cpp
   src/MenuOptionState.cpp
   src/MenuPauseState.cpp
-  src/MessageBus.cpp
-  src/Music.cpp
-  src/ParticleController.cpp
-  src/ParticleSystem.cpp
-  src/PostBloom.cpp
-  src/PostChromeAb.cpp
-  src/PostProcess.cpp
-  src/QuadTree.cpp
-  src/QuadTreeComponent.cpp
-  src/QuadTreeNode.cpp
-  src/Reports.cpp
-  src/Scene.cpp
-  src/Score.cpp
-  src/Server.cpp
-  src/ShaderResource.cpp
-  src/SoundPlayer.cpp
-  src/State.cpp
-  src/StateStack.cpp
-  src/StatsOverlayState.cpp
-  src/TextDrawable.cpp
-  src/UIButton.cpp
-  src/UICheckBox.cpp
-  src/UIComboBox.cpp
-  src/UIContainer.cpp
-  src/UIControl.cpp
-  src/UILabel.cpp
-  src/UIScoreList.cpp
-  src/UISelection.cpp
-  src/UISlider.cpp
-  src/UITextBox.cpp
-  src/UIWindow.cpp)
+  src/StatsOverlayState.cpp)
 #  ${RES_FILES})
   
 if(WIN32)
-  add_library(xygine STATIC WIN32 ${SOURCE})
+  add_executable(robomow WIN32 ${SOURCE})
 else()
-  add_library(xygine STATIC ${SOURCE})
+  add_executable(robomow ${SOURCE})
 endif()
 
-target_link_libraries(xygine
+target_link_libraries(robomow
   ${SFML_LIBRARIES}
-  ${SFML_DEPENDENCIES})
+  ${SFML_DEPENDENCIES}
+  ${xygine})
 
 if(UNIX)
-  target_link_libraries(xygine
+  target_link_libraries(robomow
     ${X11_LIBRARIES})
 endif()
 
 #install executable
-install(TARGETS xygine
+install(TARGETS robomow
   RUNTIME DESTINATION .)
 
 #install game data

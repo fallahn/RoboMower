@@ -13,6 +13,15 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\states">
+      <UniqueIdentifier>{1a2938a5-645a-4e39-9820-5b2a5ecf9190}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\states">
+      <UniqueIdentifier>{45f3caba-5513-4b1f-9a4a-fda1adadb391}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\components">
+      <UniqueIdentifier>{1f31cd96-e385-4570-bad9-c60e0ca54255}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -21,61 +30,61 @@
     <ClCompile Include="src\Game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\GameState.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\StatsOverlayState.cpp">
+      <Filter>Source Files\states</Filter>
     </ClCompile>
     <ClCompile Include="src\MenuBackgroundState.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\states</Filter>
     </ClCompile>
     <ClCompile Include="src\MenuJoinState.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\states</Filter>
     </ClCompile>
     <ClCompile Include="src\MenuLobbyState.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\states</Filter>
     </ClCompile>
     <ClCompile Include="src\MenuMainState.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\states</Filter>
     </ClCompile>
     <ClCompile Include="src\MenuOptionState.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\states</Filter>
     </ClCompile>
     <ClCompile Include="src\MenuPauseState.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\states</Filter>
     </ClCompile>
-    <ClCompile Include="src\StatsOverlayState.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\GameState.cpp">
+      <Filter>Source Files\states</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Game.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\StatsOverlayState.hpp">
+      <Filter>Header Files\states</Filter>
+    </ClInclude>
     <ClInclude Include="include\GameState.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\states</Filter>
     </ClInclude>
     <ClInclude Include="include\MenuBackgroundState.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\states</Filter>
     </ClInclude>
     <ClInclude Include="include\MenuJoinState.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\states</Filter>
     </ClInclude>
     <ClInclude Include="include\MenuLobbyState.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\states</Filter>
     </ClInclude>
     <ClInclude Include="include\MenuMainState.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\states</Filter>
     </ClInclude>
     <ClInclude Include="include\MenuOptionState.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\states</Filter>
     </ClInclude>
     <ClInclude Include="include\MenuPauseState.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\states</Filter>
     </ClInclude>
     <ClInclude Include="include\StateIds.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\StatsOverlayState.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\states</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
