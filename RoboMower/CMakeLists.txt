@@ -53,9 +53,6 @@ if(X11_FOUND)
   include_directories(${X11_INCLUDE_DIRS})
 endif()
 
-file(GLOB xygine_SRC "../xygine/src/*.cpp")
-add_library(xygine STATIC ${xygine_SRC})
-
 #if using mingw on windows compile the icon / resource files
 #set(RES_FILES "")
 #if(MINGW)
@@ -65,6 +62,9 @@ add_library(xygine STATIC ${xygine_SRC})
 #  set(CMAKE_RC_COMPILE_OBJECT
 #  "<CMAKE_RC_COMPILER> <FLAGS> -O coff <DEFINES> -i <SOURCE> -o <OBJECT>")
 #endif()
+
+SET(xygine_DIR ../xygine/src)
+include(${xygine_DIR}/CMakeLists.txt)
 
 set(SOURCE
   src/Game.cpp
@@ -80,15 +80,14 @@ set(SOURCE
 #  ${RES_FILES})
   
 if(WIN32)
-  add_executable(robomow WIN32 ${SOURCE})
+  add_executable(robomow WIN32 ${SOURCE} ${xygine_SRC})
 else()
-  add_executable(robomow ${SOURCE})
+  add_executable(robomow ${SOURCE} ${xygine_SRC})
 endif()
 
 target_link_libraries(robomow
   ${SFML_LIBRARIES}
-  ${SFML_DEPENDENCIES}
-  ${xygine})
+  ${SFML_DEPENDENCIES})
 
 if(UNIX)
   target_link_libraries(robomow
