@@ -45,6 +45,7 @@ GameState::GameState(xy::StateStack& stateStack, Context context)
     //m_audioManager.mute(context.appInstance.getAudioSettings().muted);
     m_scene.setView(context.defaultView);
     //m_scene.drawDebug(true);
+    m_scene.setPostEffects(xy::Scene::PostEffect::ChromaticAbberation);
 
     m_cursorSprite.setTexture(context.appInstance.getTexture("assets/images/ui/cursor.png"));
     m_cursorSprite.setPosition(context.renderWindow.mapPixelToCoords(sf::Mouse::getPosition(context.renderWindow)));
@@ -64,7 +65,7 @@ bool GameState::update(float dt)
 void GameState::draw()
 {
     auto& rw = getContext().renderWindow;
-    rw.setView(getContext().renderWindow.getDefaultView());   
+
     rw.draw(m_scene);
 
     rw.setView(getContext().defaultView);
@@ -210,10 +211,6 @@ void GameState::addInstructionBlock()
     entity->addComponent<xy::TextDrawable>(text);
 
     //TODO add logic component
-
-    auto b = entity->getComponent<RoundedRectangle>(ComponentId::RoundedRectangle);
-    auto r = b->getGlobalBounds();
-    xy::StatsReporter::reporter.report("Global Bounds", std::to_string(r.left) + ", " + std::to_string(r.top) + ",\n " + std::to_string(r.width) + ", " + std::to_string(r.height));
 
     m_scene.getLayer(xy::Scene::Layer::UI).addChild(entity);
 }
