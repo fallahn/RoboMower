@@ -54,6 +54,9 @@
     <ClCompile Include="src\GameState.cpp">
       <Filter>Source Files\states</Filter>
     </ClCompile>
+    <ClCompile Include="src\RoundedRectangle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Game.hpp">
@@ -85,6 +88,12 @@
     </ClInclude>
     <ClInclude Include="include\StateIds.hpp">
       <Filter>Header Files\states</Filter>
+    </ClInclude>
+    <ClInclude Include="include\components\RoundedRectangle.hpp">
+      <Filter>Header Files\components</Filter>
+    </ClInclude>
+    <ClInclude Include="include\components\ComponentIds.hpp">
+      <Filter>Header Files\components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

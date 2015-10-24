@@ -76,6 +76,7 @@ set(SOURCE
   src/MenuMainState.cpp
   src/MenuOptionState.cpp
   src/MenuPauseState.cpp
+  src/RoundedRectangle.cpp
   src/StatsOverlayState.cpp)
 #  ${RES_FILES})
   

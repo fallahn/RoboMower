@@ -81,9 +81,12 @@
     <ClCompile Include="src\MenuMainState.cpp" />
     <ClCompile Include="src\MenuOptionState.cpp" />
     <ClCompile Include="src\MenuPauseState.cpp" />
+    <ClCompile Include="src\RoundedRectangle.cpp" />
     <ClCompile Include="src\StatsOverlayState.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\components\ComponentIds.hpp" />
+    <ClInclude Include="include\components\RoundedRectangle.hpp" />
     <ClInclude Include="include\Game.hpp" />
     <ClInclude Include="include\GameState.hpp" />
     <ClInclude Include="include\MenuBackgroundState.hpp" />

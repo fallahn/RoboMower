@@ -18,6 +18,11 @@
 
 #include <SFML/Window/Event.hpp>
 
+namespace
+{
+    sf::Color clearColour(40u, 40u, 40u);
+}
+
 Game::Game()
     : m_stateStack({ getRenderWindow(), *this })
 {
@@ -93,7 +98,7 @@ void Game::pauseApp(float dt)
 
 void Game::draw()
 {
-    getRenderWindow().clear(sf::Color::Black);
+    getRenderWindow().clear(clearColour);
     m_stateStack.draw();
     getRenderWindow().display();
 }

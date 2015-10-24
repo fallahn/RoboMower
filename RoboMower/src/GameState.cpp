@@ -11,6 +11,7 @@
 #include <xygine/ParticleSystem.hpp>
 #include <xygine/AnimationController.hpp>
 #include <xygine/Reports.hpp>
+#include <xygine/Entity.hpp>
 
 #include <xygine/App.hpp>
 #include <xygine/Log.hpp>
@@ -20,6 +21,9 @@
 #include <SFML/Window/Event.hpp>
 #include <SFML/Network/Packet.hpp>
 #include <SFML/Network/Socket.hpp>
+
+#include <components/RoundedRectangle.hpp>
+#include <components/ComponentIds.hpp>
 
 namespace
 {
@@ -42,6 +46,11 @@ GameState::GameState(xy::StateStack& stateStack, Context context)
     m_scene.setView(context.defaultView);
     //m_scene.drawDebug(true);
 
+    m_cursorSprite.setTexture(context.appInstance.getTexture("assets/images/ui/cursor.png"));
+    m_cursorSprite.setPosition(context.renderWindow.mapPixelToCoords(sf::Mouse::getPosition(context.renderWindow)));
+
+
+    buildUI();
 }
 
 bool GameState::update(float dt)
@@ -59,10 +68,16 @@ void GameState::draw()
     rw.draw(m_scene);
 
     rw.setView(getContext().defaultView);
+    rw.draw(m_cursorSprite);
 }
 
 bool GameState::handleEvent(const sf::Event& evt)
 {
+    const auto& rw = getContext().renderWindow;
+    auto mousePos = rw.mapPixelToCoords(sf::Mouse::getPosition(rw));
+    //TODO pass to UI
+    m_cursorSprite.setPosition(mousePos);
+    
     switch (evt.type)
     {
     case sf::Event::KeyPressed:
@@ -144,3 +159,61 @@ void GameState::handleMessage(const xy::Message& msg)
 }
 
 //private
+void GameState::buildUI()
+{
+    //command list
+    auto rr = std::make_unique<RoundedRectangle>(m_messageBus, sf::Vector2f(320.f, 980.f));
+    rr->setFillColor({ 20u, 40u, 180u, 180u });
+    rr->setOutlineThickness(10.f);
+    rr->setOutlineColor({ 15u, 30u, 100u });
+    
+    auto entity = std::make_unique<xy::Entity>(m_messageBus);
+    entity->addComponent<RoundedRectangle>(rr);
+    entity->setPosition(50.f, 50.f);
+
+    m_scene.getLayer(xy::Scene::Layer::UI).addChild(entity);
+
+    //command tray
+    rr = std::make_unique<RoundedRectangle>(m_messageBus, sf::Vector2f(1450.f, 180.f), 39.f);
+    rr->setFillColor({ 180u, 40u, 20u, 180u });
+    rr->setOutlineColor({ 100u, 30u, 15u });
+    rr->setOutlineThickness(8.f);
+
+    entity = std::make_unique<xy::Entity>(m_messageBus);
+    entity->addComponent<RoundedRectangle>(rr);
+    entity->setPosition(420.f, 850.f);
+
+    m_scene.getLayer(xy::Scene::Layer::UI).addChild(entity);
+
+    addInstructionBlock();
+}
+
+void GameState::addInstructionBlock()
+{
+    auto entity = std::make_unique<xy::Entity>(m_messageBus);
+    entity->setPosition(455.f, 885.f); //TODO place based on type
+        
+    auto rr = std::make_unique<RoundedRectangle>(m_messageBus, sf::Vector2f(220.f, 110.f));
+    rr->setFillColor({ 220u, 240u, 10u, 180u });
+    rr->setOutlineThickness(6.f);
+    rr->setOutlineColor({ 10u, 230u, 10u });
+
+    entity->addComponent<RoundedRectangle>(rr);
+
+    auto text = std::make_unique<xy::TextDrawable>(m_messageBus);
+    text->setFont(getContext().appInstance.getFont("flaps"));
+    text->setString("Pen Up");
+    text->setColor(sf::Color::Black);
+    xy::Util::Position::centreOrigin(*text);
+    text->setPosition(110.f, 55.f);
+
+    entity->addComponent<xy::TextDrawable>(text);
+
+    //TODO add logic component
+
+    auto b = entity->getComponent<RoundedRectangle>(ComponentId::RoundedRectangle);
+    auto r = b->getGlobalBounds();
+    xy::StatsReporter::reporter.report("Global Bounds", std::to_string(r.left) + ", " + std::to_string(r.top) + ",\n " + std::to_string(r.width) + ", " + std::to_string(r.height));
+
+    m_scene.getLayer(xy::Scene::Layer::UI).addChild(entity);
+}

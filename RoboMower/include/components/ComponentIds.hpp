@@ -5,25 +5,19 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#ifndef STATE_IDS_HPP_
-#define STATE_IDS_HPP_
+//lists unique Ids of custom component types
 
-namespace States
+#ifndef COMPONENT_IDS_HPP_
+#define COMPONENT_IDS_HPP_
+
+#include <xygine/Component.hpp>
+
+namespace ComponentId
 {
-    enum ID
+    enum
     {
-        None = 0,
-        Game,
-        MenuBackground,
-        MenuMain,
-        MenuLobby,
-        MenuJoin,
-        MenuOptions,
-        MenuPaused,
-        Score,
-        Stats,
-        Title
+        RoundedRectangle = xy::Component::UniqueId::Count //starting from here means any custom IDs are contiguous
     };
 }
 
-#endif //STATE_IDS_HPP_
+#endif //COMPONENT_IDS_HPP_

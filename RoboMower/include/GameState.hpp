@@ -20,6 +20,7 @@
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/Shader.hpp>
+#include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Network/TcpSocket.hpp>
 
 namespace sf
@@ -27,10 +28,6 @@ namespace sf
     class Color;
 }
 
-namespace xy
-{
-    class NetworkController;
-}
 class GameState final : public xy::State
 {
 public:
@@ -50,6 +47,11 @@ private:
     xy::MessageBus& m_messageBus;
     xy::Scene m_scene;
     xy::AudioManager m_audioManager;
+
+    sf::Sprite m_cursorSprite;
+
+    void buildUI();
+    void addInstructionBlock(); //TODO type as parameter
 };
 
 #endif //GAME_STATE_HPP_
