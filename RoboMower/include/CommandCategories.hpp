@@ -5,20 +5,15 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-//lists unique Ids of custom component types
+//categories in which entities can be placed so that they may be targetted by commands
 
-#ifndef COMPONENT_IDS_HPP_
-#define COMPONENT_IDS_HPP_
+#ifndef COMMAND_CATEGORIES_HPP_
+#define COMMAND_CATEGORIES_HPP_
 
-#include <xygine/Component.hpp>
-
-namespace ComponentId
+enum CommandCategory
 {
-    enum
-    {
-        RoundedRectangle = xy::Component::UniqueId::Count, //starting from here means any custom IDs are contiguous
-        ButtonLogic
-    };
-}
+    TrayIcon = 0x1,
+    Cursor   = 0x2
+};
 
-#endif //COMPONENT_IDS_HPP_
+#endif //COMMAND_CATEGORIES_HPP_

@@ -10,8 +10,10 @@
 #include <xygine/TextDrawable.hpp>
 #include <xygine/ParticleSystem.hpp>
 #include <xygine/AnimationController.hpp>
+#include <xygine/AnimatedDrawable.hpp>
 #include <xygine/Reports.hpp>
 #include <xygine/Entity.hpp>
+#include <xygine/Command.hpp>
 
 #include <xygine/App.hpp>
 #include <xygine/Log.hpp>
@@ -24,6 +26,7 @@
 
 #include <components/RoundedRectangle.hpp>
 #include <components/ComponentIds.hpp>
+#include <CommandCategories.hpp>
 
 namespace
 {
@@ -35,6 +38,8 @@ namespace
 
     const float joyDeadZone = 25.f;
     const float joyMaxAxis = 100.f;
+
+    xy::Entity* mouseCursor = nullptr; //we need direct access to cursor entity else lag is horrible
 }
 
 GameState::GameState(xy::StateStack& stateStack, Context context)
@@ -46,10 +51,6 @@ GameState::GameState(xy::StateStack& stateStack, Context context)
     m_scene.setView(context.defaultView);
     //m_scene.drawDebug(true);
     m_scene.setPostEffects(xy::Scene::PostEffect::ChromaticAbberation);
-
-    m_cursorSprite.setTexture(context.appInstance.getTexture("assets/images/ui/cursor.png"));
-    m_cursorSprite.setPosition(context.renderWindow.mapPixelToCoords(sf::Mouse::getPosition(context.renderWindow)));
-
 
     buildUI();
 }
@@ -69,16 +70,14 @@ void GameState::draw()
     rw.draw(m_scene);
 
     rw.setView(getContext().defaultView);
-    rw.draw(m_cursorSprite);
 }
 
 bool GameState::handleEvent(const sf::Event& evt)
 {
     const auto& rw = getContext().renderWindow;
     auto mousePos = rw.mapPixelToCoords(sf::Mouse::getPosition(rw));
-    //TODO pass to UI
-    m_cursorSprite.setPosition(mousePos);
-    
+    mouseCursor->setWorldPosition(mousePos);
+
     switch (evt.type)
     {
     case sf::Event::KeyPressed:
@@ -148,6 +147,35 @@ bool GameState::handleEvent(const sf::Event& evt)
         default: break;
         }
         break;
+    case sf::Event::MouseButtonPressed:
+        if (evt.mouseButton.button == sf::Mouse::Left)
+        {
+            xy::Command cmd;
+            cmd.category = CommandCategory::TrayIcon;
+            cmd.action = [mousePos](xy::Entity& ent, float)
+            {
+                if (ent.getComponent<RoundedRectangle>(ComponentId::RoundedRectangle)->globalBounds().contains(mousePos))
+                {
+                    LOG(ent.getComponent<xy::TextDrawable>(xy::Component::UniqueId::TextDrawableId)->getString(), xy::Logger::Type::Info);
+                }
+            };
+            m_scene.sendCommand(cmd);
+        }
+        else if (evt.mouseButton.button == sf::Mouse::Right)
+        {
+            
+        }
+        break;
+    case sf::Event::MouseButtonReleased:
+        if (evt.mouseButton.button == sf::Mouse::Left)
+        {
+            
+        }
+        else if (evt.mouseButton.button == sf::Mouse::Right)
+        {
+            
+        }
+        break;
     default: break;
     }
     return true;
@@ -160,8 +188,36 @@ void GameState::handleMessage(const xy::Message& msg)
 }
 
 //private
-void GameState::buildUI()
+namespace
 {
+    const sf::Uint8 buttonCount = 6u;
+    const std::vector<std::string> labelNames = 
+    {
+        "Motor On",
+        "Motor Off",
+        "Forward",
+        "Left",
+        "Right",
+        "Loop"
+    };
+    const float labelSpacing = 240.f;
+    const float labelPadding = 435.f;
+    const float labelTop = 960.f;
+
+    const sf::Vector2f labelSize(220.f, 50.f);
+
+    std::unique_ptr<RoundedRectangle> makeButtonBackground(xy::MessageBus& messageBus)
+    {
+        auto rr = std::make_unique<RoundedRectangle>(messageBus, labelSize);
+        rr->setFillColor({ 220u, 240u, 10u, 180u });
+        rr->setOutlineThickness(6.f);
+        rr->setOutlineColor({ 10u, 230u, 10u });
+        return std::move(rr);
+    }
+}
+
+void GameState::buildUI()
+{   
     //command list
     auto rr = std::make_unique<RoundedRectangle>(m_messageBus, sf::Vector2f(320.f, 980.f));
     rr->setFillColor({ 20u, 40u, 180u, 180u });
@@ -172,45 +228,69 @@ void GameState::buildUI()
     entity->addComponent<RoundedRectangle>(rr);
     entity->setPosition(50.f, 50.f);
 
-    m_scene.getLayer(xy::Scene::Layer::UI).addChild(entity);
+    m_scene.getLayer(xy::Scene::Layer::FrontFront).addChild(entity);
 
     //command tray
-    rr = std::make_unique<RoundedRectangle>(m_messageBus, sf::Vector2f(1450.f, 180.f), 39.f);
+    rr = std::make_unique<RoundedRectangle>(m_messageBus, sf::Vector2f(1450.f, 90.f), 20.f);
     rr->setFillColor({ 180u, 40u, 20u, 180u });
     rr->setOutlineColor({ 100u, 30u, 15u });
     rr->setOutlineThickness(8.f);
 
     entity = std::make_unique<xy::Entity>(m_messageBus);
     entity->addComponent<RoundedRectangle>(rr);
-    entity->setPosition(420.f, 850.f);
+    entity->setPosition(420.f, 940.f);
 
-    m_scene.getLayer(xy::Scene::Layer::UI).addChild(entity);
+    m_scene.getLayer(xy::Scene::Layer::FrontFront).addChild(entity);
 
-    addInstructionBlock();
+    //create 'buttons' in tray
+    for (auto i = 0u; i < buttonCount; ++i)
+    {
+        entity = std::make_unique<xy::Entity>(m_messageBus);
+        entity->setPosition(labelPadding + (i * labelSpacing), labelTop);
+        entity->addComponent<RoundedRectangle>(makeButtonBackground(m_messageBus));
+
+        auto text = std::make_unique<xy::TextDrawable>(m_messageBus);
+        text->setFont(getContext().appInstance.getFont("flaps"));
+        text->setString(labelNames[i]);
+        text->setColor(sf::Color::Black);
+        xy::Util::Position::centreOrigin(*text);
+        text->setPosition(labelSize / 2.f);
+        text->move(0.f, -6.f);
+
+        entity->addComponent<xy::TextDrawable>(text);
+
+        entity->addCommandCategories(CommandCategory::TrayIcon);
+
+        m_scene.getLayer(xy::Scene::Layer::FrontFront).addChild(entity);
+    }
+
+    //add mouse cursor
+    auto ad = std::make_unique<xy::AnimatedDrawable>(m_messageBus, getContext().appInstance.getTexture("assets/images/ui/cursor.png"));
+    entity = std::make_unique<xy::Entity>(m_messageBus);
+    entity->addComponent<xy::AnimatedDrawable>(ad);
+    entity->addCommandCategories(CommandCategory::Cursor);
+    entity->setPosition(getContext().renderWindow.mapPixelToCoords(sf::Mouse::getPosition(getContext().renderWindow)));
+    mouseCursor = entity.get();
+    m_scene.addEntity(entity, xy::Scene::Layer::UI);
 }
 
 void GameState::addInstructionBlock()
 {
     auto entity = std::make_unique<xy::Entity>(m_messageBus);
-    entity->setPosition(455.f, 885.f); //TODO place based on type
-        
-    auto rr = std::make_unique<RoundedRectangle>(m_messageBus, sf::Vector2f(220.f, 110.f));
-    rr->setFillColor({ 220u, 240u, 10u, 180u });
-    rr->setOutlineThickness(6.f);
-    rr->setOutlineColor({ 10u, 230u, 10u });
+    entity->setPosition(labelPadding, labelTop); //TODO place based on cursor
 
-    entity->addComponent<RoundedRectangle>(rr);
+    entity->addComponent<RoundedRectangle>(makeButtonBackground(m_messageBus));
 
     auto text = std::make_unique<xy::TextDrawable>(m_messageBus);
     text->setFont(getContext().appInstance.getFont("flaps"));
     text->setString("Pen Up");
     text->setColor(sf::Color::Black);
     xy::Util::Position::centreOrigin(*text);
-    text->setPosition(110.f, 55.f);
+    text->setPosition(labelSize / 2.f);
 
     entity->addComponent<xy::TextDrawable>(text);
 
     //TODO add logic component
 
-    m_scene.getLayer(xy::Scene::Layer::UI).addChild(entity);
+    m_scene.getLayer(xy::Scene::Layer::FrontFront).addChild(entity);
 }

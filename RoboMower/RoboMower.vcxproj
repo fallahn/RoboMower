@@ -85,6 +85,8 @@
     <ClCompile Include="src\StatsOverlayState.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\CommandCategories.hpp" />
+    <ClInclude Include="include\components\ButtonLogic.hpp" />
     <ClInclude Include="include\components\ComponentIds.hpp" />
     <ClInclude Include="include\components\RoundedRectangle.hpp" />
     <ClInclude Include="include\Game.hpp" />

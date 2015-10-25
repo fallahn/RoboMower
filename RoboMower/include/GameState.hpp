@@ -48,8 +48,6 @@ private:
     xy::Scene m_scene;
     xy::AudioManager m_audioManager;
 
-    sf::Sprite m_cursorSprite;
-
     void buildUI();
     void addInstructionBlock(); //TODO type as parameter
 };

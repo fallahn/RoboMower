@@ -95,5 +95,11 @@
     <ClInclude Include="include\components\ComponentIds.hpp">
       <Filter>Header Files\components</Filter>
     </ClInclude>
+    <ClInclude Include="include\components\ButtonLogic.hpp">
+      <Filter>Header Files\components</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CommandCategories.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
