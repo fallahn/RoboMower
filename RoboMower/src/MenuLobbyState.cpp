@@ -33,12 +33,9 @@ MenuLobbyState::MenuLobbyState(xy::StateStack& stack, Context context)
     m_cursorSprite.setPosition(context.renderWindow.mapPixelToCoords(sf::Mouse::getPosition(context.renderWindow)));
     buildMenu();
 
-    xy::Message msg;
-    msg.type = xy::Message::Type::UI;
-    msg.ui.type = xy::Message::UIEvent::MenuOpened;
-    msg.ui.value = 0.f;
-    msg.ui.stateId = States::ID::MenuLobby;
-    m_messageBus.post(msg);
+    auto msg = m_messageBus.post<xy::Message::UIEvent>(xy::Message::UIMessage);
+    msg->type = xy::Message::UIEvent::MenuOpened;
+    msg->stateId = States::ID::MenuLobby;
 }
 
 
@@ -57,10 +54,8 @@ bool MenuLobbyState::update(float dt)
         {
             if (m_timeSinceLastPacket > clientTimeout)
             {
-                xy::Message msg;
-                msg.type = xy::Message::Type::Network;
-                msg.network.action = xy::Message::NetworkEvent::RequestDisconnect;
-                m_messageBus.post(msg);
+                auto msg = m_messageBus.post<xy::Message::NetworkEvent>(xy::Message::NetworkMessage);
+                msg->action = xy::Message::NetworkEvent::RequestDisconnect;
 
                 requestStackPop();
                 requestStackPush(States::ID::MenuMain);
@@ -149,16 +144,15 @@ void MenuLobbyState::handlePacket(sf::Packet& packet)
     }
         break;
     case xy::Server::GameStart:
-        xy::Message msg;
-        msg.type = xy::Message::Type::UI;
-        msg.ui.type = xy::Message::UIEvent::MenuClosed;
-        msg.ui.value = 0.f;
-        msg.ui.stateId = States::ID::MenuLobby;
-        m_messageBus.post(msg);
+    {
+        auto msg = m_messageBus.post<xy::Message::UIEvent>(xy::Message::UIMessage);
+        msg->type = xy::Message::UIEvent::MenuClosed;
+        msg->stateId = States::ID::MenuLobby;
 
         requestStackClear();
         requestStackPush(States::ID::Game);
         break;
+    }
     default: break;
     }
 }
@@ -177,12 +171,9 @@ void MenuLobbyState::buildMenu()
         if (getContext().appInstance.hosting())
         {
             //TODO check all clients are ready
-            xy::Message msg;
-            msg.type = xy::Message::Type::UI;
-            msg.ui.type = xy::Message::UIEvent::MenuClosed;
-            msg.ui.value = 0.f;
-            msg.ui.stateId = States::ID::MenuLobby;
-            m_messageBus.post(msg);
+            auto msg = m_messageBus.post<xy::Message::UIEvent>(xy::Message::UIMessage);
+            msg->type = xy::Message::UIEvent::MenuClosed;
+            msg->stateId = States::ID::MenuLobby;
 
             requestStackClear();
             requestStackPush(States::ID::Game);
@@ -198,16 +189,12 @@ void MenuLobbyState::buildMenu()
     {
         requestStackPop();
 
-        xy::Message msg;
-        msg.type = xy::Message::Type::UI;
-        msg.ui.type = xy::Message::UIEvent::MenuClosed;
-        msg.ui.value = 0.f;
-        msg.ui.stateId = States::ID::MenuLobby;
-        m_messageBus.post(msg);
+        auto msg0 = m_messageBus.post<xy::Message::UIEvent>(xy::Message::UIMessage);
+        msg0->type = xy::Message::UIEvent::MenuClosed;
+        msg0->stateId = States::ID::MenuLobby;
 
-        msg.type = xy::Message::Type::Network;
-        msg.network.action = xy::Message::NetworkEvent::RequestDisconnect;
-        m_messageBus.post(msg);
+        auto msg1 = m_messageBus.post<xy::Message::NetworkEvent>(xy::Message::UIMessage);
+        msg1->action = xy::Message::NetworkEvent::RequestDisconnect;
 
         requestStackPush(States::ID::MenuMain);
     });

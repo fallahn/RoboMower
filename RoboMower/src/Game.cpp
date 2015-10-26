@@ -58,21 +58,27 @@ void Game::handleEvent(const sf::Event& evt)
 
 void Game::handleMessage(const xy::Message& msg)
 {
-    switch (msg.type)
+    switch (msg.id)
     {
-    case xy::Message::Type::Network:
-        switch (msg.network.action)
+    case xy::Message::Type::NetworkMessage:
+    {
+        auto& msgData = msg.getData<xy::Message::NetworkEvent>();
+        switch (msgData.action)
         {
         case xy::Message::NetworkEvent::RequestStartServer:
             if (createLocalServer())
             {
-                m_stateStack.pushState(msg.network.stateID);
+                m_stateStack.pushState(msgData.stateID);
             }
             break;
         default: break;
         }
-    case xy::Message::Type::UI:
-        switch (msg.ui.type)
+        break;
+    }
+    case xy::Message::Type::UIMessage:
+    {
+        auto& msgData = msg.getData<xy::Message::UIEvent>();
+        switch (msgData.type)
         {
         case xy::Message::UIEvent::ResizedWindow:
             m_stateStack.updateView();
@@ -80,6 +86,7 @@ void Game::handleMessage(const xy::Message& msg)
         default: break;
         }
         break;
+    }
     default: break;
     }
     

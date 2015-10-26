@@ -29,12 +29,9 @@ MenuPauseState::MenuPauseState(xy::StateStack& stack, Context context)
     m_cursorSprite.setTexture(context.appInstance.getTexture("assets/images/ui/cursor.png"));
     m_cursorSprite.setPosition(context.renderWindow.mapPixelToCoords(sf::Mouse::getPosition(context.renderWindow)));
 
-    xy::Message msg;
-    msg.type = xy::Message::Type::UI;
-    msg.ui.type = xy::Message::UIEvent::MenuOpened;
-    msg.ui.value = 0.f;
-    msg.ui.stateId = States::ID::MenuPaused;
-    m_messageBus.post(msg);
+    auto msg = m_messageBus.post<xy::Message::UIEvent>(xy::Message::UIMessage);
+    msg->type = xy::Message::UIEvent::MenuOpened;
+    msg->stateId = States::ID::MenuPaused;
 
     //TODO check if hosting and send pause packet to server
 }
@@ -108,20 +105,15 @@ void MenuPauseState::buildMenu(const sf::Font& font)
 
         sendCloseMessage();
 
-        xy::Message msg;
-        msg.type = xy::Message::Type::Network;
-        //msg.network.stateID = States::ID::MenuPaused;
-        msg.network.action = xy::Message::NetworkEvent::RequestDisconnect;
-        m_messageBus.post(msg);
+        auto msg = m_messageBus.post<xy::Message::NetworkEvent>(xy::Message::NetworkMessage);
+        msg->action = xy::Message::NetworkEvent::RequestDisconnect;
     });
     m_uiContainer.addControl(button);
 }
 
 void MenuPauseState::sendCloseMessage()
 {
-    xy::Message msg;
-    msg.type = xy::Message::Type::UI;
-    msg.ui.stateId = States::ID::MenuPaused;
-    msg.ui.type = xy::Message::UIEvent::MenuClosed;
-    m_messageBus.post(msg);
+    auto msg = m_messageBus.post<xy::Message::UIEvent>(xy::Message::UIMessage);
+    msg->stateId = States::ID::MenuPaused;
+    msg->type = xy::Message::UIEvent::MenuClosed;
 }

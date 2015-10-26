@@ -21,12 +21,9 @@ MenuMainState::MenuMainState(xy::StateStack& stack, Context context)
 
     buildMenu();
 
-    xy::Message msg;
-    msg.type = xy::Message::Type::UI;
-    msg.ui.type = xy::Message::UIEvent::MenuOpened;
-    msg.ui.value = 0.f;
-    msg.ui.stateId = States::ID::MenuMain;
-    m_messageBus.post(msg);
+    auto msg = m_messageBus.post<xy::Message::UIEvent>(xy::Message::UIMessage);
+    msg->type = xy::Message::UIEvent::MenuOpened;
+    msg->stateId = States::ID::MenuMain;
 }
 
 //public
@@ -88,11 +85,9 @@ void MenuMainState::buildMenu()
     button->setPosition(960.f, 475.f);
     button->setCallback([this]()
     {
-        xy::Message msg;
-        msg.type = xy::Message::Type::Network;
-        msg.network.action = xy::Message::NetworkEvent::RequestStartServer;
-        msg.network.stateID = States::ID::Game;
-        m_messageBus.post(msg);
+        auto msg = m_messageBus.post<xy::Message::NetworkEvent>(xy::Message::NetworkMessage);
+        msg->action = xy::Message::NetworkEvent::RequestStartServer;
+        msg->stateID = States::ID::Game;
 
         close();
         requestStackClear();
@@ -107,11 +102,9 @@ void MenuMainState::buildMenu()
     {
         close();
 
-        xy::Message msg;
-        msg.type = xy::Message::Type::Network;
-        msg.network.action = xy::Message::NetworkEvent::RequestStartServer;
-        msg.network.stateID = States::ID::MenuLobby;
-        m_messageBus.post(msg);
+        auto msg = m_messageBus.post<xy::Message::NetworkEvent>(xy::Message::NetworkMessage);
+        msg->action = xy::Message::NetworkEvent::RequestStartServer;
+        msg->stateID = States::ID::MenuLobby;
     });
     m_uiContainer.addControl(button);
 
@@ -152,10 +145,7 @@ void MenuMainState::close()
 {
     requestStackPop();
 
-    xy::Message msg;
-    msg.type = xy::Message::Type::UI;
-    msg.ui.type = xy::Message::UIEvent::MenuClosed;
-    msg.ui.value = 0.f;
-    msg.ui.stateId = States::ID::MenuMain;
-    m_messageBus.post(msg);
+    auto msg = m_messageBus.post<xy::Message::UIEvent>(xy::Message::UIMessage);
+    msg->type = xy::Message::UIEvent::MenuClosed;
+    msg->stateId = States::ID::MenuMain;
 }

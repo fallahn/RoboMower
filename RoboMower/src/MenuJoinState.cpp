@@ -24,12 +24,9 @@ MenuJoinState::MenuJoinState(xy::StateStack& stack, Context context)
     m_cursorSprite.setPosition(context.renderWindow.mapPixelToCoords(sf::Mouse::getPosition(context.renderWindow)));
     buildMenu();
 
-    xy::Message msg;
-    msg.type = xy::Message::Type::UI;
-    msg.ui.type = xy::Message::UIEvent::MenuOpened;
-    msg.ui.value = 0.f;
-    msg.ui.stateId = States::ID::MenuJoin;
-    m_messageBus.post(msg);
+    auto msg = m_messageBus.post<xy::Message::UIEvent>(xy::Message::UIMessage);
+    msg->type = xy::Message::UIEvent::MenuOpened;
+    msg->stateId = States::ID::MenuJoin;
 }
 
 //public
@@ -61,9 +58,10 @@ bool MenuJoinState::handleEvent(const sf::Event& evt)
 
 void MenuJoinState::handleMessage(const xy::Message& msg)
 {
-    if (msg.type == xy::Message::Type::Network)
+    if (msg.id == xy::Message::Type::NetworkMessage)
     {
-        switch (msg.network.action)
+        auto& msgData = msg.getData<xy::Message::NetworkEvent>();
+        switch (msgData.action)
         {
         case xy::Message::NetworkEvent::ConnectSuccess:
             requestStackPop();
@@ -104,10 +102,8 @@ void MenuJoinState::buildMenu()
         getContext().appInstance.setDestinationIP(textbox->getText());
         m_statusLabel->setString("Connecting...");
 
-        xy::Message m;
-        m.type = xy::Message::Type::Network;
-        m.network.action = xy::Message::NetworkEvent::RequestJoinServer;
-        m_messageBus.post(m);
+        auto msg = m_messageBus.post<xy::Message::NetworkEvent>(xy::Message::NetworkMessage);
+        msg->action = xy::Message::NetworkEvent::RequestJoinServer;
 
     });
     m_uiContainer.addControl(joinButton);
@@ -129,10 +125,7 @@ void MenuJoinState::buildMenu()
 
 void MenuJoinState::sendCloseMessage()
 {
-    xy::Message msg;
-    msg.type = xy::Message::Type::UI;
-    msg.ui.type = xy::Message::UIEvent::MenuClosed;
-    msg.ui.value = 0.f;
-    msg.ui.stateId = States::ID::MenuJoin;
-    m_messageBus.post(msg);
+    auto msg = m_messageBus.post<xy::Message::UIEvent>(xy::Message::UIMessage);
+    msg->type = xy::Message::UIEvent::MenuClosed;
+    msg->stateId = States::ID::MenuJoin;
 }

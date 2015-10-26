@@ -39,12 +39,9 @@ MenuOptionState::MenuOptionState(xy::StateStack& stateStack, Context context)
     const auto& font = context.appInstance.getFont("assets/fonts/N_E_B.ttf");
     buildMenu(font);
 
-    xy::Message msg;
-    msg.type = xy::Message::Type::UI;
-    msg.ui.type = xy::Message::UIEvent::MenuOpened;
-    msg.ui.value = 0.f;
-    msg.ui.stateId = States::ID::MenuOptions;
-    m_messageBus.post(msg);
+    auto msg = m_messageBus.post<xy::Message::UIEvent>(xy::Message::UIMessage);
+    msg->type = xy::Message::UIEvent::MenuOpened;
+    msg->stateId = States::ID::MenuOptions;
 }
 
 //public
@@ -108,22 +105,20 @@ bool MenuOptionState::handleEvent(const sf::Event& evt)
 
 void MenuOptionState::handleMessage(const xy::Message& msg)
 {
-    switch (msg.type)
+    switch (msg.id)
     {
-    case xy::Message::Type::UI:
-        switch (msg.ui.type)
+    case xy::Message::Type::UIMessage:
+    {
+        auto& msgData = msg.getData<xy::Message::UIEvent>();
+        switch (msgData.type)
         {
         case xy::Message::UIEvent::MenuClosed:
-            /*if (msg.ui.stateId == States::ID::Help)
-            {
-                const auto& rw = getContext().renderWindow;
-                auto mousePos = rw.mapPixelToCoords(sf::Mouse::getPosition(rw));
-                m_cursorSprite.setPosition(mousePos);
-            }*/
+
             break;
         default: break;
         }
         break;
+    }
     default: break;
     }
 }
@@ -138,11 +133,9 @@ void MenuOptionState::buildMenu(const sf::Font& font)
     soundSlider->setCallback([this](const xy::ui::Slider* slider)
     {
         //send volume setting command
-        xy::Message msg;
-        msg.type = xy::Message::Type::UI;
-        msg.ui.type = xy::Message::UIEvent::RequestVolumeChange;
-        msg.ui.value = slider->getValue();
-        m_messageBus.post(msg);
+        auto msg = m_messageBus.post<xy::Message::UIEvent>(xy::Message::UIMessage);
+        msg->type = xy::Message::UIEvent::RequestVolumeChange;
+        msg->value = slider->getValue();
 
     }, xy::ui::Slider::Event::ValueChanged);
     soundSlider->setValue(getContext().appInstance.getAudioSettings().volume); //set this *after* callback is set
@@ -153,10 +146,8 @@ void MenuOptionState::buildMenu(const sf::Font& font)
     muteCheckbox->setText("Mute");
     muteCheckbox->setCallback([this](const xy::ui::CheckBox* checkBox)
     {
-        xy::Message msg;
-        msg.type = xy::Message::Type::UI;
-        msg.ui.type = (checkBox->checked()) ? xy::Message::UIEvent::RequestAudioMute : xy::Message::UIEvent::RequestAudioUnmute;
-        m_messageBus.post(msg);
+        auto msg = m_messageBus.post<xy::Message::UIEvent>(xy::Message::UIMessage);
+        msg->type = (checkBox->checked()) ? xy::Message::UIEvent::RequestAudioMute : xy::Message::UIEvent::RequestAudioUnmute;
     }, xy::ui::CheckBox::Event::CheckChanged);
     muteCheckbox->check(getContext().appInstance.getAudioSettings().muted);
     m_uiContainer.addControl(muteCheckbox);
@@ -202,11 +193,9 @@ void MenuOptionState::buildMenu(const sf::Font& font)
     difficultySelection->setCallback([this](const xy::ui::Selection* s)
     {
         //send message with new difficulty
-        xy::Message msg;
-        msg.type = xy::Message::Type::UI;
-        msg.ui.type = xy::Message::UIEvent::RequestDifficultyChange;
-        msg.ui.difficulty = static_cast<xy::Difficulty>(s->getSelectedValue());
-        m_messageBus.post(msg);
+        auto msg = m_messageBus.post<xy::Message::UIEvent>(xy::Message::UIMessage);
+        msg->type = xy::Message::UIEvent::RequestDifficultyChange;
+        msg->difficulty = static_cast<xy::Difficulty>(s->getSelectedValue());
     });
     difficultySelection->selectItem(static_cast<int>(getContext().appInstance.getGameSettings().difficulty));
     m_uiContainer.addControl(difficultySelection);
@@ -216,10 +205,9 @@ void MenuOptionState::buildMenu(const sf::Font& font)
     controllerCheckbox->setText("Enable Controller");
     controllerCheckbox->setCallback([this](const xy::ui::CheckBox* checkBox)
     {
-        xy::Message msg;
-        msg.type = xy::Message::Type::UI;
-        msg.ui.type = (checkBox->checked()) ? xy::Message::UIEvent::RequestControllerEnable : xy::Message::UIEvent::RequestControllerDisable;
-        m_messageBus.post(msg);
+        auto msg = m_messageBus.post<xy::Message::UIEvent>(xy::Message::UIMessage);
+        msg->type = (checkBox->checked()) ? xy::Message::UIEvent::RequestControllerEnable : xy::Message::UIEvent::RequestControllerDisable;
+
     }, xy::ui::CheckBox::Event::CheckChanged);
     controllerCheckbox->check(getContext().appInstance.getGameSettings().controllerEnabled);
     m_uiContainer.addControl(controllerCheckbox);
@@ -238,11 +226,8 @@ void MenuOptionState::buildMenu(const sf::Font& font)
         settings.WindowStyle = (fullscreenCheckbox->checked()) ? sf::Style::Fullscreen : sf::Style::Close;
         getContext().appInstance.applyVideoSettings(settings);
 
-        xy::Message msg;
-        msg.type = xy::Message::Type::UI;
-        msg.ui.type = xy::Message::UIEvent::ResizedWindow;
-        m_messageBus.post(msg);
-
+        auto msg = m_messageBus.post<xy::Message::UIEvent>(xy::Message::UIMessage);
+        msg->type = xy::Message::UIEvent::ResizedWindow;
     });
     m_uiContainer.addControl(applyButton);
 
@@ -262,10 +247,7 @@ void MenuOptionState::close()
 {
     requestStackPop();
 
-    xy::Message msg;
-    msg.type = xy::Message::Type::UI;
-    msg.ui.type = xy::Message::UIEvent::MenuClosed;
-    msg.ui.value = 0.f;
-    msg.ui.stateId = States::ID::MenuOptions;
-    m_messageBus.post(msg);
+    auto msg = m_messageBus.post<xy::Message::UIEvent>(xy::Message::UIMessage);
+    msg->type = xy::Message::UIEvent::MenuClosed;
+    msg->stateId = States::ID::MenuOptions;
 }
