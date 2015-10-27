@@ -5,20 +5,20 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-//lists unique Ids of custom component types
+//defines the instruction set / vm which powers the mower logic
 
-#ifndef COMPONENT_IDS_HPP_
-#define COMPONENT_IDS_HPP_
+#ifndef INSTRUCTION_SET_HPP_
+#define INSTRUCTION_SET_HPP_
 
-#include <xygine/Component.hpp>
-
-namespace ComponentId
+enum Instruction
 {
-    enum
-    {
-        RoundedRectangle = xy::Component::UniqueId::Count, //starting from here means any custom IDs are contiguous
-        ButtonLogic
-    };
-}
+    EngineOn = 0x1,
+    EngineOff,
+    Forward,
+    Right,
+    Left,
+    Loop,
+    Value
+};
 
-#endif //COMPONENT_IDS_HPP_
+#endif //INSTRUCTION_SET_HPP_

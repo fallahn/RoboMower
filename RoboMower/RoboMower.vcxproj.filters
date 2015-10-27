@@ -22,6 +22,9 @@
     <Filter Include="Header Files\components">
       <UniqueIdentifier>{1f31cd96-e385-4570-bad9-c60e0ca54255}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Components">
+      <UniqueIdentifier>{07513dee-5363-4b5f-b0c7-9e190b30aacb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -54,8 +57,11 @@
     <ClCompile Include="src\GameState.cpp">
       <Filter>Source Files\states</Filter>
     </ClCompile>
+    <ClCompile Include="src\ButtonLogic.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
     <ClCompile Include="src\RoundedRectangle.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -92,13 +98,16 @@
     <ClInclude Include="include\components\RoundedRectangle.hpp">
       <Filter>Header Files\components</Filter>
     </ClInclude>
-    <ClInclude Include="include\components\ComponentIds.hpp">
-      <Filter>Header Files\components</Filter>
-    </ClInclude>
     <ClInclude Include="include\components\ButtonLogic.hpp">
       <Filter>Header Files\components</Filter>
     </ClInclude>
     <ClInclude Include="include\CommandCategories.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Messages.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\InstructionSet.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

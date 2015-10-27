@@ -13,25 +13,27 @@
 #include <xygine/Component.hpp>
 
 #include <components/ComponentIds.hpp>
+#include <InstructionSet.hpp>
 
 class ButtonLogicScript final : public xy::Component
 {
 public:
-    explicit ButtonLogicScript(xy::MessageBus&);
+    ButtonLogicScript(xy::MessageBus&, Instruction);
     ~ButtonLogicScript() = default;
     ButtonLogicScript(const ButtonLogicScript&) = delete;
     ButtonLogicScript& operator = (const ButtonLogicScript&) = delete;
 
     xy::Component::Type type() const override { return xy::Component::Type::Script; }
-    xy::Component::UniqueType uniqueType() const override { return ComponentId::ButtonLogic; }
 
     void entityUpdate(xy::Entity&, float) override;
     void handleMessage(const xy::Message&) override;
 
+    Instruction getInstruction() const;
+    void doClick();
 
 private:
 
-
+    Instruction m_instruction;
 
 };
 

@@ -28,7 +28,7 @@ public:
     RoundedRectangle& operator = (const RoundedRectangle&) = delete;
 
     xy::Component::Type type() const override;
-    xy::Component::UniqueType uniqueType() const override;
+
     void entityUpdate(xy::Entity&, float) override;
     void handleMessage(const xy::Message&) override;
 

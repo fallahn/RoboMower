@@ -26,7 +26,9 @@
 
 #include <components/RoundedRectangle.hpp>
 #include <components/ComponentIds.hpp>
+#include <components/ButtonLogic.hpp>
 #include <CommandCategories.hpp>
+#include <InstructionSet.hpp>
 
 namespace
 {
@@ -154,9 +156,9 @@ bool GameState::handleEvent(const sf::Event& evt)
             cmd.category = CommandCategory::TrayIcon;
             cmd.action = [mousePos](xy::Entity& ent, float)
             {
-                if (ent.getComponent<RoundedRectangle>(ComponentId::RoundedRectangle)->globalBounds().contains(mousePos))
+                if (ent.getComponent<RoundedRectangle>()->globalBounds().contains(mousePos))
                 {
-                    LOG(ent.getComponent<xy::TextDrawable>(xy::Component::UniqueId::TextDrawableId)->getString(), xy::Logger::Type::Info);
+                    ent.getComponent<ButtonLogicScript>()->doClick();
                 }
             };
             m_scene.sendCommand(cmd);
@@ -190,16 +192,17 @@ void GameState::handleMessage(const xy::Message& msg)
 //private
 namespace
 {
-    const sf::Uint8 buttonCount = 6u;
-    const std::vector<std::string> labelNames = 
+    std::map<Instruction, std::string> instructionLabels = 
     {
-        "Motor On",
-        "Motor Off",
-        "Forward",
-        "Left",
-        "Right",
-        "Loop"
+        { Instruction::EngineOn, "Motor On" },
+        { Instruction::EngineOff, "Motor Off" },
+        { Instruction::Forward, "Forward" },
+        { Instruction::Left, "Left" },
+        { Instruction::Right, "Right" },
+        { Instruction::Loop, "Loop" }
     };
+    const sf::Uint8 buttonCount = 6u;
+
     const float labelSpacing = 240.f;
     const float labelPadding = 435.f;
     const float labelTop = 960.f;
@@ -243,23 +246,24 @@ void GameState::buildUI()
     m_scene.getLayer(xy::Scene::Layer::FrontFront).addChild(entity);
 
     //create 'buttons' in tray
-    for (auto i = 0u; i < buttonCount; ++i)
+    auto it = instructionLabels.begin();
+    for (auto i = 0u; i < buttonCount; ++i, ++it)
     {
         entity = std::make_unique<xy::Entity>(m_messageBus);
         entity->setPosition(labelPadding + (i * labelSpacing), labelTop);
+        entity->addCommandCategories(CommandCategory::TrayIcon);
         entity->addComponent<RoundedRectangle>(makeButtonBackground(m_messageBus));
+        entity->addComponent<ButtonLogicScript>(std::make_unique<ButtonLogicScript>(m_messageBus, it->first));
 
         auto text = std::make_unique<xy::TextDrawable>(m_messageBus);
         text->setFont(getContext().appInstance.getFont("flaps"));
-        text->setString(labelNames[i]);
+        text->setString(it->second);
         text->setColor(sf::Color::Black);
         xy::Util::Position::centreOrigin(*text);
         text->setPosition(labelSize / 2.f);
         text->move(0.f, -6.f);
 
         entity->addComponent<xy::TextDrawable>(text);
-
-        entity->addCommandCategories(CommandCategory::TrayIcon);
 
         m_scene.getLayer(xy::Scene::Layer::FrontFront).addChild(entity);
     }

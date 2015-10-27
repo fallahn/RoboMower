@@ -22,7 +22,7 @@ namespace
 
 
 RoundedRectangle::RoundedRectangle(xy::MessageBus& mb, const sf::Vector2f& size, float radius)
-    : xy::Component (mb),
+    : xy::Component (mb, this),
     m_size          (size),
     m_cornerRadius  (radius),
     m_minimumSize   (10.f, 10.f)
@@ -37,11 +37,6 @@ RoundedRectangle::RoundedRectangle(xy::MessageBus& mb, const sf::Vector2f& size,
 xy::Component::Type RoundedRectangle::type() const
 {
     return xy::Component::Type::Drawable;
-}
-
-xy::Component::UniqueType RoundedRectangle::uniqueType() const
-{
-    return ComponentId::RoundedRectangle;
 }
 
 void RoundedRectangle::entityUpdate(xy::Entity& e, float)
