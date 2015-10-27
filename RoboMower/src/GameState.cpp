@@ -25,10 +25,11 @@
 #include <SFML/Network/Socket.hpp>
 
 #include <components/RoundedRectangle.hpp>
-#include <components/ComponentIds.hpp>
 #include <components/ButtonLogic.hpp>
+#include <components/InstructionBlockLogic.hpp>
 #include <CommandCategories.hpp>
 #include <InstructionSet.hpp>
+#include <Messages.hpp>
 
 namespace
 {
@@ -59,6 +60,23 @@ GameState::GameState(xy::StateStack& stateStack, Context context)
 
 bool GameState::update(float dt)
 {
+    const auto& rw = getContext().renderWindow;
+    auto mousePos = rw.mapPixelToCoords(sf::Mouse::getPosition(rw));
+    mouseCursor->setWorldPosition(mousePos);
+    
+    xy::Command dragCommand;
+    dragCommand.category = CommandCategory::InstructionBlock;
+    dragCommand.action = [=](xy::Entity& entity, float)
+    {
+        auto lc = entity.getComponent<InstructionBlockLogic>();
+        if (lc->carried())
+        {
+            entity.setPosition(mouseCursor->getPosition() - lc->getCursorOffset());
+        }
+    };
+    m_scene.sendCommand(dragCommand);
+    
+    
     m_audioManager.update(dt);
     m_scene.update(dt);
 
@@ -76,10 +94,6 @@ void GameState::draw()
 
 bool GameState::handleEvent(const sf::Event& evt)
 {
-    const auto& rw = getContext().renderWindow;
-    auto mousePos = rw.mapPixelToCoords(sf::Mouse::getPosition(rw));
-    mouseCursor->setWorldPosition(mousePos);
-
     switch (evt.type)
     {
     case sf::Event::KeyPressed:
@@ -152,13 +166,23 @@ bool GameState::handleEvent(const sf::Event& evt)
     case sf::Event::MouseButtonPressed:
         if (evt.mouseButton.button == sf::Mouse::Left)
         {
+            auto mousePos = mouseCursor->getPosition();
+            
+            //check tray icons and instruction blocks, and pick up if necessary
             xy::Command cmd;
-            cmd.category = CommandCategory::TrayIcon;
+            cmd.category = CommandCategory::TrayIcon | CommandCategory::InstructionBlock;
             cmd.action = [mousePos](xy::Entity& ent, float)
             {
                 if (ent.getComponent<RoundedRectangle>()->globalBounds().contains(mousePos))
                 {
-                    ent.getComponent<ButtonLogicScript>()->doClick();
+                    if (ent.hasCommandCategories(CommandCategory::TrayIcon))
+                    {
+                        ent.getComponent<ButtonLogicScript>()->doClick(mousePos);
+                    }
+                    else
+                    {
+                        ent.getComponent<InstructionBlockLogic>()->setCarried(true);
+                    }
                 }
             };
             m_scene.sendCommand(cmd);
@@ -171,7 +195,15 @@ bool GameState::handleEvent(const sf::Event& evt)
     case sf::Event::MouseButtonReleased:
         if (evt.mouseButton.button == sf::Mouse::Left)
         {
-            
+            //drop any carried logic blocks
+            xy::Command cmd;
+            cmd.category = CommandCategory::InstructionBlock;
+            cmd.action = [](xy::Entity& entity, float)
+            {
+                auto lc = entity.getComponent<InstructionBlockLogic>();
+                lc->setCarried(false);
+            };
+            m_scene.sendCommand(cmd);
         }
         else if (evt.mouseButton.button == sf::Mouse::Right)
         {
@@ -185,6 +217,18 @@ bool GameState::handleEvent(const sf::Event& evt)
 
 void GameState::handleMessage(const xy::Message& msg)
 { 
+    switch (msg.id)
+    {
+    case MessageId::TrayIconMessage:
+        {
+            auto msgData = msg.getData<TrayIconEvent>();
+            if (msgData.action == TrayIconEvent::Clicked)
+                addInstructionBlock({ msgData.x, msgData.y }, {}, msgData.instruction);
+        }
+        break;
+    default: break;
+    }
+    
     m_audioManager.handleMessage(msg);
     m_scene.handleMessage(msg);
 }
@@ -206,6 +250,7 @@ namespace
     const float labelSpacing = 240.f;
     const float labelPadding = 435.f;
     const float labelTop = 960.f;
+    const float textOffset = -6.f;
 
     const sf::Vector2f labelSize(220.f, 50.f);
 
@@ -261,7 +306,7 @@ void GameState::buildUI()
         text->setColor(sf::Color::Black);
         xy::Util::Position::centreOrigin(*text);
         text->setPosition(labelSize / 2.f);
-        text->move(0.f, -6.f);
+        text->move(0.f, textOffset);
 
         entity->addComponent<xy::TextDrawable>(text);
 
@@ -278,23 +323,28 @@ void GameState::buildUI()
     m_scene.addEntity(entity, xy::Scene::Layer::UI);
 }
 
-void GameState::addInstructionBlock()
+void GameState::addInstructionBlock(const sf::Vector2f& position, const sf::Vector2f& offset, Instruction instruction)
 {
     auto entity = std::make_unique<xy::Entity>(m_messageBus);
-    entity->setPosition(labelPadding, labelTop); //TODO place based on cursor
+    entity->setPosition(position);
+    entity->addCommandCategories(CommandCategory::InstructionBlock);
 
     entity->addComponent<RoundedRectangle>(makeButtonBackground(m_messageBus));
 
     auto text = std::make_unique<xy::TextDrawable>(m_messageBus);
     text->setFont(getContext().appInstance.getFont("flaps"));
-    text->setString("Pen Up");
+    text->setString(instructionLabels[instruction]);
     text->setColor(sf::Color::Black);
     xy::Util::Position::centreOrigin(*text);
     text->setPosition(labelSize / 2.f);
+    text->move(0.f, textOffset);
 
     entity->addComponent<xy::TextDrawable>(text);
 
-    //TODO add logic component
+    auto lc = std::make_unique<InstructionBlockLogic>(m_messageBus, instruction);
+    lc->setTarget(position - offset);
+    lc->setCursorOffset(offset);
+    entity->addComponent<InstructionBlockLogic>(lc);
 
     m_scene.getLayer(xy::Scene::Layer::FrontFront).addChild(entity);
 }

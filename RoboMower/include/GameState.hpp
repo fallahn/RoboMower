@@ -11,6 +11,7 @@
 #define GAME_STATE_HPP_
 
 #include <StateIds.hpp>
+#include <InstructionSet.hpp>
 
 #include <xygine/State.hpp>
 #include <xygine/Entity.hpp>
@@ -49,7 +50,7 @@ private:
     xy::AudioManager m_audioManager;
 
     void buildUI();
-    void addInstructionBlock(); //TODO type as parameter
+    void addInstructionBlock(const sf::Vector2f& position, const sf::Vector2f& offset, Instruction);
 };
 
 #endif //GAME_STATE_HPP_

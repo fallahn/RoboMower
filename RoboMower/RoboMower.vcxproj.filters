@@ -63,6 +63,9 @@
     <ClCompile Include="src\RoundedRectangle.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
+    <ClCompile Include="src\InstructionBlockLogic.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Game.hpp">
@@ -95,9 +98,6 @@
     <ClInclude Include="include\StateIds.hpp">
       <Filter>Header Files\states</Filter>
     </ClInclude>
-    <ClInclude Include="include\components\RoundedRectangle.hpp">
-      <Filter>Header Files\components</Filter>
-    </ClInclude>
     <ClInclude Include="include\components\ButtonLogic.hpp">
       <Filter>Header Files\components</Filter>
     </ClInclude>
@@ -109,6 +109,12 @@
     </ClInclude>
     <ClInclude Include="include\InstructionSet.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\components\RoundedRectangle.hpp">
+      <Filter>Header Files\components</Filter>
+    </ClInclude>
+    <ClInclude Include="include\components\InstructionBlockLogic.hpp">
+      <Filter>Header Files\components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -6,7 +6,6 @@
 //==============================================================================
 
 #include <components/RoundedRectangle.hpp>
-#include <components/ComponentIds.hpp>
 
 #include <xygine/Messagebus.hpp>
 #include <xygine/Entity.hpp>

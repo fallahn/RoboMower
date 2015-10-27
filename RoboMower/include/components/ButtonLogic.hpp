@@ -12,8 +12,9 @@
 
 #include <xygine/Component.hpp>
 
-#include <components/ComponentIds.hpp>
 #include <InstructionSet.hpp>
+
+#include <SFML/System/Vector2.hpp>
 
 class ButtonLogicScript final : public xy::Component
 {
@@ -29,7 +30,7 @@ public:
     void handleMessage(const xy::Message&) override;
 
     Instruction getInstruction() const;
-    void doClick();
+    void doClick(const sf::Vector2f&);
 
 private:
 

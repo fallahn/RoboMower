@@ -6,6 +6,7 @@
 //==============================================================================
 
 #include <components/ButtonLogic.hpp>
+#include <Messages.hpp>
 
 #include <xygine/Log.hpp>
 
@@ -26,7 +27,11 @@ Instruction ButtonLogicScript::getInstruction() const
     return m_instruction;
 }
 
-void ButtonLogicScript::doClick()
+void ButtonLogicScript::doClick(const sf::Vector2f& position)
 {
-    std::cout << "flaps" << std::endl;
+    auto msg = sendMessage<TrayIconEvent>(MessageId::TrayIconMessage);
+    msg->action = TrayIconEvent::Clicked;
+    msg->instruction = m_instruction;
+    msg->x = position.x;
+    msg->y = position.y;
 }

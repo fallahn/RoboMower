@@ -16,7 +16,8 @@
 
 enum MessageId
 {
-    TrayIcon = xy::Message::Count
+    TrayIconMessage = xy::Message::Count,
+    InstructionBlockMessage
 };
 
 struct TrayIconEvent
@@ -24,8 +25,14 @@ struct TrayIconEvent
     enum
     {
         Clicked
-    }type;
+    }action;
     Instruction instruction;
+    float x, y;
+};
+
+struct InstructionBlockEvent
+{
+
 };
 
 #endif //MESSAGE_HPP_

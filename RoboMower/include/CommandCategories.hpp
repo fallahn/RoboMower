@@ -12,8 +12,9 @@
 
 enum CommandCategory
 {
-    TrayIcon = 0x1,
-    Cursor   = 0x2
+    TrayIcon         = 0x1,
+    Cursor           = 0x2,
+    InstructionBlock = 0x4,
 };
 
 #endif //COMMAND_CATEGORIES_HPP_
