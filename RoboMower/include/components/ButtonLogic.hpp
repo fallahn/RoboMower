@@ -30,7 +30,7 @@ public:
     void handleMessage(const xy::Message&) override;
 
     Instruction getInstruction() const;
-    void doClick(const sf::Vector2f&);
+    void doClick(const sf::Vector2f& abs, const sf::Vector2f& rel);
 
 private:
 

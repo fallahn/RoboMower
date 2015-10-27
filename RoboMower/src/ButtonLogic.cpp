@@ -27,11 +27,13 @@ Instruction ButtonLogicScript::getInstruction() const
     return m_instruction;
 }
 
-void ButtonLogicScript::doClick(const sf::Vector2f& position)
+void ButtonLogicScript::doClick(const sf::Vector2f& abs, const sf::Vector2f& rel)
 {
     auto msg = sendMessage<TrayIconEvent>(MessageId::TrayIconMessage);
     msg->action = TrayIconEvent::Clicked;
     msg->instruction = m_instruction;
-    msg->x = position.x;
-    msg->y = position.y;
+    msg->absX = abs.x;
+    msg->absY = abs.y;
+    msg->relX = rel.x;
+    msg->relY = rel.y;
 }

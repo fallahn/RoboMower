@@ -27,7 +27,8 @@ struct TrayIconEvent
         Clicked
     }action;
     Instruction instruction;
-    float x, y;
+    float absX, absY;
+    float relX, relY;
 };
 
 struct InstructionBlockEvent

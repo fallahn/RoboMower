@@ -177,7 +177,7 @@ bool GameState::handleEvent(const sf::Event& evt)
                 {
                     if (ent.hasCommandCategories(CommandCategory::TrayIcon))
                     {
-                        ent.getComponent<ButtonLogicScript>()->doClick(mousePos);
+                        ent.getComponent<ButtonLogicScript>()->doClick(mousePos, mousePos - ent.getPosition());
                     }
                     else
                     {
@@ -223,7 +223,7 @@ void GameState::handleMessage(const xy::Message& msg)
         {
             auto msgData = msg.getData<TrayIconEvent>();
             if (msgData.action == TrayIconEvent::Clicked)
-                addInstructionBlock({ msgData.x, msgData.y }, {}, msgData.instruction);
+                addInstructionBlock({ msgData.absX, msgData.absY }, { msgData.relX, msgData.relY }, msgData.instruction);
         }
         break;
     default: break;
