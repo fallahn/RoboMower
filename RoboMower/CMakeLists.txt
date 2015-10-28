@@ -70,6 +70,7 @@ set(SOURCE
   src/ButtonLogic.cpp
   src/Game.cpp
   src/GameState.cpp
+  src/GameUI.cpp
   src/InstructionBlockLogic.cpp
   src/main.cpp
   src/MenuBackgroundState.cpp

@@ -12,6 +12,7 @@
 
 #include <StateIds.hpp>
 #include <InstructionSet.hpp>
+#include <GameUI.hpp>
 
 #include <xygine/State.hpp>
 #include <xygine/Entity.hpp>
@@ -48,9 +49,7 @@ private:
     xy::MessageBus& m_messageBus;
     xy::Scene m_scene;
     xy::AudioManager m_audioManager;
-
-    void buildUI();
-    void addInstructionBlock(const sf::Vector2f& position, const sf::Vector2f& offset, Instruction);
+    GameUI m_gameUI;
 };
 
 #endif //GAME_STATE_HPP_
