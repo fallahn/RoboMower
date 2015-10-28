@@ -50,6 +50,8 @@ private:
     xy::Scene m_scene;
     xy::AudioManager m_audioManager;
     GameUI m_gameUI;
+
+    sf::Text m_reportText;
 };
 
 #endif //GAME_STATE_HPP_

@@ -18,6 +18,7 @@
 #include <components/RoundedRectangle.hpp>
 #include <components/ButtonLogic.hpp>
 #include <components/InstructionBlockLogic.hpp>
+#include <components/StackLogicComponent.hpp>
 #include <CommandCategories.hpp>
 #include <Messages.hpp>
 
@@ -69,6 +70,8 @@ GameUI::GameUI(xy::State::Context sc, xy::Scene& scene)
     auto entity = std::make_unique<xy::Entity>(m_messageBus);
     entity->addComponent<RoundedRectangle>(rr);
     entity->setPosition(50.f, 50.f);
+
+    entity->addComponent<StackLogicComponent>(std::make_unique<StackLogicComponent>(m_messageBus, labelSize));
 
     m_scene.getLayer(xy::Scene::Layer::FrontFront).addChild(entity);
 
@@ -129,7 +132,12 @@ void GameUI::update(float dt, const sf::Vector2f& mousePos)
         auto lc = entity.getComponent<InstructionBlockLogic>();
         if (lc->carried())
         {
-            entity.setPosition(m_mouseCursor->getPosition() - lc->getCursorOffset());
+            auto position = m_mouseCursor->getPosition();
+            entity.setPosition(position - lc->getCursorOffset());
+            auto msg = m_messageBus.post<InstructionBlockEvent>(MessageId::InstructionBlockMessage);
+            msg->component = lc;
+            msg->action = InstructionBlockEvent::Moved;
+            msg->position = position;
         }
     };
     m_scene.sendCommand(dragCommand);

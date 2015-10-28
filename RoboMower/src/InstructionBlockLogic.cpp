@@ -6,6 +6,7 @@
 //==============================================================================
 
 #include <components/InstructionBlockLogic.hpp>
+#include <Messages.hpp>
 
 #include <xygine/Entity.hpp>
 #include <xygine/Util.hpp>
@@ -16,9 +17,11 @@ namespace
 }
 
 InstructionBlockLogic::InstructionBlockLogic(xy::MessageBus& mb, Instruction inst)
-    : Component     (mb, this),
-    m_state         (State::Carried),
-    m_instruction   (inst)
+    : Component         (mb, this),
+    m_state             (State::Carried),
+    m_instruction       (inst),
+    m_destroyWhenDone   (true),
+    m_stackIndex        (-1)
 {
 
 }
@@ -34,10 +37,22 @@ void InstructionBlockLogic::entityUpdate(xy::Entity& entity, float dt)
     case State::Homing:
         auto dir = m_target - entity.getPosition();
         const auto len = xy::Util::Vector::lengthSquared(dir);
-        if (len < 0.15f)
+        if (len < 2.5f)
         {
             m_state = State::Idle;
             entity.setPosition(m_target);
+            if (m_destroyWhenDone)
+            {
+                entity.destroy();
+            }
+            else
+            {
+                //raise event to say we were dropped
+                auto msg = sendMessage<InstructionBlockEvent>(MessageId::InstructionBlockMessage);
+                msg->action = InstructionBlockEvent::Dropped;
+                msg->component = this;
+                msg->position = m_target;
+            }
         }
         else
         {
@@ -55,6 +70,14 @@ void InstructionBlockLogic::handleMessage(const xy::Message& msg)
 void InstructionBlockLogic::setCarried(bool c)
 {
     m_state = (c) ? State::Carried : State::Homing;
+
+    if (c)
+    {
+        auto msg = sendMessage<InstructionBlockEvent>(MessageId::InstructionBlockMessage);
+        msg->action = InstructionBlockEvent::PickedUp;
+        msg->component = this;
+        msg->position = m_target;
+    }
 }
 
 bool InstructionBlockLogic::carried() const
@@ -62,9 +85,10 @@ bool InstructionBlockLogic::carried() const
     return (m_state == State::Carried);
 }
 
-void InstructionBlockLogic::setTarget(const sf::Vector2f& target)
+void InstructionBlockLogic::setTarget(const sf::Vector2f& target, bool destroyWhenDone)
 {
     m_target = target;
+    m_destroyWhenDone = destroyWhenDone;
 }
 
 void InstructionBlockLogic::setCursorOffset(const sf::Vector2f& offset)
@@ -75,4 +99,14 @@ void InstructionBlockLogic::setCursorOffset(const sf::Vector2f& offset)
 const sf::Vector2f& InstructionBlockLogic::getCursorOffset() const
 {
     return m_cursorOffset;
+}
+
+void InstructionBlockLogic::setStackIndex(sf::Int32 idx)
+{
+    m_stackIndex = idx;
+}
+
+sf::Int32 InstructionBlockLogic::getStackIndex() const
+{
+    return m_stackIndex;
 }

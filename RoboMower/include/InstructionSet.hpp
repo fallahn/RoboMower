@@ -12,6 +12,7 @@
 
 enum Instruction
 {
+    NOP,
     EngineOn = 0x1,
     EngineOff,
     Forward,

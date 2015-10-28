@@ -33,15 +33,18 @@ namespace
 }
 
 GameState::GameState(xy::StateStack& stateStack, Context context)
-    : State                 (stateStack, context),
-    m_messageBus            (context.appInstance.getMessageBus()),
-    m_scene                 (m_messageBus),
-    m_gameUI                (context, m_scene)
+    : State         (stateStack, context),
+    m_messageBus    (context.appInstance.getMessageBus()),
+    m_scene         (m_messageBus),
+    m_gameUI        (context, m_scene)
 {
     //m_audioManager.mute(context.appInstance.getAudioSettings().muted);
     m_scene.setView(context.defaultView);
     //m_scene.drawDebug(true);
     m_scene.setPostEffects(xy::Scene::PostEffect::ChromaticAbberation);
+
+    m_reportText.setFont(context.appInstance.getFont("res/fonts/Console.ttf"));
+    m_reportText.setPosition(1500.f, 30.f);
 }
 
 bool GameState::update(float dt)
@@ -53,16 +56,17 @@ bool GameState::update(float dt)
     m_audioManager.update(dt);
     m_scene.update(dt);
 
+    m_reportText.setString(xy::StatsReporter::reporter.getString());
+
     return true;
 }
 
 void GameState::draw()
 {
     auto& rw = getContext().renderWindow;
-
     rw.draw(m_scene);
-
     rw.setView(getContext().defaultView);
+    rw.draw(m_reportText);
 }
 
 bool GameState::handleEvent(const sf::Event& evt)

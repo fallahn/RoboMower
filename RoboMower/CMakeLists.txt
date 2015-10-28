@@ -80,6 +80,7 @@ set(SOURCE
   src/MenuOptionState.cpp
   src/MenuPauseState.cpp
   src/RoundedRectangle.cpp
+  src/StackLogicComponent.cpp
   src/StatsOverlayState.cpp)
 #  ${RES_FILES})
   

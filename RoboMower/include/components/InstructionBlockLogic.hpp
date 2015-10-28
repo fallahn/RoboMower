@@ -31,9 +31,12 @@ public:
     void setCarried(bool);
     bool carried() const;
 
-    void setTarget(const sf::Vector2f&);
+    void setTarget(const sf::Vector2f&, bool destroyWhenDone = true);
     void setCursorOffset(const sf::Vector2f&);
     const sf::Vector2f& getCursorOffset() const;
+
+    void setStackIndex(sf::Int32);
+    sf::Int32 getStackIndex() const;
 
 private:
     enum class State
@@ -46,6 +49,9 @@ private:
     Instruction m_instruction;
     sf::Vector2f m_target;
     sf::Vector2f m_cursorOffset;
+    bool m_destroyWhenDone;
+
+    sf::Int32 m_stackIndex;
 };
 
 

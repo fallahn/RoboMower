@@ -1,0 +1,44 @@
+//==============================================================================
+// RoboMower - Copyright (C) Matt Marchant; All Rights Reserved
+// Unauthorized copying of this file via any medium is strictly prohibited
+// Proprietary and confidential
+// Written by Matt Marchant (matty_styles@hotmail.com) 2015
+//==============================================================================
+
+//defines the layout logic for the instruction stack pane
+
+#ifndef STACK_LOGIC_COMPONENT_HPP_
+#define STACK_LOGIC_COMPONENT_HPP_
+
+#include <xygine/Component.hpp>
+
+#include <InstructionSet.hpp>
+
+#include <vector>
+
+class StackLogicComponent final : public xy::Component
+{
+public:
+    StackLogicComponent(xy::MessageBus&, const sf::Vector2f& size);
+    ~StackLogicComponent() = default;
+    StackLogicComponent(const StackLogicComponent&) = delete;
+    StackLogicComponent& operator = (const StackLogicComponent&) = delete;
+
+    xy::Component::Type type() const override { return xy::Component::Type::Script; }
+    void entityUpdate(xy::Entity&, float) override;
+    void handleMessage(const xy::Message&) override;
+
+private:
+    struct SlotData
+    {
+        sf::FloatRect slotArea;
+        sf::Uint64 occupierID = 0;
+        Instruction instruction = NOP;
+    };
+
+    std::vector<SlotData> m_slots;
+    bool m_updateTransform;
+};
+
+
+#endif //STACK_LOGIC_COMPONENT_HPP_

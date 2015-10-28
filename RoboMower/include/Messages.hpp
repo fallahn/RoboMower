@@ -14,6 +14,8 @@
 
 #include <InstructionSet.hpp>
 
+class InstructionBlockLogic;
+
 enum MessageId
 {
     TrayIconMessage = xy::Message::Count,
@@ -26,14 +28,21 @@ struct TrayIconEvent
     {
         Clicked
     }action;
-    Instruction instruction;
+    Instruction instruction = NOP;
     float absX, absY;
     float relX, relY;
 };
 
 struct InstructionBlockEvent
 {
-
+    enum
+    {
+        Moved,
+        Dropped,
+        PickedUp
+    }action;
+    InstructionBlockLogic* component = nullptr;
+    sf::Vector2f position;
 };
 
 #endif //MESSAGE_HPP_

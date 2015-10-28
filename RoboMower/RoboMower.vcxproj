@@ -85,6 +85,7 @@
     <ClCompile Include="src\MenuOptionState.cpp" />
     <ClCompile Include="src\MenuPauseState.cpp" />
     <ClCompile Include="src\RoundedRectangle.cpp" />
+    <ClCompile Include="src\StackLogicComponent.cpp" />
     <ClCompile Include="src\StatsOverlayState.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -92,6 +93,7 @@
     <ClInclude Include="include\components\ButtonLogic.hpp" />
     <ClInclude Include="include\components\InstructionBlockLogic.hpp" />
     <ClInclude Include="include\components\RoundedRectangle.hpp" />
+    <ClInclude Include="include\components\StackLogicComponent.hpp" />
     <ClInclude Include="include\Game.hpp" />
     <ClInclude Include="include\GameState.hpp" />
     <ClInclude Include="include\GameUI.hpp" />
