@@ -27,7 +27,8 @@ StackLogicComponent::StackLogicComponent(xy::MessageBus& mb, const sf::Vector2f&
     m_slots             (maxInstructions),
     m_updateTransform   (true),
     m_parentEntity      (nullptr),
-    m_verticalDistance  (0.f)
+    m_verticalDistance  (0.f),
+    m_instructionCount  (0)
 {
     for (auto i = 0u; i < m_slots.size(); ++i)
     {
@@ -62,7 +63,9 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
         switch (msgData.action)
         {
         case InstructionBlockEvent::Moved:
-            for (auto i = 0u; i < m_slots.size(); ++i)
+        {   
+            auto size = m_instructionCount + 1;
+            for (auto i = 0u; i < size; ++i)
             {
                 const auto& area = m_slots[i].slotArea;
                 if (area.contains(msgData.position))
@@ -127,7 +130,8 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
                     break;
                 }
             }
-            break;
+        break;
+        }
         case InstructionBlockEvent::Dropped:
         {
             for (auto i = 0u; i < m_slots.size(); ++i)
@@ -141,6 +145,9 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
                     break;
                 }
             }
+
+            //recalc size
+            updateInstructionCount();
         }
         break;
         case InstructionBlockEvent::PickedUp:
@@ -152,6 +159,7 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
                 m_slots[i].instruction = Instruction::NOP;
                 msgData.component->setStackIndex(-1);
                 REPORT("Slot " + std::to_string(i), std::to_string(m_slots[i].occupierID));
+                updateInstructionCount();
             }
         }
             break;
@@ -163,4 +171,17 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
 void StackLogicComponent::onStart(xy::Entity& entity)
 {
     m_parentEntity = &entity;
+}
+
+//private
+void StackLogicComponent::updateInstructionCount()
+{
+    m_instructionCount = 0;
+
+    for (const auto& s : m_slots)
+    {
+        if (s.occupierID != 0) m_instructionCount++;
+    }
+
+    REPORT("Instruction Count", std::to_string(m_instructionCount));
 }

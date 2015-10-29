@@ -42,6 +42,9 @@ private:
     bool m_updateTransform;
     xy::Entity* m_parentEntity;
     float m_verticalDistance;
+    std::size_t m_instructionCount;
+
+    void updateInstructionCount();
 };
 
 
