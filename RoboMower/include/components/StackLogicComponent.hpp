@@ -28,6 +28,8 @@ public:
     void entityUpdate(xy::Entity&, float) override;
     void handleMessage(const xy::Message&) override;
 
+    void onStart(xy::Entity&) override;
+
 private:
     struct SlotData
     {
@@ -38,6 +40,8 @@ private:
 
     std::vector<SlotData> m_slots;
     bool m_updateTransform;
+    xy::Entity* m_parentEntity;
+    float m_verticalDistance;
 };
 
 
