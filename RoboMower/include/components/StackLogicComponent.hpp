@@ -36,6 +36,7 @@ private:
         sf::FloatRect slotArea;
         sf::Uint64 occupierID = 0;
         Instruction instruction = NOP;
+        bool targeted = false;
     };
 
     std::vector<SlotData> m_slots;

@@ -52,6 +52,13 @@ void StackLogicComponent::entityUpdate(xy::Entity& entity, float)
         }
         m_updateTransform = false;
     }
+
+#ifdef _DEBUG_
+    for (auto i = 0u; i < m_slots.size(); ++i)
+    {
+        REPORT("Slot " + std::to_string(i), std::to_string(m_slots[i].occupierID));
+    }
+#endif //_DEBUG_
 }
 
 void StackLogicComponent::handleMessage(const xy::Message& msg)
@@ -68,9 +75,10 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
             for (auto i = 0u; i < size; ++i)
             {
                 const auto& area = m_slots[i].slotArea;
-                if (area.contains(msgData.position))
+                if (area.contains(msgData.position) && !m_slots[i].targeted)
                 {
                     msgData.component->setTarget({ area.left, area.top }, false);
+                    m_slots[i].targeted = true;
                     if (m_slots[i].occupierID != 0)
                     {
                         //check previous slot is empty and move any icons up
@@ -87,7 +95,7 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
                             };
                             m_parentEntity->getScene()->sendCommand(cmd);
                             m_slots[i].occupierID = 0;
-                            REPORT("Slot " + std::to_string(i), std::to_string(m_slots[i].occupierID));
+                            m_slots[i - 1].targeted = true;
                         }
                         else
                         {
@@ -109,6 +117,7 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
                                         ib->setTarget(entity.getWorldPosition() + sf::Vector2f(0.f, m_verticalDistance), false);
                                         ib->setCarried(false);
                                     };
+                                    m_slots[i + 1].targeted = true;
                                 }
                                 else
                                 {
@@ -123,7 +132,6 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
                                 }
                                 m_parentEntity->getScene()->sendCommand(cmd);
                                 m_slots[j].occupierID = 0;
-                                REPORT("Slot " + std::to_string(j), std::to_string(m_slots[j].occupierID));
                             }
                         }
                     }
@@ -137,12 +145,11 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
             for (auto i = 0u; i < m_slots.size(); ++i)
             {
                 if (m_slots[i].slotArea.contains(msgData.position))
-                { 
+                {                     
                     m_slots[i].occupierID = msgData.component->getParentUID();
                     m_slots[i].instruction = msgData.component->getInstruction();
-                    REPORT("Slot " + std::to_string(i), std::to_string(m_slots[i].occupierID));
+                    m_slots[i].targeted = false;
                     msgData.component->setStackIndex(i);
-                    break;
                 }
             }
 
@@ -157,8 +164,8 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
             {
                 m_slots[i].occupierID = 0;
                 m_slots[i].instruction = Instruction::NOP;
+                m_slots[i].targeted = false;
                 msgData.component->setStackIndex(-1);
-                REPORT("Slot " + std::to_string(i), std::to_string(m_slots[i].occupierID));
                 updateInstructionCount();
             }
         }
