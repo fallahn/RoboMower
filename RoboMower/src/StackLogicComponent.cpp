@@ -143,16 +143,40 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
                 }
 
                 //we got to the end so therefore test for deletion
-                if (msgData.component->getPreviousStackIndex() >= 0 &&
+                auto idx = msgData.component->getPreviousStackIndex();
+                if (idx >= 0 &&
                     !m_parentEntity->getComponent<RoundedRectangle>()->globalBounds().contains(msgData.position))
                 {
-                    msgData.component->setTarget(msgData.position); //TODO send to a bin icon?
+                    msgData.component->setTarget({ 1920.f - m_slots[0].slotArea.width, 20.f }); //TODO somewhere with a bin icon, or set this on mouse up
+                    msgData.component->setStackIndex(-1);
+                    m_slots[idx].targeted = false;
+     
+                    if (idx >= 0)
+                    {
+                        //block was dragged off stack so realign remaining
+                        for (auto i = idx + 1; i < maxInstructions; ++i)
+                        {
+                            xy::Command cmd;
+                            cmd.entityID = m_slots[i].occupierID;
+                            cmd.action = [this](xy::Entity& entity, float)
+                            {
+                                auto ib = entity.getComponent<InstructionBlockLogic>();
+                                XY_ASSERT(ib, "component doesn't exist");
+                                ib->setTarget(entity.getWorldPosition() + sf::Vector2f(0.f, -m_verticalDistance), false);
+                                ib->setCarried(false);
+                            };
+                            m_parentEntity->getScene()->sendCommand(cmd);
+                            m_slots[i].occupierID = 0;
+                            m_slots[i].targeted = false;
+                        }
+                    }
                 }
             }
         break;
         }
         case InstructionBlockEvent::Dropped:
         {
+            //update the slot data with the block info and vice versa
             for (auto i = 0u; i < m_slots.size(); ++i)
             {
                 if (m_slots[i].slotArea.contains(msgData.position))
@@ -170,6 +194,7 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
         break;
         case InstructionBlockEvent::PickedUp:
         {
+            //empty the slot if this block previously occupied it
             auto i = msgData.component->getStackIndex();
             if (i >= 0)
             {
@@ -183,26 +208,7 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
             break;
         case InstructionBlockEvent::Destroyed:
         {
-            auto idx = msgData.lastStackIndex;
-            if (idx >= 0)
-            {
-                //block was dragged off stack so realign remaining
-                for (auto i = idx + 1; i < maxInstructions; ++i)
-                {
-                    xy::Command cmd;
-                    cmd.entityID = m_slots[i].occupierID;
-                    cmd.action = [this](xy::Entity& entity, float)
-                    {
-                        auto ib = entity.getComponent<InstructionBlockLogic>();
-                        XY_ASSERT(ib, "component doesn't exist");
-                        ib->setTarget(entity.getWorldPosition() + sf::Vector2f(0.f, -m_verticalDistance), false);
-                        ib->setCarried(false);
-                    };
-                    m_parentEntity->getScene()->sendCommand(cmd);
-                    m_slots[i].occupierID = 0;
-                    m_slots[i].targeted = false;  
-                }
-            }
+            //TODO send a message to particle controller
         }
             break;
         default: break;

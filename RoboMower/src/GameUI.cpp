@@ -127,7 +127,7 @@ void GameUI::update(float dt, const sf::Vector2f& mousePos)
 
     xy::Command dragCommand;
     dragCommand.category = CommandCategory::InstructionBlock;
-    dragCommand.action = [this](xy::Entity& entity, float)
+    dragCommand.action = [this](xy::Entity& entity, float) //TODO if we really have to send this every frame make it a member function
     {
         auto lc = entity.getComponent<InstructionBlockLogic>();
         if (lc->carried())

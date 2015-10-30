@@ -46,7 +46,6 @@ void InstructionBlockLogic::entityUpdate(xy::Entity& entity, float dt)
             //raise event to say we were dropped or destroyed
             auto msg = sendMessage<InstructionBlockEvent>(MessageId::InstructionBlockMessage);        
             msg->position = m_target;
-            msg->lastStackIndex = m_previousStackindex;
 
             if (m_destroyWhenDone)
             {

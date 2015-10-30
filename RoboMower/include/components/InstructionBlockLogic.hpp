@@ -54,6 +54,7 @@ private:
 
     sf::Int32 m_stackIndex;
     sf::Int32 m_previousStackindex;
+
 };
 
 
