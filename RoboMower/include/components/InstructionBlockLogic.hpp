@@ -37,6 +37,7 @@ public:
 
     void setStackIndex(sf::Int32);
     sf::Int32 getStackIndex() const;
+    sf::Int32 getPreviousStackIndex() const;
 
 private:
     enum class State
@@ -52,6 +53,7 @@ private:
     bool m_destroyWhenDone;
 
     sf::Int32 m_stackIndex;
+    sf::Int32 m_previousStackindex;
 };
 
 

@@ -7,6 +7,7 @@
 
 #include <components/StackLogicComponent.hpp>
 #include <components/InstructionBlockLogic.hpp>
+#include <components/RoundedRectangle.hpp>
 #include <Messages.hpp>
 
 #include <xygine/Entity.hpp>
@@ -54,9 +55,11 @@ void StackLogicComponent::entityUpdate(xy::Entity& entity, float)
     }
 
 #ifdef _DEBUG_
+    std::string targeted;
     for (auto i = 0u; i < m_slots.size(); ++i)
     {
-        REPORT("Slot " + std::to_string(i), std::to_string(m_slots[i].occupierID));
+        targeted = (m_slots[i].targeted) ? "true" : "false";
+        REPORT("Slot " + std::to_string(i), std::to_string(m_slots[i].occupierID) + ", " + targeted);
     }
 #endif //_DEBUG_
 }
@@ -71,7 +74,7 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
         {
         case InstructionBlockEvent::Moved:
         {   
-            auto size = m_instructionCount + 1;
+            auto size = std::min(m_instructionCount + 1, maxInstructions);
             for (auto i = 0u; i < size; ++i)
             {
                 const auto& area = m_slots[i].slotArea;
@@ -128,6 +131,7 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
                                         XY_ASSERT(ib, "component doesn't exist");
                                         ib->setTarget(entity.getWorldPosition() + sf::Vector2f(0.f, 500.f)); //arbitary number here just to push icon off bottom
                                         ib->setCarried(false);
+                                        ib->setStackIndex(-1);
                                     };
                                 }
                                 m_parentEntity->getScene()->sendCommand(cmd);
@@ -136,6 +140,13 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
                         }
                     }
                     break;
+                }
+
+                //we got to the end so therefore test for deletion
+                if (msgData.component->getPreviousStackIndex() >= 0 &&
+                    !m_parentEntity->getComponent<RoundedRectangle>()->globalBounds().contains(msgData.position))
+                {
+                    msgData.component->setTarget(msgData.position); //TODO send to a bin icon?
                 }
             }
         break;
@@ -167,6 +178,30 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
                 m_slots[i].targeted = false;
                 msgData.component->setStackIndex(-1);
                 updateInstructionCount();
+            }
+        }
+            break;
+        case InstructionBlockEvent::Destroyed:
+        {
+            auto idx = msgData.lastStackIndex;
+            if (idx >= 0)
+            {
+                //block was dragged off stack so realign remaining
+                for (auto i = idx + 1; i < maxInstructions; ++i)
+                {
+                    xy::Command cmd;
+                    cmd.entityID = m_slots[i].occupierID;
+                    cmd.action = [this](xy::Entity& entity, float)
+                    {
+                        auto ib = entity.getComponent<InstructionBlockLogic>();
+                        XY_ASSERT(ib, "component doesn't exist");
+                        ib->setTarget(entity.getWorldPosition() + sf::Vector2f(0.f, -m_verticalDistance), false);
+                        ib->setCarried(false);
+                    };
+                    m_parentEntity->getScene()->sendCommand(cmd);
+                    m_slots[i].occupierID = 0;
+                    m_slots[i].targeted = false;  
+                }
             }
         }
             break;

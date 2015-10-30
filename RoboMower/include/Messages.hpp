@@ -39,10 +39,12 @@ struct InstructionBlockEvent
     {
         Moved,
         Dropped,
-        PickedUp
+        PickedUp,
+        Destroyed
     }action;
     InstructionBlockLogic* component = nullptr;
     sf::Vector2f position;
+    sf::Int32 lastStackIndex = -1;
 };
 
 #endif //MESSAGE_HPP_

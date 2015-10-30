@@ -21,7 +21,8 @@ InstructionBlockLogic::InstructionBlockLogic(xy::MessageBus& mb, Instruction ins
     m_state             (State::Carried),
     m_instruction       (inst),
     m_destroyWhenDone   (true),
-    m_stackIndex        (-1)
+    m_stackIndex        (-1),
+    m_previousStackindex(-1)
 {
 
 }
@@ -41,17 +42,22 @@ void InstructionBlockLogic::entityUpdate(xy::Entity& entity, float dt)
         {
             m_state = State::Idle;
             entity.setPosition(m_target);
+
+            //raise event to say we were dropped or destroyed
+            auto msg = sendMessage<InstructionBlockEvent>(MessageId::InstructionBlockMessage);        
+            msg->position = m_target;
+            msg->lastStackIndex = m_previousStackindex;
+
             if (m_destroyWhenDone)
             {
                 entity.destroy();
+                msg->action = InstructionBlockEvent::Destroyed;
+                msg->component = nullptr;
             }
             else
             {
-                //raise event to say we were dropped
-                auto msg = sendMessage<InstructionBlockEvent>(MessageId::InstructionBlockMessage);
-                msg->action = InstructionBlockEvent::Dropped;
+                msg->action = InstructionBlockEvent::Dropped; 
                 msg->component = this;
-                msg->position = m_target;
             }
         }
         else
@@ -103,10 +109,16 @@ const sf::Vector2f& InstructionBlockLogic::getCursorOffset() const
 
 void InstructionBlockLogic::setStackIndex(sf::Int32 idx)
 {
+    m_previousStackindex = m_stackIndex;
     m_stackIndex = idx;
 }
 
 sf::Int32 InstructionBlockLogic::getStackIndex() const
 {
     return m_stackIndex;
+}
+
+sf::Int32 InstructionBlockLogic::getPreviousStackIndex() const
+{
+    return m_previousStackindex;
 }
