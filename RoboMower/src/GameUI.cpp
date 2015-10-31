@@ -44,11 +44,21 @@ namespace
     const float textOffset = -6.f;
 
     const sf::Vector2f labelSize(220.f, 50.f);
+    const sf::Vector2f inputSize(50.f, 50.f);
 
     std::unique_ptr<RoundedRectangle> makeButtonBackground(xy::MessageBus& messageBus)
     {
         auto rr = std::make_unique<RoundedRectangle>(messageBus, labelSize);
         rr->setFillColor({ 220u, 240u, 10u, 180u });
+        rr->setOutlineThickness(6.f);
+        rr->setOutlineColor({ 10u, 230u, 10u });
+        return std::move(rr);
+    }
+
+    std::unique_ptr<RoundedRectangle> makeInputBackground(xy::MessageBus& messageBus)
+    {
+        auto rr = std::make_unique<RoundedRectangle>(messageBus, inputSize);
+        rr->setFillColor({ 220u, 40u, 210u, 180u });
         rr->setOutlineThickness(6.f);
         rr->setOutlineColor({ 10u, 230u, 10u });
         return std::move(rr);
@@ -98,7 +108,7 @@ GameUI::GameUI(xy::State::Context sc, xy::Scene& scene)
         entity->addComponent<ButtonLogicScript>(std::make_unique<ButtonLogicScript>(m_messageBus, it->first));
 
         auto text = std::make_unique<xy::TextDrawable>(m_messageBus);
-        text->setFont(sc.appInstance.getFont("flaps"));
+        text->setFont(sc.appInstance.getFont("assets/fonts/Console.ttf"));
         text->setString(it->second);
         text->setColor(sf::Color::Black);
         xy::Util::Position::centreOrigin(*text);
@@ -223,7 +233,7 @@ void GameUI::addInstructionBlock(const sf::Vector2f& position, const sf::Vector2
     entity->addComponent<RoundedRectangle>(makeButtonBackground(m_messageBus));
 
     auto text = std::make_unique<xy::TextDrawable>(m_messageBus);
-    text->setFont(m_stateContext.appInstance.getFont("flaps"));
+    text->setFont(m_stateContext.appInstance.getFont("assets/fonts/Console.ttf"));
     text->setString(instructionLabels[instruction]);
     text->setColor(sf::Color::Black);
     xy::Util::Position::centreOrigin(*text);
@@ -236,6 +246,22 @@ void GameUI::addInstructionBlock(const sf::Vector2f& position, const sf::Vector2
     lc->setTarget(position - offset);
     lc->setCursorOffset(offset);
     entity->addComponent<InstructionBlockLogic>(lc);
+
+    if (instruction != Instruction::EngineOff && instruction != Instruction::EngineOn)
+    {
+        auto subEnt = std::make_unique<xy::Entity>(m_messageBus);
+        subEnt->setPosition({ labelSize.x + 26.f, 0.f });
+        subEnt->addComponent<RoundedRectangle>(makeInputBackground(m_messageBus));
+     
+        //TODO add logic
+        
+        entity->addChild(subEnt);
+    }
+
+    if (instruction == Instruction::Loop)
+    {
+        //TODO add loop wire
+    }
 
     m_scene.getLayer(xy::Scene::Layer::FrontFront).addChild(entity);
 }

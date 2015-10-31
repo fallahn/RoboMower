@@ -12,9 +12,10 @@
 
 enum CommandCategory
 {
-    TrayIcon         = 0x1,
-    Cursor           = 0x2,
-    InstructionBlock = 0x4,
+    TrayIcon           = 0x1,
+    Cursor             = 0x2,
+    InstructionBlock   = 0x4,
+    ParticleController = 0x8
 };
 
 #endif //COMMAND_CATEGORIES_HPP_

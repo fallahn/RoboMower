@@ -9,12 +9,14 @@
 #include <components/InstructionBlockLogic.hpp>
 #include <components/RoundedRectangle.hpp>
 #include <Messages.hpp>
+#include <CommandCategories.hpp>
 
 #include <xygine/Entity.hpp>
 #include <xygine/Util.hpp>
 #include <xygine/Log.hpp>
 #include <xygine/Reports.hpp>
 #include <xygine/Scene.hpp>
+#include <xygine/ParticleController.hpp>
 
 namespace
 {
@@ -208,7 +210,15 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
             break;
         case InstructionBlockEvent::Destroyed:
         {
-            //TODO send a message to particle controller
+            auto position = msgData.position;
+            //send a message to particle controller
+            xy::Command cmd;
+            cmd.category = CommandCategory::ParticleController;
+            cmd.action = [position](xy::Entity& entity, float)
+            {
+                entity.getComponent<xy::ParticleController>()->fire(0, position);
+            };
+            m_parentEntity->getScene()->sendCommand(cmd);
         }
             break;
         default: break;

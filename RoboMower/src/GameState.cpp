@@ -15,6 +15,9 @@
 #include <xygine/Log.hpp>
 #include <xygine/Util.hpp>
 
+#include <xygine/ParticleController.hpp>
+#include <CommandCategories.hpp>
+
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Network/Packet.hpp>
@@ -30,6 +33,22 @@ namespace
 
     const float joyDeadZone = 25.f;
     const float joyMaxAxis = 100.f;
+
+    std::vector<sf::Vector2f> explodeVelocities =
+    {
+        { -80.5f, 0.f },
+        { -60.f, -8.9f },
+        { -20.f, -24.f },
+        { 0.f, -40.5f },
+        { 28.5f, -24.6f },
+        { 64.f, -8.5f },
+        { 80.9f, 0.f },
+        { 64.f, 9.5f },
+        { 28.f, 27.5f },
+        { 0.7f, 40.4f },
+        { -20.f, 29.6f },
+        { -60.f, 9.5f }
+    };
 }
 
 GameState::GameState(xy::StateStack& stateStack, Context context)
@@ -43,8 +62,30 @@ GameState::GameState(xy::StateStack& stateStack, Context context)
     //m_scene.drawDebug(true);
     m_scene.setPostEffects(xy::Scene::PostEffect::ChromaticAbberation);
 
-    m_reportText.setFont(context.appInstance.getFont("res/fonts/Console.ttf"));
+    m_reportText.setFont(context.appInstance.getFont("assets/fonts/Console.ttf"));
     m_reportText.setPosition(1500.f, 30.f);
+
+
+    //create a particle controller for scene TEMP!!
+    auto entity = std::make_unique<xy::Entity>(m_messageBus);
+    entity->addCommandCategories(CommandCategory::ParticleController);
+
+    auto pc = std::make_unique<xy::ParticleController>(m_messageBus);
+
+    xy::ParticleSystem::Definition def;
+    def.randomInitialVelocities = explodeVelocities;
+    def.releaseCount = 5u;
+    def.delay = 0.f;
+    def.duration = 0.1f;
+    def.followParent = true;
+
+    xy::ForceAffector fa({ 0.f, 150.f });
+    xy::ParticleSystem::Affector a = std::bind(fa, std::placeholders::_1, std::placeholders::_2);
+    def.affectors.push_back(a);
+
+    entity->addComponent<xy::ParticleController>(pc);
+    entity->getComponent<xy::ParticleController>()->addDefinition(0, def);
+    m_scene.addEntity(entity, xy::Scene::Layer::UI);
 }
 
 bool GameState::update(float dt)
