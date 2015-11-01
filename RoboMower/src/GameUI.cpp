@@ -81,7 +81,8 @@ GameUI::GameUI(xy::State::Context sc, xy::Scene& scene)
     entity->addComponent<RoundedRectangle>(rr);
     entity->setPosition(50.f, 50.f);
 
-    entity->addComponent<StackLogicComponent>(std::make_unique<StackLogicComponent>(m_messageBus, labelSize));
+    auto scl = std::make_unique<StackLogicComponent>(m_messageBus, labelSize);
+    entity->addComponent<StackLogicComponent>(scl);
 
     m_scene.getLayer(xy::Scene::Layer::FrontFront).addChild(entity);
 
@@ -104,8 +105,10 @@ GameUI::GameUI(xy::State::Context sc, xy::Scene& scene)
         entity = std::make_unique<xy::Entity>(m_messageBus);
         entity->setPosition(labelPadding + (i * labelSpacing), labelTop);
         entity->addCommandCategories(CommandCategory::TrayIcon);
-        entity->addComponent<RoundedRectangle>(makeButtonBackground(m_messageBus));
-        entity->addComponent<ButtonLogicScript>(std::make_unique<ButtonLogicScript>(m_messageBus, it->first));
+        auto rr = makeButtonBackground(m_messageBus);
+        entity->addComponent<RoundedRectangle>(rr);
+        auto bls = std::make_unique<ButtonLogicScript>(m_messageBus, it->first);
+        entity->addComponent<ButtonLogicScript>(bls);
 
         auto text = std::make_unique<xy::TextDrawable>(m_messageBus);
         text->setFont(sc.appInstance.getFont("assets/fonts/Console.ttf"));
@@ -229,8 +232,8 @@ void GameUI::addInstructionBlock(const sf::Vector2f& position, const sf::Vector2
     auto entity = std::make_unique<xy::Entity>(m_messageBus);
     entity->setPosition(position);
     entity->addCommandCategories(CommandCategory::InstructionBlock);
-
-    entity->addComponent<RoundedRectangle>(makeButtonBackground(m_messageBus));
+    auto rr = makeButtonBackground(m_messageBus);
+    entity->addComponent<RoundedRectangle>(rr);
 
     auto text = std::make_unique<xy::TextDrawable>(m_messageBus);
     text->setFont(m_stateContext.appInstance.getFont("assets/fonts/Console.ttf"));
@@ -251,7 +254,8 @@ void GameUI::addInstructionBlock(const sf::Vector2f& position, const sf::Vector2
     {
         auto subEnt = std::make_unique<xy::Entity>(m_messageBus);
         subEnt->setPosition({ labelSize.x + 26.f, 0.f });
-        subEnt->addComponent<RoundedRectangle>(makeInputBackground(m_messageBus));
+        auto rr = makeInputBackground(m_messageBus);
+        subEnt->addComponent<RoundedRectangle>(rr);
      
         //TODO add logic
         

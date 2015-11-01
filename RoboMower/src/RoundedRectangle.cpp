@@ -7,7 +7,7 @@
 
 #include <components/RoundedRectangle.hpp>
 
-#include <xygine/Messagebus.hpp>
+#include <xygine/MessageBus.hpp>
 #include <xygine/Entity.hpp>
 
 #include <cassert>
