@@ -22,7 +22,7 @@ namespace xy
 class RoundedRectangle final : public sf::Shape, public xy::Component
 {
 public:
-    RoundedRectangle(xy::MessageBus&, const sf::Vector2f& size, float radius = 14.f);
+    RoundedRectangle(xy::MessageBus&, const sf::Vector2f& size, float radius = 8.f);
     ~RoundedRectangle() = default;
     RoundedRectangle(const RoundedRectangle&) = delete;
     RoundedRectangle& operator = (const RoundedRectangle&) = delete;

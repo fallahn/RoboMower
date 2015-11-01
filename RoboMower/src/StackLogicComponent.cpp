@@ -20,8 +20,8 @@
 
 namespace
 {
-    const std::size_t maxInstructions = 12;
-    const float padding = 32.f;
+    const std::size_t maxInstructions = 16;
+    const float padding = 30.f;
     const float margin = 8.f;
 }
 

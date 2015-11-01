@@ -40,11 +40,11 @@ namespace
 
     const float labelSpacing = 240.f;
     const float labelPadding = 435.f;
-    const float labelTop = 960.f;
+    const float labelTop = 980.f;
     const float textOffset = -6.f;
 
-    const sf::Vector2f labelSize(220.f, 50.f);
-    const sf::Vector2f inputSize(50.f, 50.f);
+    const sf::Vector2f labelSize(220.f, 30.f);
+    const sf::Vector2f inputSize(50.f, 30.f);
 
     std::unique_ptr<RoundedRectangle> makeButtonBackground(xy::MessageBus& messageBus)
     {
@@ -86,14 +86,14 @@ GameUI::GameUI(xy::State::Context sc, xy::Scene& scene)
     m_scene.getLayer(xy::Scene::Layer::FrontFront).addChild(entity);
 
     //command tray
-    rr = std::make_unique<RoundedRectangle>(m_messageBus, sf::Vector2f(1450.f, 90.f), 20.f);
+    rr = std::make_unique<RoundedRectangle>(m_messageBus, sf::Vector2f(1450.f, 70.f), 20.f);
     rr->setFillColor({ 180u, 40u, 20u, 180u });
     rr->setOutlineColor({ 100u, 30u, 15u });
     rr->setOutlineThickness(8.f);
 
     entity = std::make_unique<xy::Entity>(m_messageBus);
     entity->addComponent<RoundedRectangle>(rr);
-    entity->setPosition(420.f, 940.f);
+    entity->setPosition(420.f, 960.f);
 
     m_scene.getLayer(xy::Scene::Layer::FrontFront).addChild(entity);
 
