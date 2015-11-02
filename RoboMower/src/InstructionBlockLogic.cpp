@@ -36,12 +36,12 @@ void InstructionBlockLogic::entityUpdate(xy::Entity& entity, float dt)
     case State::Idle:
     default: break;
     case State::Homing:
-        auto dir = m_target - entity.getPosition();
+        auto dir = m_target - entity.getWorldPosition();
         const auto len = xy::Util::Vector::lengthSquared(dir);
         if (len < 2.5f)
         {
             m_state = State::Idle;
-            entity.setPosition(m_target);
+            entity.setWorldPosition(m_target);
 
             //raise event to say we were dropped or destroyed
             auto msg = sendMessage<InstructionBlockEvent>(MessageId::InstructionBlockMessage);        

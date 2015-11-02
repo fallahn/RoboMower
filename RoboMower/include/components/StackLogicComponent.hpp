@@ -19,7 +19,7 @@
 class StackLogicComponent final : public xy::Component
 {
 public:
-    StackLogicComponent(xy::MessageBus&, const sf::Vector2f& size);
+    StackLogicComponent(xy::MessageBus&, const sf::Vector2f& slotSize, const sf::Vector2f& overallSize);
     ~StackLogicComponent() = default;
     StackLogicComponent(const StackLogicComponent&) = delete;
     StackLogicComponent& operator = (const StackLogicComponent&) = delete;
@@ -34,18 +34,25 @@ private:
     struct SlotData
     {
         sf::FloatRect slotArea;
+        sf::FloatRect slotLocalArea;
         sf::Uint64 occupierID = 0;
         Instruction instruction = NOP;
         bool targeted = false;
     };
 
     std::vector<SlotData> m_slots;
-    bool m_updateTransform;
+    //bool m_updateTransform;
+
+    sf::FloatRect m_globalBounds;
+    sf::FloatRect m_localBounds;
+
     xy::Entity* m_parentEntity;
     float m_verticalDistance;
     std::size_t m_instructionCount;
 
     void updateInstructionCount();
+    sf::Vector2f getNextSlot() const; //down
+    sf::Vector2f getPreviousSlot() const;//up
 };
 
 

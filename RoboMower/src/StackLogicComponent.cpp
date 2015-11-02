@@ -20,41 +20,41 @@
 
 namespace
 {
-    const std::size_t maxInstructions = 16;
-    const float padding = 30.f;
+    const std::size_t maxInstructions = 32;
+    const float padding = 22.f;
     const float margin = 8.f;
 }
 
-StackLogicComponent::StackLogicComponent(xy::MessageBus& mb, const sf::Vector2f& size)
+StackLogicComponent::StackLogicComponent(xy::MessageBus& mb, const sf::Vector2f& slotSize, const sf::Vector2f& bounds)
     : xy::Component     (mb, this),
     m_slots             (maxInstructions),
-    m_updateTransform   (true),
+    m_localBounds       ({}, bounds),
+    //m_updateTransform   (true),
     m_parentEntity      (nullptr),
     m_verticalDistance  (0.f),
     m_instructionCount  (0)
 {
     for (auto i = 0u; i < m_slots.size(); ++i)
     {
-        m_slots[i].slotArea = { { margin, (i * (size.y + padding)) + margin }, size };
+        m_slots[i].slotLocalArea = { { margin, (i * (slotSize.y + padding)) + (margin * 2.f) }, slotSize };
         REPORT("Slot " + std::to_string(i), std::to_string(m_slots[i].occupierID));
     }
 
-    m_verticalDistance = m_slots[1].slotArea.top - m_slots[0].slotArea.top;
+    m_verticalDistance = m_slots[1].slotLocalArea.top - m_slots[0].slotLocalArea.top;
     LOG("vertical distance: " + std::to_string(m_verticalDistance), xy::Logger::Type::Info);
 }
 
 //public
 void StackLogicComponent::entityUpdate(xy::Entity& entity, float)
 {
-    if (m_updateTransform)
+    //TODO this might be better if only done when entity is transformed (receive scroll message to invalidate?)
+    auto tr = entity.getWorldTransform();
+    for (auto& s : m_slots)
     {
-        auto tr = entity.getWorldTransform();
-        for (auto& s : m_slots)
-        {
-            s.slotArea = tr.transformRect(s.slotArea);
-        }
-        m_updateTransform = false;
+        s.slotArea = tr.transformRect(s.slotLocalArea);
     }
+    m_globalBounds = tr.transformRect(m_localBounds);
+
 
 #ifdef _DEBUG_
     std::string targeted;
@@ -147,7 +147,7 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
                 //we got to the end so therefore test for deletion
                 auto idx = msgData.component->getPreviousStackIndex();
                 if (idx >= 0 &&
-                    !m_parentEntity->getComponent<RoundedRectangle>()->globalBounds().contains(msgData.position))
+                    !m_globalBounds.contains(msgData.position))
                 {
                     msgData.component->setTarget({ 1920.f - m_slots[0].slotArea.width, 20.f }); //TODO somewhere with a bin icon, or set this on mouse up
                     msgData.component->setStackIndex(-1);
@@ -242,4 +242,32 @@ void StackLogicComponent::updateInstructionCount()
     }
 
     REPORT("Instruction Count", std::to_string(m_instructionCount));
+}
+
+sf::Vector2f StackLogicComponent::getNextSlot() const
+{
+    //start at the end and work up to get farthest slot
+    for (auto it = m_slots.rbegin(); it != m_slots.rend(); ++it)
+    {
+        if (it->occupierID == 0 && !it->targeted)
+        {
+            return{ it->slotArea.left, it->slotArea.top };
+        }
+    }
+    
+    return{};
+}
+
+sf::Vector2f StackLogicComponent::getPreviousSlot() const
+{
+    //start at the beginning and work down to get farthest slot
+    for (const auto& s : m_slots)
+    {
+        if (s.occupierID == 0 && !s.targeted)
+        {
+            return{ s.slotArea.left, s.slotArea.top };
+        }
+    }
+
+    return{};
 }

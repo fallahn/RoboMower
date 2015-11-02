@@ -47,6 +47,7 @@ private:
     xy::Scene& m_scene;
     xy::MessageBus& m_messageBus;
     xy::Entity* m_mouseCursor;
+    xy::Entity* m_instructionStack;
     void addInstructionBlock(const sf::Vector2f& position, const sf::Vector2f& offset, Instruction);
 };
 

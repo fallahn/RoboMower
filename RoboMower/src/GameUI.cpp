@@ -19,6 +19,8 @@
 #include <components/ButtonLogic.hpp>
 #include <components/InstructionBlockLogic.hpp>
 #include <components/StackLogicComponent.hpp>
+#include <components/CircleDrawable.hpp>
+#include <components/ScrollHandleLogic.hpp>
 #include <CommandCategories.hpp>
 #include <Messages.hpp>
 
@@ -39,12 +41,20 @@ namespace
     const sf::Uint8 buttonCount = 6u;
 
     const float labelSpacing = 240.f;
-    const float labelPadding = 435.f;
+    const float labelPadding = 445.f;
     const float labelTop = 980.f;
     const float textOffset = -6.f;
 
     const sf::Vector2f labelSize(220.f, 30.f);
     const sf::Vector2f inputSize(50.f, 30.f);
+
+    const sf::Vector2f stackPosition(50.f, 50.f);
+    const sf::Vector2f stackSize(320.f, 980.f);
+
+    const sf::Vector2f trayPosition(430.f, 960.f);
+
+    const sf::Color fillColour(180u, 40u, 20u, 180u);
+    const sf::Color borderColour(15u, 30u, 100u);
 
     std::unique_ptr<RoundedRectangle> makeButtonBackground(xy::MessageBus& messageBus)
     {
@@ -66,37 +76,41 @@ namespace
 }
 
 GameUI::GameUI(xy::State::Context sc, xy::Scene& scene)
-    : m_stateContext(sc),
-    m_scene         (scene),
-    m_messageBus    (sc.appInstance.getMessageBus()),
-    m_mouseCursor   (nullptr)
+    : m_stateContext    (sc),
+    m_scene             (scene),
+    m_messageBus        (sc.appInstance.getMessageBus()),
+    m_mouseCursor       (nullptr),
+    m_instructionStack  (nullptr)
 {
     //command list
-    auto rr = std::make_unique<RoundedRectangle>(m_messageBus, sf::Vector2f(320.f, 980.f));
-    rr->setFillColor({ 20u, 40u, 180u, 180u });
+    auto rr = std::make_unique<RoundedRectangle>(m_messageBus, sf::Vector2f(stackSize));
+    rr->setFillColor(fillColour);
     rr->setOutlineThickness(10.f);
-    rr->setOutlineColor({ 15u, 30u, 100u });
+    rr->setOutlineColor(borderColour);
 
     auto entity = std::make_unique<xy::Entity>(m_messageBus);
     entity->addComponent<RoundedRectangle>(rr);
-    entity->setPosition(50.f, 50.f);
+    entity->setPosition(stackPosition);
+    m_scene.addEntity(entity, xy::Scene::Layer::FrontFront);
 
-    auto scl = std::make_unique<StackLogicComponent>(m_messageBus, labelSize);
+    //the logic is separated from the background so we can scroll it
+    entity = std::make_unique<xy::Entity>(m_messageBus);
+    entity->addCommandCategories(CommandCategory::InstructionList);
+    entity->setPosition(stackPosition);
+    auto scl = std::make_unique<StackLogicComponent>(m_messageBus, labelSize, sf::Vector2f(stackSize.x, stackSize.y * 2));
     entity->addComponent<StackLogicComponent>(scl);
-
-    m_scene.getLayer(xy::Scene::Layer::FrontFront).addChild(entity);
+    m_instructionStack = m_scene.addEntity(entity, xy::Scene::Layer::FrontFront);
 
     //command tray
     rr = std::make_unique<RoundedRectangle>(m_messageBus, sf::Vector2f(1450.f, 70.f), 20.f);
-    rr->setFillColor({ 180u, 40u, 20u, 180u });
-    rr->setOutlineColor({ 100u, 30u, 15u });
+    rr->setFillColor(fillColour);
+    rr->setOutlineColor(borderColour);
     rr->setOutlineThickness(8.f);
 
     entity = std::make_unique<xy::Entity>(m_messageBus);
     entity->addComponent<RoundedRectangle>(rr);
-    entity->setPosition(420.f, 960.f);
-
-    m_scene.getLayer(xy::Scene::Layer::FrontFront).addChild(entity);
+    entity->setPosition(trayPosition);
+    m_scene.addEntity(entity, xy::Scene::Layer::FrontFront);
 
     //create 'buttons' in tray
     auto it = instructionLabels.begin();
@@ -119,9 +133,36 @@ GameUI::GameUI(xy::State::Context sc, xy::Scene& scene)
         text->move(0.f, textOffset);
 
         entity->addComponent<xy::TextDrawable>(text);
-
-        m_scene.getLayer(xy::Scene::Layer::FrontFront).addChild(entity);
+        m_scene.addEntity(entity, xy::Scene::Layer::FrontFront);
     }
+
+    //scroll bar
+    rr = std::make_unique<RoundedRectangle>(m_messageBus, sf::Vector2f(16.f, stackSize.y), 8.f); //TODO make radius a const
+    rr->setFillColor(fillColour);
+    rr->setOutlineColor(borderColour);
+    rr->setOutlineThickness(3.f);
+    entity = std::make_unique<xy::Entity>(m_messageBus);
+    entity->setPosition(stackPosition + sf::Vector2f(stackSize.x + 20.f, 0.f));
+    entity->addComponent<RoundedRectangle>(rr);
+
+    auto cd = std::make_unique<CircleDrawable>(m_messageBus);
+    cd->setRadius(8.f);
+    cd->setFillColor(borderColour);
+    cd->setOutlineThickness(-1.f);
+    cd->setOutlineColor(fillColour);
+
+    auto subEnt = std::make_unique<xy::Entity>(m_messageBus);
+    subEnt->addComponent<CircleDrawable>(cd);
+
+    auto shl = std::make_unique<ScrollHandleLogic>(m_messageBus);
+    shl->setLength(stackSize.y - 8.f);
+    subEnt->addComponent<ScrollHandleLogic>(shl);
+
+    subEnt->addCommandCategories(CommandCategory::ScrollHandle);
+    entity->addChild(subEnt);
+
+    m_scene.addEntity(entity, xy::Scene::Layer::FrontFront);
+
 
     //add mouse cursor
     auto ad = std::make_unique<xy::AnimatedDrawable>(m_messageBus, sc.appInstance.getTexture("assets/images/ui/cursor.png"));
@@ -129,8 +170,7 @@ GameUI::GameUI(xy::State::Context sc, xy::Scene& scene)
     entity->addComponent<xy::AnimatedDrawable>(ad);
     entity->addCommandCategories(CommandCategory::Cursor);
     entity->setPosition(sc.renderWindow.mapPixelToCoords(sf::Mouse::getPosition(sc.renderWindow)));
-    m_mouseCursor = entity.get();
-    m_scene.addEntity(entity, xy::Scene::Layer::UI);
+    m_mouseCursor = m_scene.addEntity(entity, xy::Scene::Layer::UI);
 }
 
 //public
@@ -146,11 +186,27 @@ void GameUI::update(float dt, const sf::Vector2f& mousePos)
         if (lc->carried())
         {
             auto position = m_mouseCursor->getPosition();
-            entity.setPosition(position - lc->getCursorOffset());
+            entity.setWorldPosition(position - lc->getCursorOffset());
             auto msg = m_messageBus.post<InstructionBlockEvent>(MessageId::InstructionBlockMessage);
             msg->component = lc;
             msg->action = InstructionBlockEvent::Moved;
             msg->position = position;
+        }
+    };
+    m_scene.sendCommand(dragCommand);
+
+    //resend to scroll bar (probably make this a member function too)
+    dragCommand.category = CommandCategory::ScrollHandle;
+    dragCommand.action = [this](xy::Entity& entity, float)
+    {
+        if (entity.getComponent<ScrollHandleLogic>()->carried())
+        {
+            auto mousePos = m_mouseCursor->getPosition();
+            auto currentPos = entity.getWorldPosition();
+        
+            entity.setWorldPosition({ currentPos.x, mousePos.y });
+
+            //TODO raise a scrolled message
         }
     };
     m_scene.sendCommand(dragCommand);
@@ -183,6 +239,16 @@ void GameUI::handleEvent(const sf::Event& evt)
                 }
             };
             m_scene.sendCommand(cmd);
+
+            cmd.category = CommandCategory::ScrollHandle;
+            cmd.action = [mousePos](xy::Entity& entity, float)
+            {
+                if (entity.getComponent<CircleDrawable>()->globalBounds().contains(mousePos))
+                {
+                    entity.getComponent<ScrollHandleLogic>()->setCarried(true);
+                }
+            };
+            m_scene.sendCommand(cmd);
         }
         else if (evt.mouseButton.button == sf::Mouse::Right)
         {
@@ -199,6 +265,13 @@ void GameUI::handleEvent(const sf::Event& evt)
             {
                 auto lc = entity.getComponent<InstructionBlockLogic>();
                 lc->setCarried(false);
+            };
+            m_scene.sendCommand(cmd);
+
+            cmd.category = CommandCategory::ScrollHandle;
+            cmd.action = [](xy::Entity& entity, float)
+            {
+                entity.getComponent<ScrollHandleLogic>()->setCarried(false);
             };
             m_scene.sendCommand(cmd);
         }
@@ -267,5 +340,6 @@ void GameUI::addInstructionBlock(const sf::Vector2f& position, const sf::Vector2
         //TODO add loop wire
     }
 
-    m_scene.getLayer(xy::Scene::Layer::FrontFront).addChild(entity);
+    //m_scene.getLayer(xy::Scene::Layer::FrontFront).addChild(entity);
+    m_instructionStack->addChild(entity);
 }

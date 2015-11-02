@@ -68,6 +68,7 @@ include(${xygine_DIR}/CMakeLists.txt)
 
 set(SOURCE
   src/ButtonLogic.cpp
+  src/CircleDrawable.cpp
   src/Game.cpp
   src/GameState.cpp
   src/GameUI.cpp
@@ -80,6 +81,7 @@ set(SOURCE
   src/MenuOptionState.cpp
   src/MenuPauseState.cpp
   src/RoundedRectangle.cpp
+  src/ScrollHandleLogic.cpp
   src/StackLogicComponent.cpp
   src/StatsOverlayState.cpp)
 #  ${RES_FILES})
