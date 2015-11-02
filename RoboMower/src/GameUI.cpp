@@ -14,6 +14,7 @@
 #include <xygine/Util.hpp>
 #include <xygine/AnimatedDrawable.hpp>
 #include <xygine/App.hpp>
+#include <xygine/Reports.hpp>
 
 #include <components/RoundedRectangle.hpp>
 #include <components/ButtonLogic.hpp>
@@ -91,15 +92,15 @@ GameUI::GameUI(xy::State::Context sc, xy::Scene& scene)
     auto entity = std::make_unique<xy::Entity>(m_messageBus);
     entity->addComponent<RoundedRectangle>(rr);
     entity->setPosition(stackPosition);
-    m_scene.addEntity(entity, xy::Scene::Layer::FrontFront);
+    auto backPanel = m_scene.addEntity(entity, xy::Scene::Layer::FrontFront);
 
     //the logic is separated from the background so we can scroll it
-    entity = std::make_unique<xy::Entity>(m_messageBus);
-    entity->addCommandCategories(CommandCategory::InstructionList);
-    entity->setPosition(stackPosition);
+    auto subEnt = std::make_unique<xy::Entity>(m_messageBus);
+    subEnt->addCommandCategories(CommandCategory::InstructionList);
     auto scl = std::make_unique<StackLogicComponent>(m_messageBus, labelSize, sf::Vector2f(stackSize.x, stackSize.y * 2));
-    entity->addComponent<StackLogicComponent>(scl);
-    m_instructionStack = m_scene.addEntity(entity, xy::Scene::Layer::FrontFront);
+    subEnt->addComponent<StackLogicComponent>(scl);
+    m_instructionStack = subEnt.get();
+    backPanel->addChild(subEnt); //backPanel has to be added first so it has a valid scene pointer
 
     //command tray
     rr = std::make_unique<RoundedRectangle>(m_messageBus, sf::Vector2f(1450.f, 70.f), 20.f);
@@ -151,7 +152,7 @@ GameUI::GameUI(xy::State::Context sc, xy::Scene& scene)
     cd->setOutlineThickness(-1.f);
     cd->setOutlineColor(fillColour);
 
-    auto subEnt = std::make_unique<xy::Entity>(m_messageBus);
+    subEnt = std::make_unique<xy::Entity>(m_messageBus);
     subEnt->addComponent<CircleDrawable>(cd);
 
     auto shl = std::make_unique<ScrollHandleLogic>(m_messageBus);
@@ -161,7 +162,7 @@ GameUI::GameUI(xy::State::Context sc, xy::Scene& scene)
     subEnt->addCommandCategories(CommandCategory::ScrollHandle);
     entity->addChild(subEnt);
 
-    m_scene.addEntity(entity, xy::Scene::Layer::FrontFront);
+    m_scene.addEntity(entity, xy::Scene::Layer::FrontMiddle);
 
 
     //add mouse cursor
@@ -206,7 +207,10 @@ void GameUI::update(float dt, const sf::Vector2f& mousePos)
         
             entity.setWorldPosition({ currentPos.x, mousePos.y });
 
-            //TODO raise a scrolled message
+            //raise a scrolled message
+            auto msg = m_messageBus.post<ScrollbarEvent>(MessageId::ScrollbarMessage);
+            msg->position = entity.getComponent<ScrollHandleLogic>()->getPosition();
+            REPORT("Scroll Position", std::to_string(msg->position));
         }
     };
     m_scene.sendCommand(dragCommand);
@@ -279,6 +283,27 @@ void GameUI::handleEvent(const sf::Event& evt)
         {
 
         }
+        break;
+    case sf::Event::MouseWheelScrolled:
+        {
+            auto dist = evt.mouseWheelScroll.delta;
+        
+            xy::Command cmd;
+            cmd.category = CommandCategory::ScrollHandle;
+            cmd.action = [this, dist](xy::Entity& entity, float)
+            {
+                auto currentPos = entity.getWorldPosition();
+
+                entity.setWorldPosition({ currentPos.x, currentPos.y - (10.f * dist) });
+
+                //raise a scrolled message
+                auto msg = m_messageBus.post<ScrollbarEvent>(MessageId::ScrollbarMessage);
+                msg->position = entity.getComponent<ScrollHandleLogic>()->getPosition();
+                REPORT("Scroll Position", std::to_string(msg->position));
+            };
+            m_scene.sendCommand(cmd);
+        }
+
         break;
     default: break;
     }

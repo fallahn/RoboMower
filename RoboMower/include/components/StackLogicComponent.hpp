@@ -41,7 +41,7 @@ private:
     };
 
     std::vector<SlotData> m_slots;
-    //bool m_updateTransform;
+    bool m_updateTransform;
 
     sf::FloatRect m_globalBounds;
     sf::FloatRect m_localBounds;

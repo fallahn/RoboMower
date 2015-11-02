@@ -36,6 +36,8 @@ private:
     bool m_carried;
     float m_length;
     float m_position;
+
+    bool m_update;
 };
 
 #endif //SCROLL_HANDLE_LOGIC_HPP_

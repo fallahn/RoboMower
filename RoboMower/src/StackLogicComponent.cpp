@@ -28,8 +28,8 @@ namespace
 StackLogicComponent::StackLogicComponent(xy::MessageBus& mb, const sf::Vector2f& slotSize, const sf::Vector2f& bounds)
     : xy::Component     (mb, this),
     m_slots             (maxInstructions),
+    m_updateTransform   (true),
     m_localBounds       ({}, bounds),
-    //m_updateTransform   (true),
     m_parentEntity      (nullptr),
     m_verticalDistance  (0.f),
     m_instructionCount  (0)
@@ -37,31 +37,31 @@ StackLogicComponent::StackLogicComponent(xy::MessageBus& mb, const sf::Vector2f&
     for (auto i = 0u; i < m_slots.size(); ++i)
     {
         m_slots[i].slotLocalArea = { { margin, (i * (slotSize.y + padding)) + (margin * 2.f) }, slotSize };
-        REPORT("Slot " + std::to_string(i), std::to_string(m_slots[i].occupierID));
     }
 
     m_verticalDistance = m_slots[1].slotLocalArea.top - m_slots[0].slotLocalArea.top;
-    LOG("vertical distance: " + std::to_string(m_verticalDistance), xy::Logger::Type::Info);
+    //LOG("vertical distance: " + std::to_string(m_verticalDistance), xy::Logger::Type::Info);
 }
 
 //public
 void StackLogicComponent::entityUpdate(xy::Entity& entity, float)
 {
-    //TODO this might be better if only done when entity is transformed (receive scroll message to invalidate?)
-    auto tr = entity.getWorldTransform();
-    for (auto& s : m_slots)
+    if (m_updateTransform)
     {
-        s.slotArea = tr.transformRect(s.slotLocalArea);
+        auto tr = entity.getWorldTransform();
+        for (auto& s : m_slots)
+        {
+            s.slotArea = tr.transformRect(s.slotLocalArea);
+        }
+        m_globalBounds = tr.transformRect(m_localBounds);
+        m_updateTransform = false;
     }
-    m_globalBounds = tr.transformRect(m_localBounds);
-
-
 #ifdef _DEBUG_
     std::string targeted;
-    for (auto i = 0u; i < m_slots.size(); ++i)
+    for (auto i = 0u; i < m_slots.size() / 2; ++i)
     {
         targeted = (m_slots[i].targeted) ? "true" : "false";
-        REPORT("Slot " + std::to_string(i), std::to_string(m_slots[i].occupierID) + ", " + targeted);
+        REPORT("Slot " + std::to_string(i + 10), std::to_string(m_slots[i].occupierID) + ", " + targeted);
     }
 #endif //_DEBUG_
 }
@@ -223,6 +223,25 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
             break;
         default: break;
         }
+    }
+    else if (msg.id == MessageId::ScrollbarMessage)
+    {
+        auto& msgData = msg.getData<ScrollbarEvent>();
+        const float distance = msgData.position * m_localBounds.height;
+
+        //TODO allow for offset or make this entity a child of background
+
+        xy::Command cmd;
+        cmd.category = CommandCategory::InstructionList;
+        cmd.action = [distance](xy::Entity& entity, float)
+        {
+            auto position = entity.getPosition();
+            position.y = -distance;
+            entity.setPosition(position);
+        };
+        m_parentEntity->getScene()->sendCommand(cmd);
+
+        m_updateTransform = true;
     }
 }
 

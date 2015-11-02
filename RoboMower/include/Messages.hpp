@@ -19,7 +19,8 @@ class InstructionBlockLogic;
 enum MessageId
 {
     TrayIconMessage = xy::Message::Count,
-    InstructionBlockMessage
+    InstructionBlockMessage,
+    ScrollbarMessage
 };
 
 struct TrayIconEvent
@@ -44,6 +45,11 @@ struct InstructionBlockEvent
     }action;
     InstructionBlockLogic* component = nullptr;
     sf::Vector2f position;
+};
+
+struct ScrollbarEvent
+{
+    float position = 0.f;
 };
 
 #endif //MESSAGE_HPP_
