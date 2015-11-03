@@ -199,13 +199,14 @@ GameUI::GameUI(xy::State::Context sc, xy::Scene& scene)
 
     m_mouseCursor = m_scene.addEntity(entity, xy::Scene::Layer::UI);
 
-    m_shaderResource.preload(Shader::Id::Test, xy::Shader::FullPass::vertex, Shader::Testing::fragment);
+
+    //cropping shader
+    m_shaderResource.preload(Shader::Id::Test, xy::Shader::LightRay::vertex, Shader::Testing::fragment);
     auto& shader = m_shaderResource.get(Shader::Id::Test);
 
-    //TODO wrap this in a function so we can update when window resized
-    auto pos = sc.renderWindow.mapCoordsToPixel(stackPosition); //need to account for view offset
-    auto size = sc.renderWindow.mapCoordsToPixel(stackSize);
-    pos.y += size.y; //because glsl y inversion
+    auto pos = sc.renderWindow.mapCoordsToPixel(stackPosition, sc.renderWindow.getDefaultView());
+    auto size = sc.renderWindow.mapCoordsToPixel(stackSize, sc.renderWindow.getDefaultView());
+    //pos.y += size.y; //because glsl y inversion
     shader.setParameter("u_position", sf::Vector2f(pos));
     shader.setParameter("u_size", sf::Vector2f(size));
 }
@@ -378,6 +379,7 @@ void GameUI::addInstructionBlock(const sf::Vector2f& position, const sf::Vector2
     xy::Util::Position::centreOrigin(td);
     text->setPosition(labelSize / 2.f);
     text->move(0.f, textOffset);
+    text->setShader(&m_shaderResource.get(Shader::Id::Test));
 
     entity->addComponent<xy::SfDrawableComponent<sf::Text>>(text);
 
@@ -391,6 +393,7 @@ void GameUI::addInstructionBlock(const sf::Vector2f& position, const sf::Vector2
         auto subEnt = std::make_unique<xy::Entity>(m_messageBus);
         subEnt->setPosition({ labelSize.x + 26.f, 0.f });
         auto rr = makeInputBackground(m_messageBus);
+        rr->setShader(&m_shaderResource.get(Shader::Id::Test));
         subEnt->addComponent<xy::SfDrawableComponent<RoundedRectangle>>(rr);
      
         //TODO add logic
