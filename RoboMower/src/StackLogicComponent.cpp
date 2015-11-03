@@ -7,7 +7,7 @@
 
 #include <components/StackLogicComponent.hpp>
 #include <components/InstructionBlockLogic.hpp>
-#include <components/RoundedRectangle.hpp>
+#include <RoundedRectangle.hpp>
 #include <Messages.hpp>
 #include <CommandCategories.hpp>
 

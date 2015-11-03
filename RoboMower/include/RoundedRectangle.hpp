@@ -5,12 +5,13 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-//creates a rounded rectangle drawable component
+//creates a rounded rectangle drawable
 
 #ifndef ROUND_RECT_HPP_
 #define ROUND_RECT_HPP_
 
 #include <xygine/Component.hpp>
+#include <xygine/ShaderProperty.hpp>
 
 #include <SFML/Graphics/Shape.hpp>
 
@@ -19,24 +20,13 @@ namespace xy
     class MessageBus;
 }
 
-class RoundedRectangle final : public sf::Shape, public xy::Component
+class RoundedRectangle final : public sf::Shape
 {
 public:
-    RoundedRectangle(xy::MessageBus&, const sf::Vector2f& size, float radius = 8.f);
+    RoundedRectangle(const sf::Vector2f& size = sf::Vector2f(8.f, 8.f), float radius = 8.f);
     ~RoundedRectangle() = default;
     RoundedRectangle(const RoundedRectangle&) = delete;
     RoundedRectangle& operator = (const RoundedRectangle&) = delete;
-
-    xy::Component::Type type() const override;
-
-    void entityUpdate(xy::Entity&, float) override;
-    void handleMessage(const xy::Message&) override;
-
-    void onStart(xy::Entity&) override;
-    //prefer this over the inherited version as it properly
-    //takes into account of entity transform
-    sf::FloatRect globalBounds() const override;
-    sf::FloatRect localBounds() const override;
 
     void setSize(const sf::Vector2f&);
     void setRadius(float);

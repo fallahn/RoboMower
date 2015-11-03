@@ -16,7 +16,7 @@
 #include <xygine/Reports.hpp>
 #include <xygine/SfDrawableComponent.hpp>
 
-#include <components/RoundedRectangle.hpp>
+#include <RoundedRectangle.hpp>
 #include <components/ButtonLogic.hpp>
 #include <components/InstructionBlockLogic.hpp>
 #include <components/StackLogicComponent.hpp>
@@ -27,6 +27,7 @@
 #include <SFML/Window/Mouse.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics/CircleShape.hpp>
+#include <SFML/Graphics/Sprite.hpp>
 
 namespace
 {
@@ -53,25 +54,32 @@ namespace
     const sf::Vector2f stackSize(320.f, 980.f);
 
     const sf::Vector2f trayPosition(430.f, 960.f);
+    const sf::Vector2f traySize(1450.f, 70.f);
 
     const sf::Color fillColour(180u, 40u, 20u, 180u);
     const sf::Color borderColour(15u, 30u, 100u);
 
-    std::unique_ptr<RoundedRectangle> makeButtonBackground(xy::MessageBus& messageBus)
+    const float scrollBarRadius = 8.f;
+
+    std::unique_ptr<xy::SfDrawableComponent<RoundedRectangle>> makeButtonBackground(xy::MessageBus& messageBus)
     {
-        auto rr = std::make_unique<RoundedRectangle>(messageBus, labelSize);
-        rr->setFillColor({ 220u, 240u, 10u, 180u });
-        rr->setOutlineThickness(6.f);
-        rr->setOutlineColor({ 10u, 230u, 10u });
+        auto rr = std::make_unique<xy::SfDrawableComponent<RoundedRectangle>>(messageBus);
+        auto& shape = rr->getDrawable();
+        shape.setFillColor({ 220u, 240u, 10u, 180u });
+        shape.setOutlineThickness(6.f);
+        shape.setOutlineColor({ 10u, 230u, 10u });
+        shape.setSize(labelSize);
         return std::move(rr);
     }
 
-    std::unique_ptr<RoundedRectangle> makeInputBackground(xy::MessageBus& messageBus)
+    std::unique_ptr<xy::SfDrawableComponent<RoundedRectangle>> makeInputBackground(xy::MessageBus& messageBus)
     {
-        auto rr = std::make_unique<RoundedRectangle>(messageBus, inputSize);
-        rr->setFillColor({ 220u, 40u, 210u, 180u });
-        rr->setOutlineThickness(6.f);
-        rr->setOutlineColor({ 10u, 230u, 10u });
+        auto rr = std::make_unique<xy::SfDrawableComponent<RoundedRectangle>>(messageBus);
+        auto& shape = rr->getDrawable();
+        shape.setFillColor({ 220u, 40u, 210u, 180u });
+        shape.setOutlineThickness(6.f);
+        shape.setOutlineColor({ 10u, 230u, 10u });
+        shape.setSize(inputSize);
         return std::move(rr);
     }
 }
@@ -84,13 +92,15 @@ GameUI::GameUI(xy::State::Context sc, xy::Scene& scene)
     m_instructionStack  (nullptr)
 {
     //command list
-    auto rr = std::make_unique<RoundedRectangle>(m_messageBus, sf::Vector2f(stackSize));
-    rr->setFillColor(fillColour);
-    rr->setOutlineThickness(10.f);
-    rr->setOutlineColor(borderColour);
+    auto rr = std::make_unique<xy::SfDrawableComponent<RoundedRectangle>>(m_messageBus);
+    auto& shape = rr->getDrawable();
+    shape.setFillColor(fillColour);
+    shape.setOutlineThickness(10.f);
+    shape.setOutlineColor(borderColour);
+    shape.setSize(stackSize);
 
     auto entity = std::make_unique<xy::Entity>(m_messageBus);
-    entity->addComponent<RoundedRectangle>(rr);
+    entity->addComponent<xy::SfDrawableComponent<RoundedRectangle>>(rr);
     entity->setPosition(stackPosition);
     auto backPanel = m_scene.addEntity(entity, xy::Scene::Layer::FrontFront);
 
@@ -103,13 +113,16 @@ GameUI::GameUI(xy::State::Context sc, xy::Scene& scene)
     backPanel->addChild(subEnt); //backPanel has to be added first so it has a valid scene pointer
 
     //command tray
-    rr = std::make_unique<RoundedRectangle>(m_messageBus, sf::Vector2f(1450.f, 70.f), 20.f);
-    rr->setFillColor(fillColour);
-    rr->setOutlineColor(borderColour);
-    rr->setOutlineThickness(8.f);
+    rr = std::make_unique<xy::SfDrawableComponent<RoundedRectangle>>(m_messageBus);
+    auto& shape2 = rr->getDrawable();
+    shape2.setFillColor(fillColour);
+    shape2.setOutlineColor(borderColour);
+    shape2.setOutlineThickness(8.f);
+    shape2.setSize(traySize);
+    shape2.setRadius(20.f);
 
     entity = std::make_unique<xy::Entity>(m_messageBus);
-    entity->addComponent<RoundedRectangle>(rr);
+    entity->addComponent<xy::SfDrawableComponent<RoundedRectangle>>(rr);
     entity->setPosition(trayPosition);
     m_scene.addEntity(entity, xy::Scene::Layer::FrontFront);
 
@@ -121,7 +134,7 @@ GameUI::GameUI(xy::State::Context sc, xy::Scene& scene)
         entity->setPosition(labelPadding + (i * labelSpacing), labelTop);
         entity->addCommandCategories(CommandCategory::TrayIcon);
         auto rr = makeButtonBackground(m_messageBus);
-        entity->addComponent<RoundedRectangle>(rr);
+        entity->addComponent<xy::SfDrawableComponent<RoundedRectangle>>(rr);
         auto bls = std::make_unique<ButtonLogicScript>(m_messageBus, it->first);
         entity->addComponent<ButtonLogicScript>(bls);
 
@@ -139,17 +152,20 @@ GameUI::GameUI(xy::State::Context sc, xy::Scene& scene)
     }
 
     //scroll bar
-    rr = std::make_unique<RoundedRectangle>(m_messageBus, sf::Vector2f(16.f, stackSize.y), 8.f); //TODO make radius a const
-    rr->setFillColor(fillColour);
-    rr->setOutlineColor(borderColour);
-    rr->setOutlineThickness(3.f);
+    rr = std::make_unique<xy::SfDrawableComponent<RoundedRectangle>>(m_messageBus);
+    auto& shape3 = rr->getDrawable();
+    shape3.setFillColor(fillColour);
+    shape3.setOutlineColor(borderColour);
+    shape3.setOutlineThickness(3.f);
+    shape3.setSize({ scrollBarRadius * 2.f, stackSize.y });
+    shape3.setRadius(scrollBarRadius); //TODO make radius a const
     entity = std::make_unique<xy::Entity>(m_messageBus);
     entity->setPosition(stackPosition + sf::Vector2f(stackSize.x + 20.f, 0.f));
-    entity->addComponent<RoundedRectangle>(rr);
+    entity->addComponent<xy::SfDrawableComponent<RoundedRectangle>>(rr);
 
     auto cd = std::make_unique<xy::SfDrawableComponent<sf::CircleShape>>(m_messageBus);
     auto& circle = cd->getDrawable();
-    circle.setRadius(8.f);
+    circle.setRadius(scrollBarRadius);
     circle.setFillColor(borderColour);
     circle.setOutlineThickness(-1.f);
     circle.setOutlineColor(fillColour);
@@ -168,9 +184,12 @@ GameUI::GameUI(xy::State::Context sc, xy::Scene& scene)
 
 
     //add mouse cursor
-    auto ad = std::make_unique<xy::AnimatedDrawable>(m_messageBus, sc.appInstance.getTexture("assets/images/ui/cursor.png"));
+    auto ad = std::make_unique<xy::SfDrawableComponent<sf::Sprite>>(m_messageBus);
+    auto& sprite = ad->getDrawable();
+    sprite.setTexture(sc.appInstance.getTexture("assets/images/ui/cursor.png"));
+
     entity = std::make_unique<xy::Entity>(m_messageBus);
-    entity->addComponent<xy::AnimatedDrawable>(ad);
+    entity->addComponent<xy::SfDrawableComponent<sf::Sprite>>(ad);
     entity->addCommandCategories(CommandCategory::Cursor);
     entity->setPosition(sc.renderWindow.mapPixelToCoords(sf::Mouse::getPosition(sc.renderWindow)));
 
@@ -233,7 +252,7 @@ void GameUI::handleEvent(const sf::Event& evt)
             cmd.category = CommandCategory::TrayIcon | CommandCategory::InstructionBlock;
             cmd.action = [mousePos](xy::Entity& ent, float)
             {
-                if (ent.getComponent<RoundedRectangle>()->globalBounds().contains(mousePos))
+                if (ent.getComponent<xy::SfDrawableComponent<RoundedRectangle>>()->globalBounds().contains(mousePos))
                 {
                     if (ent.hasCommandCategories(CommandCategory::TrayIcon))
                     {
@@ -334,7 +353,7 @@ void GameUI::addInstructionBlock(const sf::Vector2f& position, const sf::Vector2
     entity->setPosition(position);
     entity->addCommandCategories(CommandCategory::InstructionBlock);
     auto rr = makeButtonBackground(m_messageBus);
-    entity->addComponent<RoundedRectangle>(rr);
+    entity->addComponent<xy::SfDrawableComponent<RoundedRectangle>>(rr);
 
     auto text = std::make_unique<xy::SfDrawableComponent<sf::Text>>(m_messageBus);
     auto& td = text->getDrawable();
@@ -357,7 +376,7 @@ void GameUI::addInstructionBlock(const sf::Vector2f& position, const sf::Vector2
         auto subEnt = std::make_unique<xy::Entity>(m_messageBus);
         subEnt->setPosition({ labelSize.x + 26.f, 0.f });
         auto rr = makeInputBackground(m_messageBus);
-        subEnt->addComponent<RoundedRectangle>(rr);
+        subEnt->addComponent<xy::SfDrawableComponent<RoundedRectangle>>(rr);
      
         //TODO add logic
         

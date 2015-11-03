@@ -5,12 +5,11 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#include <components/RoundedRectangle.hpp>
+#include <RoundedRectangle.hpp>
 
 #include <xygine/MessageBus.hpp>
 #include <xygine/Entity.hpp>
-
-#include <cassert>
+#include <xygine/Assert.hpp>
 
 namespace
 {
@@ -20,47 +19,18 @@ namespace
 }
 
 
-RoundedRectangle::RoundedRectangle(xy::MessageBus& mb, const sf::Vector2f& size, float radius)
-    : xy::Component (mb, this),
-    m_size          (size),
+RoundedRectangle::RoundedRectangle(const sf::Vector2f& size, float radius)
+    : m_size        (size),
     m_cornerRadius  (radius),
     m_minimumSize   (10.f, 10.f)
 {
-    assert(radius > 0 && size.x > 0 && size.y > 0);
+    XY_ASSERT(radius > 0 && size.x > 0 && size.y > 0, "rounded rectangle parameters must be greater than 0");
     
     clampSize();
     update();
 }
 
 //public
-xy::Component::Type RoundedRectangle::type() const
-{
-    return xy::Component::Type::Drawable;
-}
-
-void RoundedRectangle::entityUpdate(xy::Entity& e, float)
-{
-    //TODO dirty flag optimise, or add listener callback to ent
-    m_globalBounds = e.getWorldTransform().transformRect(getGlobalBounds());
-}
-
-void RoundedRectangle::handleMessage(const xy::Message&){}
-
-void RoundedRectangle::onStart(xy::Entity& e)
-{
-    m_globalBounds = e.getWorldTransform().transformRect(getGlobalBounds());
-}
-
-sf::FloatRect RoundedRectangle::globalBounds() const
-{
-    return m_globalBounds;
-}
-
-sf::FloatRect RoundedRectangle::localBounds() const
-{
-    return getLocalBounds();
-}
-
 void RoundedRectangle::setSize(const sf::Vector2f& size)
 {
     m_size = size;
