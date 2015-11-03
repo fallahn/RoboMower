@@ -10,23 +10,23 @@
 #include <xygine/Scene.hpp>
 #include <xygine/Entity.hpp>
 #include <xygine/MessageBus.hpp>
-#include <xygine/TextDrawable.hpp>
 #include <xygine/Util.hpp>
 #include <xygine/AnimatedDrawable.hpp>
 #include <xygine/App.hpp>
 #include <xygine/Reports.hpp>
+#include <xygine/SfDrawableComponent.hpp>
 
 #include <components/RoundedRectangle.hpp>
 #include <components/ButtonLogic.hpp>
 #include <components/InstructionBlockLogic.hpp>
 #include <components/StackLogicComponent.hpp>
-#include <components/CircleDrawable.hpp>
 #include <components/ScrollHandleLogic.hpp>
 #include <CommandCategories.hpp>
 #include <Messages.hpp>
 
 #include <SFML/Window/Mouse.hpp>
 #include <SFML/Window/Event.hpp>
+#include <SFML/Graphics/CircleShape.hpp>
 
 namespace
 {
@@ -125,15 +125,16 @@ GameUI::GameUI(xy::State::Context sc, xy::Scene& scene)
         auto bls = std::make_unique<ButtonLogicScript>(m_messageBus, it->first);
         entity->addComponent<ButtonLogicScript>(bls);
 
-        auto text = std::make_unique<xy::TextDrawable>(m_messageBus);
-        text->setFont(sc.appInstance.getFont("assets/fonts/Console.ttf"));
-        text->setString(it->second);
-        text->setColour(sf::Color::Black);
-        xy::Util::Position::centreOrigin(*text);
+        auto text = std::make_unique<xy::SfDrawableComponent<sf::Text>>(m_messageBus);
+        auto& td = text->getDrawable();
+        td.setFont(sc.appInstance.getFont("assets/fonts/Console.ttf"));
+        td.setString(it->second);
+        td.setColor(sf::Color::Black);
+        xy::Util::Position::centreOrigin(td);
         text->setPosition(labelSize / 2.f);
         text->move(0.f, textOffset);
 
-        entity->addComponent<xy::TextDrawable>(text);
+        entity->addComponent<xy::SfDrawableComponent<sf::Text>>(text);
         m_scene.addEntity(entity, xy::Scene::Layer::FrontFront);
     }
 
@@ -146,14 +147,15 @@ GameUI::GameUI(xy::State::Context sc, xy::Scene& scene)
     entity->setPosition(stackPosition + sf::Vector2f(stackSize.x + 20.f, 0.f));
     entity->addComponent<RoundedRectangle>(rr);
 
-    auto cd = std::make_unique<CircleDrawable>(m_messageBus);
-    cd->setRadius(8.f);
-    cd->setFillColor(borderColour);
-    cd->setOutlineThickness(-1.f);
-    cd->setOutlineColor(fillColour);
+    auto cd = std::make_unique<xy::SfDrawableComponent<sf::CircleShape>>(m_messageBus);
+    auto& circle = cd->getDrawable();
+    circle.setRadius(8.f);
+    circle.setFillColor(borderColour);
+    circle.setOutlineThickness(-1.f);
+    circle.setOutlineColor(fillColour);
 
     subEnt = std::make_unique<xy::Entity>(m_messageBus);
-    subEnt->addComponent<CircleDrawable>(cd);
+    subEnt->addComponent<xy::SfDrawableComponent<sf::CircleShape>>(cd);
 
     auto shl = std::make_unique<ScrollHandleLogic>(m_messageBus);
     shl->setLength(stackSize.y - 8.f);
@@ -171,6 +173,7 @@ GameUI::GameUI(xy::State::Context sc, xy::Scene& scene)
     entity->addComponent<xy::AnimatedDrawable>(ad);
     entity->addCommandCategories(CommandCategory::Cursor);
     entity->setPosition(sc.renderWindow.mapPixelToCoords(sf::Mouse::getPosition(sc.renderWindow)));
+
     m_mouseCursor = m_scene.addEntity(entity, xy::Scene::Layer::UI);
 }
 
@@ -247,7 +250,7 @@ void GameUI::handleEvent(const sf::Event& evt)
             cmd.category = CommandCategory::ScrollHandle;
             cmd.action = [mousePos](xy::Entity& entity, float)
             {
-                if (entity.getComponent<CircleDrawable>()->globalBounds().contains(mousePos))
+                if (entity.getComponent<xy::SfDrawableComponent<sf::CircleShape>>()->globalBounds().contains(mousePos))
                 {
                     entity.getComponent<ScrollHandleLogic>()->setCarried(true);
                 }
@@ -333,15 +336,16 @@ void GameUI::addInstructionBlock(const sf::Vector2f& position, const sf::Vector2
     auto rr = makeButtonBackground(m_messageBus);
     entity->addComponent<RoundedRectangle>(rr);
 
-    auto text = std::make_unique<xy::TextDrawable>(m_messageBus);
-    text->setFont(m_stateContext.appInstance.getFont("assets/fonts/Console.ttf"));
-    text->setString(instructionLabels[instruction]);
-    text->setColour(sf::Color::Black);
-    xy::Util::Position::centreOrigin(*text);
+    auto text = std::make_unique<xy::SfDrawableComponent<sf::Text>>(m_messageBus);
+    auto& td = text->getDrawable();
+    td.setFont(m_stateContext.appInstance.getFont("assets/fonts/Console.ttf"));
+    td.setString(instructionLabels[instruction]);
+    td.setColor(sf::Color::Black);
+    xy::Util::Position::centreOrigin(td);
     text->setPosition(labelSize / 2.f);
     text->move(0.f, textOffset);
 
-    entity->addComponent<xy::TextDrawable>(text);
+    entity->addComponent<xy::SfDrawableComponent<sf::Text>>(text);
 
     auto lc = std::make_unique<InstructionBlockLogic>(m_messageBus, instruction);
     lc->setTarget(position - offset);
@@ -365,6 +369,5 @@ void GameUI::addInstructionBlock(const sf::Vector2f& position, const sf::Vector2
         //TODO add loop wire
     }
 
-    //m_scene.getLayer(xy::Scene::Layer::FrontFront).addChild(entity);
     m_instructionStack->addChild(entity);
 }
