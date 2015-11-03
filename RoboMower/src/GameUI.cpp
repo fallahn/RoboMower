@@ -24,6 +24,10 @@
 #include <CommandCategories.hpp>
 #include <Messages.hpp>
 
+#include <shaders/ShaderIds.hpp>
+#include <shaders/TestShader.hpp>
+#include <xygine/Shaders.hpp>
+
 #include <SFML/Window/Mouse.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics/CircleShape.hpp>
@@ -194,6 +198,16 @@ GameUI::GameUI(xy::State::Context sc, xy::Scene& scene)
     entity->setPosition(sc.renderWindow.mapPixelToCoords(sf::Mouse::getPosition(sc.renderWindow)));
 
     m_mouseCursor = m_scene.addEntity(entity, xy::Scene::Layer::UI);
+
+    m_shaderResource.preload(Shader::Id::Test, xy::Shader::FullPass::vertex, Shader::Testing::fragment);
+    auto& shader = m_shaderResource.get(Shader::Id::Test);
+
+    //TODO wrap this in a function so we can update when window resized
+    auto pos = sc.renderWindow.mapCoordsToPixel(stackPosition); //need to account for view offset
+    auto size = sc.renderWindow.mapCoordsToPixel(stackSize);
+    pos.y += size.y; //because glsl y inversion
+    shader.setParameter("u_position", sf::Vector2f(pos));
+    shader.setParameter("u_size", sf::Vector2f(size));
 }
 
 //public
@@ -353,6 +367,7 @@ void GameUI::addInstructionBlock(const sf::Vector2f& position, const sf::Vector2
     entity->setPosition(position);
     entity->addCommandCategories(CommandCategory::InstructionBlock);
     auto rr = makeButtonBackground(m_messageBus);
+    rr->setShader(&m_shaderResource.get(Shader::Id::Test));
     entity->addComponent<xy::SfDrawableComponent<RoundedRectangle>>(rr);
 
     auto text = std::make_unique<xy::SfDrawableComponent<sf::Text>>(m_messageBus);

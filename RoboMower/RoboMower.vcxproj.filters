@@ -25,6 +25,9 @@
     <Filter Include="Source Files\Components">
       <UniqueIdentifier>{07513dee-5363-4b5f-b0c7-9e190b30aacb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\shaders">
+      <UniqueIdentifier>{e4dcd422-5ebe-4214-ab7f-98d78adf858d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -133,6 +136,12 @@
     </ClInclude>
     <ClInclude Include="include\RoundedRectangle.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\shaders\TestShader.hpp">
+      <Filter>Header Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="include\shaders\ShaderIds.hpp">
+      <Filter>Header Files\shaders</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

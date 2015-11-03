@@ -15,6 +15,7 @@
 #include <InstructionSet.hpp>
 
 #include <xygine/State.hpp>
+#include <xygine/ShaderResource.hpp>
 
 namespace sf
 {
@@ -43,6 +44,8 @@ public:
     void handleMessage(const xy::Message&);
 
 private:
+    xy::ShaderResource m_shaderResource;
+
     xy::State::Context m_stateContext;
     xy::Scene& m_scene;
     xy::MessageBus& m_messageBus;
