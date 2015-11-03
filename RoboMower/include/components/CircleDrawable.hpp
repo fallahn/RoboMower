@@ -12,11 +12,11 @@
 
 #include <xygine/Component.hpp>
 
-class CircleDrawable final : public xy::Component, public sf::CircleShape
+class CircleDrawable final : public xy::Component, public sf::Transformable, public sf::Drawable
 {
 public:
     explicit CircleDrawable(xy::MessageBus&);
-    ~CircleDrawable() = default; //HM. is this right? using pointers to components may not neccesarily properly destroy circleshape
+    ~CircleDrawable() = default;
 
     xy::Component::Type type() const override { return xy::Component::Type::Drawable; }
     void entityUpdate(xy::Entity&, float) override;
@@ -24,10 +24,31 @@ public:
 
     sf::FloatRect globalBounds() const override;
     sf::FloatRect localBounds() const override;
+
+    void setRadius(float);
+    float getRadius() const;
+    void setPointCount(std::size_t);
+    std::size_t getPointCount() const;
+    sf::Vector2f getPoint(std::size_t) const;
+    void setTexture(sf::Texture*, bool = true);
+    void setTextureRect(const sf::IntRect&);
+    void setFillColor(const sf::Color&);
+    void setOutlineColor(const sf::Color&);
+    void setOutlineThickness(float);
+
+    const sf::Texture* getTexture() const;
+    const sf::IntRect& getTextureRect() const;
+    const sf::Color& getFillColor() const;
+    const sf::Color& getOutlineColor() const;
+    float getOutlineThickness() const;
+
+
 private:
     sf::FloatRect m_localBounds;
     sf::FloatRect m_globalBounds;
 
+    sf::CircleShape m_shape;
+    void draw(sf::RenderTarget& rt, sf::RenderStates states) const override;
 };
 
 #endif //CIRCLE_DRAWABLE_HPP_
