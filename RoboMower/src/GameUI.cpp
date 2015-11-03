@@ -128,7 +128,7 @@ GameUI::GameUI(xy::State::Context sc, xy::Scene& scene)
         auto text = std::make_unique<xy::TextDrawable>(m_messageBus);
         text->setFont(sc.appInstance.getFont("assets/fonts/Console.ttf"));
         text->setString(it->second);
-        text->setColor(sf::Color::Black);
+        text->setColour(sf::Color::Black);
         xy::Util::Position::centreOrigin(*text);
         text->setPosition(labelSize / 2.f);
         text->move(0.f, textOffset);
@@ -336,7 +336,7 @@ void GameUI::addInstructionBlock(const sf::Vector2f& position, const sf::Vector2
     auto text = std::make_unique<xy::TextDrawable>(m_messageBus);
     text->setFont(m_stateContext.appInstance.getFont("assets/fonts/Console.ttf"));
     text->setString(instructionLabels[instruction]);
-    text->setColor(sf::Color::Black);
+    text->setColour(sf::Color::Black);
     xy::Util::Position::centreOrigin(*text);
     text->setPosition(labelSize / 2.f);
     text->move(0.f, textOffset);
