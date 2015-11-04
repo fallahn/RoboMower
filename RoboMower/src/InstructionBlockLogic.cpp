@@ -10,6 +10,7 @@
 
 #include <xygine/Entity.hpp>
 #include <xygine/Util.hpp>
+#include <xygine/Reports.hpp>
 
 namespace
 {

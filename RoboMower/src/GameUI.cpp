@@ -316,7 +316,7 @@ void GameUI::handleEvent(const sf::Event& evt)
             cmd.action = [](xy::Entity& entity, float)
             {
                 auto lc = entity.getComponent<InstructionBlockLogic>();
-                lc->setCarried(false);
+                if(lc->carried()) lc->setCarried(false);
             };
             m_scene.sendCommand(cmd);
 

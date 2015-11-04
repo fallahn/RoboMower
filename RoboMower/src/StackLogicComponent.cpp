@@ -86,6 +86,7 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
                         msgData.component->setTargetIndex(i);
                         m_slots[i].targeted = true;
                         msgData.component->setTarget({ area.left, area.top }, false);
+                        REPORT("buns", std::to_string(i));
                     }
 
                     //we need to move out occupier if it exists
