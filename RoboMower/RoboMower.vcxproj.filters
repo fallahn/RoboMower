@@ -78,6 +78,9 @@
     <ClCompile Include="src\RoundedRectangle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\InputWindow.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Game.hpp">
@@ -142,6 +145,9 @@
     </ClInclude>
     <ClInclude Include="include\shaders\CropShader.hpp">
       <Filter>Header Files\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="include\components\InputWindow.hpp">
+      <Filter>Header Files\components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
