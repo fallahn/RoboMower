@@ -201,14 +201,19 @@ GameUI::GameUI(xy::State::Context sc, xy::Scene& scene)
 
 
     //cropping shader
-    m_shaderResource.preload(Shader::Id::Test, xy::Shader::LightRay::vertex, Shader::Testing::fragment);
+    m_shaderResource.preload(Shader::Id::Test, Shader::version + Shader::Testing::vertex,Shader::version + Shader::Testing::fragment);
     auto& shader = m_shaderResource.get(Shader::Id::Test);
 
     auto pos = sc.renderWindow.mapCoordsToPixel(stackPosition, sc.renderWindow.getDefaultView());
     auto size = sc.renderWindow.mapCoordsToPixel(stackSize, sc.renderWindow.getDefaultView());
-    //pos.y += size.y; //because glsl y inversion
+    //pos.y = sc.renderWindow.getSize().y - pos.y; //because glsl y inversion
     shader.setParameter("u_position", sf::Vector2f(pos));
     shader.setParameter("u_size", sf::Vector2f(size));
+
+    m_shaderResource.preload(Shader::Id::TestText, Shader::version + Shader::Testing::vertex, Shader::version + Shader::useTexture + Shader::Testing::fragment);
+    auto& textShader = m_shaderResource.get(Shader::Id::TestText);
+    textShader.setParameter("u_position", sf::Vector2f(pos));
+    textShader.setParameter("u_size", sf::Vector2f(size));
 }
 
 //public
@@ -369,6 +374,7 @@ void GameUI::addInstructionBlock(const sf::Vector2f& position, const sf::Vector2
     entity->addCommandCategories(CommandCategory::InstructionBlock);
     auto rr = makeButtonBackground(m_messageBus);
     rr->setShader(&m_shaderResource.get(Shader::Id::Test));
+    rr->setShaderActive(false);
     entity->addComponent<xy::SfDrawableComponent<RoundedRectangle>>(rr);
 
     auto text = std::make_unique<xy::SfDrawableComponent<sf::Text>>(m_messageBus);
@@ -379,8 +385,8 @@ void GameUI::addInstructionBlock(const sf::Vector2f& position, const sf::Vector2
     xy::Util::Position::centreOrigin(td);
     text->setPosition(labelSize / 2.f);
     text->move(0.f, textOffset);
-    text->setShader(&m_shaderResource.get(Shader::Id::Test));
-
+    text->setShader(&m_shaderResource.get(Shader::Id::TestText));
+    text->setShaderActive(false);
     entity->addComponent<xy::SfDrawableComponent<sf::Text>>(text);
 
     auto lc = std::make_unique<InstructionBlockLogic>(m_messageBus, instruction);
@@ -394,6 +400,7 @@ void GameUI::addInstructionBlock(const sf::Vector2f& position, const sf::Vector2
         subEnt->setPosition({ labelSize.x + 26.f, 0.f });
         auto rr = makeInputBackground(m_messageBus);
         rr->setShader(&m_shaderResource.get(Shader::Id::Test));
+        rr->setShaderActive(false);
         subEnt->addComponent<xy::SfDrawableComponent<RoundedRectangle>>(rr);
      
         //TODO add logic

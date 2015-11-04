@@ -17,6 +17,7 @@
 #include <xygine/Reports.hpp>
 #include <xygine/Scene.hpp>
 #include <xygine/ParticleController.hpp>
+#include <xygine/SfDrawableComponent.hpp>
 
 namespace
 {
@@ -187,6 +188,18 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
                     m_slots[i].instruction = msgData.component->getInstruction();
                     m_slots[i].targeted = false;
                     msgData.component->setStackIndex(i);
+
+                    //send command to enable cropping shader
+                    xy::Command cmd;
+                    cmd.entityID = m_slots[i].occupierID;
+                    cmd.action = [](xy::Entity& entity, float)
+                    {
+                        entity.getComponent<xy::SfDrawableComponent<sf::Text>>()->setShaderActive();
+                        entity.getComponent<xy::SfDrawableComponent<RoundedRectangle>>()->setShaderActive();
+                    };
+                    m_parentEntity->getScene()->sendCommand(cmd);
+
+                    break;
                 }
             }
 
@@ -205,6 +218,16 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
                 m_slots[i].targeted = false;
                 msgData.component->setStackIndex(-1);
                 updateInstructionCount();
+
+                //send command to disable cropping shader
+                xy::Command cmd;
+                cmd.entityID = msgData.component->getParentUID();
+                cmd.action = [](xy::Entity& entity, float)
+                {
+                    entity.getComponent<xy::SfDrawableComponent<sf::Text>>()->setShaderActive(false);
+                    entity.getComponent<xy::SfDrawableComponent<RoundedRectangle>>()->setShaderActive(false);
+                };
+                m_parentEntity->getScene()->sendCommand(cmd);
             }
         }
             break;
