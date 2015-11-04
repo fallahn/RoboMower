@@ -189,13 +189,20 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
                     m_slots[i].targeted = false;
                     msgData.component->setStackIndex(i);
 
+                    bool child = (m_slots[i].instruction != Instruction::EngineOff && m_slots[i].instruction != Instruction::EngineOn);
+
                     //send command to enable cropping shader
                     xy::Command cmd;
                     cmd.entityID = m_slots[i].occupierID;
-                    cmd.action = [](xy::Entity& entity, float)
+                    cmd.action = [child](xy::Entity& entity, float)
                     {
                         entity.getComponent<xy::SfDrawableComponent<sf::Text>>()->setShaderActive();
                         entity.getComponent<xy::SfDrawableComponent<RoundedRectangle>>()->setShaderActive();
+
+                        if (child) //also activate on input box
+                        {
+                            entity.getChildren()[0]->getComponent<xy::SfDrawableComponent<RoundedRectangle>>()->setShaderActive();
+                        }
                     };
                     m_parentEntity->getScene()->sendCommand(cmd);
 
@@ -213,6 +220,8 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
             auto i = msgData.component->getStackIndex();
             if (i >= 0)
             {
+                bool child = (m_slots[i].instruction != Instruction::EngineOff && m_slots[i].instruction != Instruction::EngineOn);
+
                 m_slots[i].occupierID = 0;
                 m_slots[i].instruction = Instruction::NOP;
                 m_slots[i].targeted = false;
@@ -222,10 +231,14 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
                 //send command to disable cropping shader
                 xy::Command cmd;
                 cmd.entityID = msgData.component->getParentUID();
-                cmd.action = [](xy::Entity& entity, float)
+                cmd.action = [child](xy::Entity& entity, float)
                 {
                     entity.getComponent<xy::SfDrawableComponent<sf::Text>>()->setShaderActive(false);
                     entity.getComponent<xy::SfDrawableComponent<RoundedRectangle>>()->setShaderActive(false);
+                    if (child) //also deactivate on input box
+                    {
+                        entity.getChildren()[0]->getComponent<xy::SfDrawableComponent<RoundedRectangle>>()->setShaderActive(false);
+                    }
                 };
                 m_parentEntity->getScene()->sendCommand(cmd);
             }

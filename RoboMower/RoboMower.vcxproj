@@ -108,7 +108,7 @@
     <ClInclude Include="include\Messages.hpp" />
     <ClInclude Include="include\RoundedRectangle.hpp" />
     <ClInclude Include="include\shaders\ShaderIds.hpp" />
-    <ClInclude Include="include\shaders\TestShader.hpp" />
+    <ClInclude Include="include\shaders\CropShader.hpp" />
     <ClInclude Include="include\StateIds.hpp" />
     <ClInclude Include="include\StatsOverlayState.hpp" />
   </ItemGroup>

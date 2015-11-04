@@ -5,8 +5,8 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015
 //==============================================================================
 
-#ifndef TEST_SHADER_HPP_
-#define TEST_SHADER_HPP_
+#ifndef CROP_SHADER_HPP_
+#define CROP_SHADER_HPP_
 
 #include <string>
 
@@ -15,7 +15,7 @@ namespace Shader
     static const std::string version = "#version 120\n";
     static const std::string useTexture = "#define TEXTURE\n";
 
-    namespace Testing
+    namespace Cropping
     {
         static const std::string vertex =
             "void main()\n" \
@@ -51,4 +51,4 @@ namespace Shader
     }
 }
 
-#endif //TEST_SHADER_HPP_
+#endif //CROP_SHADER_HPP_

@@ -137,10 +137,10 @@
     <ClInclude Include="include\RoundedRectangle.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\shaders\TestShader.hpp">
+    <ClInclude Include="include\shaders\ShaderIds.hpp">
       <Filter>Header Files\shaders</Filter>
     </ClInclude>
-    <ClInclude Include="include\shaders\ShaderIds.hpp">
+    <ClInclude Include="include\shaders\CropShader.hpp">
       <Filter>Header Files\shaders</Filter>
     </ClInclude>
   </ItemGroup>

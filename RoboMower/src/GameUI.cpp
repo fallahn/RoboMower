@@ -25,7 +25,7 @@
 #include <Messages.hpp>
 
 #include <shaders/ShaderIds.hpp>
-#include <shaders/TestShader.hpp>
+#include <shaders/CropShader.hpp>
 #include <xygine/Shaders.hpp>
 
 #include <SFML/Window/Mouse.hpp>
@@ -201,7 +201,7 @@ GameUI::GameUI(xy::State::Context sc, xy::Scene& scene)
 
 
     //cropping shader
-    m_shaderResource.preload(Shader::Id::Test, Shader::version + Shader::Testing::vertex,Shader::version + Shader::Testing::fragment);
+    m_shaderResource.preload(Shader::Id::Test, Shader::version + Shader::Cropping::vertex,Shader::version + Shader::Cropping::fragment);
     auto& shader = m_shaderResource.get(Shader::Id::Test);
 
     auto pos = sc.renderWindow.mapCoordsToPixel(stackPosition, sc.renderWindow.getDefaultView());
@@ -210,7 +210,7 @@ GameUI::GameUI(xy::State::Context sc, xy::Scene& scene)
     shader.setParameter("u_position", sf::Vector2f(pos));
     shader.setParameter("u_size", sf::Vector2f(size));
 
-    m_shaderResource.preload(Shader::Id::TestText, Shader::version + Shader::Testing::vertex, Shader::version + Shader::useTexture + Shader::Testing::fragment);
+    m_shaderResource.preload(Shader::Id::TestText, Shader::version + Shader::Cropping::vertex, Shader::version + Shader::useTexture + Shader::Cropping::fragment);
     auto& textShader = m_shaderResource.get(Shader::Id::TestText);
     textShader.setParameter("u_position", sf::Vector2f(pos));
     textShader.setParameter("u_size", sf::Vector2f(size));
