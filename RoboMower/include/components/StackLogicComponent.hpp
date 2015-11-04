@@ -47,7 +47,7 @@ private:
     sf::FloatRect m_localBounds;
 
     xy::Entity* m_parentEntity;
-    //float m_verticalDistance;
+    float m_maxScrollDistance;
     std::size_t m_instructionCount;
 
     void updateInstructionCount();

@@ -111,7 +111,7 @@ GameUI::GameUI(xy::State::Context sc, xy::Scene& scene)
     //the logic is separated from the background so we can scroll it
     auto subEnt = std::make_unique<xy::Entity>(m_messageBus);
     subEnt->addCommandCategories(CommandCategory::InstructionList);
-    auto scl = std::make_unique<StackLogicComponent>(m_messageBus, labelSize, sf::Vector2f(stackSize.x, stackSize.y * 2));
+    auto scl = std::make_unique<StackLogicComponent>(m_messageBus, labelSize, stackSize);
     subEnt->addComponent<StackLogicComponent>(scl);
     m_instructionStack = subEnt.get();
     backPanel->addChild(subEnt); //backPanel has to be added first so it has a valid scene pointer

@@ -32,12 +32,15 @@ StackLogicComponent::StackLogicComponent(xy::MessageBus& mb, const sf::Vector2f&
     m_updateTransform   (true),
     m_localBounds       ({}, bounds),
     m_parentEntity      (nullptr),
+    m_maxScrollDistance (bounds.y),
     m_instructionCount  (0)
 {
     for (auto i = 0u; i < m_slots.size(); ++i)
     {
         m_slots[i].slotLocalArea = { { margin, (i * (slotSize.y + padding)) + (margin * 2.f) }, slotSize };
     }
+    m_localBounds.height = m_slots.back().slotLocalArea.top + slotSize.y + margin;
+    m_maxScrollDistance = m_localBounds.height - m_maxScrollDistance;
 }
 
 //public
@@ -86,7 +89,6 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
                         msgData.component->setTargetIndex(i);
                         m_slots[i].targeted = true;
                         msgData.component->setTarget({ area.left, area.top }, false);
-                        REPORT("buns", std::to_string(i));
                     }
 
                     //we need to move out occupier if it exists
@@ -281,9 +283,7 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
     else if (msg.id == MessageId::ScrollbarMessage)
     {
         auto& msgData = msg.getData<ScrollbarEvent>();
-        const float distance = msgData.position * m_localBounds.height;
-
-        //TODO allow for offset or make this entity a child of background
+        const float distance = msgData.position * m_maxScrollDistance;
 
         xy::Command cmd;
         cmd.category = CommandCategory::InstructionList;
