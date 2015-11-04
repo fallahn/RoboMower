@@ -20,6 +20,7 @@ InstructionBlockLogic::InstructionBlockLogic(xy::MessageBus& mb, Instruction ins
     : Component         (mb, this),
     m_state             (State::Carried),
     m_instruction       (inst),
+    m_targetIndex       (-1),
     m_destroyWhenDone   (true),
     m_stackIndex        (-1),
     m_previousStackindex(-1)
@@ -94,6 +95,16 @@ void InstructionBlockLogic::setTarget(const sf::Vector2f& target, bool destroyWh
 {
     m_target = target;
     m_destroyWhenDone = destroyWhenDone;
+}
+
+void InstructionBlockLogic::setTargetIndex(sf::Int32 idx)
+{
+    m_targetIndex = idx;
+}
+
+sf::Int32 InstructionBlockLogic::getTargetIndex() const
+{
+    return m_targetIndex;
 }
 
 void InstructionBlockLogic::setCursorOffset(const sf::Vector2f& offset)

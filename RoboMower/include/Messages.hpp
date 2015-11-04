@@ -20,7 +20,8 @@ enum MessageId
 {
     TrayIconMessage = xy::Message::Count,
     InstructionBlockMessage,
-    ScrollbarMessage
+    ScrollbarMessage,
+    InputBoxMessage
 };
 
 struct TrayIconEvent
@@ -50,6 +51,15 @@ struct InstructionBlockEvent
 struct ScrollbarEvent
 {
     float position = 0.f;
+};
+
+struct InputBoxEvent
+{
+    enum
+    {
+        Clicked
+    }action;
+    sf::Uint64 entityId;
 };
 
 #endif //MESSAGE_HPP_

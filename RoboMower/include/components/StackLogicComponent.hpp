@@ -47,12 +47,10 @@ private:
     sf::FloatRect m_localBounds;
 
     xy::Entity* m_parentEntity;
-    float m_verticalDistance;
+    //float m_verticalDistance;
     std::size_t m_instructionCount;
 
     void updateInstructionCount();
-    sf::Vector2f getNextSlot() const; //down
-    sf::Vector2f getPreviousSlot() const;//up
 };
 
 

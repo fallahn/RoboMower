@@ -32,6 +32,9 @@ public:
     bool carried() const;
 
     void setTarget(const sf::Vector2f&, bool destroyWhenDone = true);
+    void setTargetIndex(sf::Int32);
+    sf::Int32 getTargetIndex() const;
+
     void setCursorOffset(const sf::Vector2f&);
     const sf::Vector2f& getCursorOffset() const;
 
@@ -49,6 +52,8 @@ private:
 
     Instruction m_instruction;
     sf::Vector2f m_target;
+    sf::Int32 m_targetIndex;
+
     sf::Vector2f m_cursorOffset;
     bool m_destroyWhenDone;
 

@@ -16,8 +16,8 @@ namespace Shader
 {
     enum Id
     {
-        Test = xy::Shader::Count,
-        TestText
+        Crop = xy::Shader::Count,
+        CropText
     };
 }
 

@@ -17,7 +17,8 @@ enum CommandCategory
     InstructionBlock   = 0x4,
     ParticleController = 0x8,
     InstructionList    = 0x10,
-    ScrollHandle       = 0x20
+    ScrollHandle       = 0x20,
+    InputBox           = 0x40
 };
 
 #endif //COMMAND_CATEGORIES_HPP_

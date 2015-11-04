@@ -32,16 +32,12 @@ StackLogicComponent::StackLogicComponent(xy::MessageBus& mb, const sf::Vector2f&
     m_updateTransform   (true),
     m_localBounds       ({}, bounds),
     m_parentEntity      (nullptr),
-    m_verticalDistance  (0.f),
     m_instructionCount  (0)
 {
     for (auto i = 0u; i < m_slots.size(); ++i)
     {
         m_slots[i].slotLocalArea = { { margin, (i * (slotSize.y + padding)) + (margin * 2.f) }, slotSize };
     }
-
-    m_verticalDistance = m_slots[1].slotLocalArea.top - m_slots[0].slotLocalArea.top;
-    //LOG("vertical distance: " + std::to_string(m_verticalDistance), xy::Logger::Type::Info);
 }
 
 //public
@@ -82,33 +78,46 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
             {
                 const auto& area = m_slots[i].slotArea;
                 if (area.contains(msgData.position) && !m_slots[i].targeted)
-                {
-                    msgData.component->setTarget({ area.left, area.top }, false);
-                    m_slots[i].targeted = true;
-                    if (m_slots[i].occupierID != 0)
+                {                   
+                    auto targetIdx = msgData.component->getTargetIndex();
+                    if (targetIdx != i)
+                    {
+                        if (targetIdx > -1) m_slots[targetIdx].targeted = false;
+                        msgData.component->setTargetIndex(i);
+                        m_slots[i].targeted = true;
+                        msgData.component->setTarget({ area.left, area.top }, false);
+                    }
+
+                    //we need to move out occupier if it exists
+                    if (m_slots[i].occupierID != 0) 
                     {
                         //check previous slot is empty and move any icons up
                         if (i > 0 && m_slots[i - 1].occupierID == 0)
                         {
-                            xy::Command cmd;
-                            cmd.entityID = m_slots[i].occupierID;
-                            cmd.action = [this](xy::Entity& entity, float)
+                            auto idx = i - 1;
                             {
-                                auto ib = entity.getComponent<InstructionBlockLogic>();
-                                XY_ASSERT(ib, "component doesn't exist");
-                                ib->setTarget(entity.getWorldPosition() + sf::Vector2f(0.f, -m_verticalDistance), false);
-                                ib->setCarried(false);
-                            };
-                            m_parentEntity->getScene()->sendCommand(cmd);
-                            m_slots[i].occupierID = 0;
-                            m_slots[i - 1].targeted = true;
+                                sf::Vector2f targetPos(m_slots[idx].slotArea.left, m_slots[idx].slotArea.top);
+                                
+                                xy::Command cmd;
+                                cmd.entityID = m_slots[i].occupierID;
+                                cmd.action = [targetPos](xy::Entity& entity, float)
+                                {
+                                    auto ib = entity.getComponent<InstructionBlockLogic>();
+                                    XY_ASSERT(ib, "component doesn't exist");
+                                    ib->setTarget(targetPos, false);
+                                    ib->setCarried(false);
+                                };
+                                m_parentEntity->getScene()->sendCommand(cmd);
+                                m_slots[i].occupierID = 0;
+                                m_slots[idx].targeted = true;
+                            }
                         }
                         else
                         {
                             //move existing instruction tabs down
                             for (auto j = i; j < m_slots.size(); ++j)
                             {
-                                if (m_slots[j].occupierID == 0) break;
+                                if (m_slots[j].occupierID == 0) break; //got to end of occupied slots
 
                                 xy::Command cmd;
                                 cmd.entityID = m_slots[j].occupierID;
@@ -116,14 +125,16 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
                                 if (j < m_slots.size() - 1)
                                 {
                                     //safe to move down
-                                    cmd.action = [this](xy::Entity& entity, float)
+                                    auto idx = j + 1;
+                                    sf::Vector2f targetPos(m_slots[idx].slotArea.left, m_slots[idx].slotArea.top);
+                                    cmd.action = [targetPos](xy::Entity& entity, float)
                                     {
                                         auto ib = entity.getComponent<InstructionBlockLogic>();
                                         XY_ASSERT(ib, "component doesn't exist");
-                                        ib->setTarget(entity.getWorldPosition() + sf::Vector2f(0.f, m_verticalDistance), false);
+                                        ib->setTarget(targetPos, false);
                                         ib->setCarried(false);
                                     };
-                                    m_slots[i + 1].targeted = true;
+                                    m_slots[j + 1].targeted = true;
                                 }
                                 else
                                 {
@@ -159,13 +170,15 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
                         //block was dragged off stack so realign remaining
                         for (auto i = idx + 1; i < maxInstructions; ++i)
                         {
+                            sf::Vector2f targetPos(m_slots[i - 1].slotArea.left, m_slots[i - 1].slotArea.top);
+                            
                             xy::Command cmd;
                             cmd.entityID = m_slots[i].occupierID;
-                            cmd.action = [this](xy::Entity& entity, float)
+                            cmd.action = [targetPos](xy::Entity& entity, float)
                             {
                                 auto ib = entity.getComponent<InstructionBlockLogic>();
                                 XY_ASSERT(ib, "component doesn't exist");
-                                ib->setTarget(entity.getWorldPosition() + sf::Vector2f(0.f, -m_verticalDistance), false);
+                                ib->setTarget(targetPos, false);
                                 ib->setCarried(false);
                             };
                             m_parentEntity->getScene()->sendCommand(cmd);
@@ -201,7 +214,9 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
 
                         if (child) //also activate on input box
                         {
-                            entity.getChildren()[0]->getComponent<xy::SfDrawableComponent<RoundedRectangle>>()->setShaderActive();
+                            auto& chent = *entity.getChildren()[0];
+                            chent.getComponent<xy::SfDrawableComponent<RoundedRectangle>>()->setShaderActive();
+                            chent.getComponent<xy::SfDrawableComponent<sf::Text>>()->setShaderActive();
                         }
                     };
                     m_parentEntity->getScene()->sendCommand(cmd);
@@ -237,7 +252,9 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
                     entity.getComponent<xy::SfDrawableComponent<RoundedRectangle>>()->setShaderActive(false);
                     if (child) //also deactivate on input box
                     {
-                        entity.getChildren()[0]->getComponent<xy::SfDrawableComponent<RoundedRectangle>>()->setShaderActive(false);
+                        auto& chent = *entity.getChildren()[0];
+                        chent.getComponent<xy::SfDrawableComponent<RoundedRectangle>>()->setShaderActive(false);
+                        chent.getComponent<xy::SfDrawableComponent<sf::Text>>()->setShaderActive(false);
                     }
                 };
                 m_parentEntity->getScene()->sendCommand(cmd);
@@ -297,32 +314,4 @@ void StackLogicComponent::updateInstructionCount()
     }
 
     REPORT("Instruction Count", std::to_string(m_instructionCount));
-}
-
-sf::Vector2f StackLogicComponent::getNextSlot() const
-{
-    //start at the end and work up to get farthest slot
-    for (auto it = m_slots.rbegin(); it != m_slots.rend(); ++it)
-    {
-        if (it->occupierID == 0 && !it->targeted)
-        {
-            return{ it->slotArea.left, it->slotArea.top };
-        }
-    }
-    
-    return{};
-}
-
-sf::Vector2f StackLogicComponent::getPreviousSlot() const
-{
-    //start at the beginning and work down to get farthest slot
-    for (const auto& s : m_slots)
-    {
-        if (s.occupierID == 0 && !s.targeted)
-        {
-            return{ s.slotArea.left, s.slotArea.top };
-        }
-    }
-
-    return{};
 }

@@ -162,7 +162,7 @@ GameUI::GameUI(xy::State::Context sc, xy::Scene& scene)
     shape3.setOutlineColor(borderColour);
     shape3.setOutlineThickness(3.f);
     shape3.setSize({ scrollBarRadius * 2.f, stackSize.y });
-    shape3.setRadius(scrollBarRadius); //TODO make radius a const
+    shape3.setRadius(scrollBarRadius);
     entity = std::make_unique<xy::Entity>(m_messageBus);
     entity->setPosition(stackPosition + sf::Vector2f(stackSize.x + 20.f, 0.f));
     entity->addComponent<xy::SfDrawableComponent<RoundedRectangle>>(rr);
@@ -201,8 +201,8 @@ GameUI::GameUI(xy::State::Context sc, xy::Scene& scene)
 
 
     //cropping shader
-    m_shaderResource.preload(Shader::Id::Test, Shader::version + Shader::Cropping::vertex,Shader::version + Shader::Cropping::fragment);
-    auto& shader = m_shaderResource.get(Shader::Id::Test);
+    m_shaderResource.preload(Shader::Id::Crop, Shader::version + Shader::Cropping::vertex,Shader::version + Shader::Cropping::fragment);
+    auto& shader = m_shaderResource.get(Shader::Id::Crop);
 
     auto pos = sc.renderWindow.mapCoordsToPixel(stackPosition, sc.renderWindow.getDefaultView());
     auto size = sc.renderWindow.mapCoordsToPixel(stackSize, sc.renderWindow.getDefaultView());
@@ -210,8 +210,8 @@ GameUI::GameUI(xy::State::Context sc, xy::Scene& scene)
     shader.setParameter("u_position", sf::Vector2f(pos));
     shader.setParameter("u_size", sf::Vector2f(size));
 
-    m_shaderResource.preload(Shader::Id::TestText, Shader::version + Shader::Cropping::vertex, Shader::version + Shader::useTexture + Shader::Cropping::fragment);
-    auto& textShader = m_shaderResource.get(Shader::Id::TestText);
+    m_shaderResource.preload(Shader::Id::CropText, Shader::version + Shader::Cropping::vertex, Shader::version + Shader::useTexture + Shader::Cropping::fragment);
+    auto& textShader = m_shaderResource.get(Shader::Id::CropText);
     textShader.setParameter("u_position", sf::Vector2f(pos));
     textShader.setParameter("u_size", sf::Vector2f(size));
 }
@@ -252,7 +252,7 @@ void GameUI::update(float dt, const sf::Vector2f& mousePos)
             //raise a scrolled message
             auto msg = m_messageBus.post<ScrollbarEvent>(MessageId::ScrollbarMessage);
             msg->position = entity.getComponent<ScrollHandleLogic>()->getPosition();
-            REPORT("Scroll Position", std::to_string(msg->position));
+            //REPORT("Scroll Position", std::to_string(msg->position));
         }
     };
     m_scene.sendCommand(dragCommand);
@@ -269,18 +269,24 @@ void GameUI::handleEvent(const sf::Event& evt)
 
             //check tray icons and instruction blocks, and pick up if necessary
             xy::Command cmd;
-            cmd.category = CommandCategory::TrayIcon | CommandCategory::InstructionBlock;
-            cmd.action = [mousePos](xy::Entity& ent, float)
+            cmd.category = CommandCategory::TrayIcon | CommandCategory::InstructionBlock | CommandCategory::InputBox;
+            cmd.action = [this, mousePos](xy::Entity& ent, float)
             {
                 if (ent.getComponent<xy::SfDrawableComponent<RoundedRectangle>>()->globalBounds().contains(mousePos))
-                {
+                {                    
                     if (ent.hasCommandCategories(CommandCategory::TrayIcon))
                     {
                         ent.getComponent<ButtonLogicScript>()->doClick(mousePos, mousePos - ent.getPosition());
                     }
-                    else
+                    else if(ent.hasCommandCategories(CommandCategory::InstructionBlock))
                     {
                         ent.getComponent<InstructionBlockLogic>()->setCarried(true);
+                    }
+                    else
+                    {
+                        auto msg = m_messageBus.post<InputBoxEvent>(MessageId::InputBoxMessage);
+                        msg->action = InputBoxEvent::Clicked;
+                        msg->entityId = ent.getUID();
                     }
                 }
             };
@@ -362,6 +368,13 @@ void GameUI::handleMessage(const xy::Message& msg)
             addInstructionBlock({ msgData.absX, msgData.absY }, { msgData.relX, msgData.relY }, msgData.instruction);
     }
     break;
+    case MessageId::InputBoxMessage:
+    {
+        //TODO create an input box and place on screen
+        //TODO how to consume input neatly?
+        LOG("clicked input", xy::Logger::Type::Info);
+    }
+    break;
     default: break;
     }
 }
@@ -373,7 +386,7 @@ void GameUI::addInstructionBlock(const sf::Vector2f& position, const sf::Vector2
     entity->setPosition(position);
     entity->addCommandCategories(CommandCategory::InstructionBlock);
     auto rr = makeButtonBackground(m_messageBus);
-    rr->setShader(&m_shaderResource.get(Shader::Id::Test));
+    rr->setShader(&m_shaderResource.get(Shader::Id::Crop));
     rr->setShaderActive(false);
     entity->addComponent<xy::SfDrawableComponent<RoundedRectangle>>(rr);
 
@@ -385,7 +398,7 @@ void GameUI::addInstructionBlock(const sf::Vector2f& position, const sf::Vector2
     xy::Util::Position::centreOrigin(td);
     text->setPosition(labelSize / 2.f);
     text->move(0.f, textOffset);
-    text->setShader(&m_shaderResource.get(Shader::Id::TestText));
+    text->setShader(&m_shaderResource.get(Shader::Id::CropText));
     text->setShaderActive(false);
     entity->addComponent<xy::SfDrawableComponent<sf::Text>>(text);
 
@@ -398,11 +411,23 @@ void GameUI::addInstructionBlock(const sf::Vector2f& position, const sf::Vector2
     {
         auto subEnt = std::make_unique<xy::Entity>(m_messageBus);
         subEnt->setPosition({ labelSize.x + 26.f, 0.f });
-        auto rr = makeInputBackground(m_messageBus);
-        rr->setShader(&m_shaderResource.get(Shader::Id::Test));
+        subEnt->addCommandCategories(CommandCategory::InputBox);
+        rr = makeInputBackground(m_messageBus);
+        rr->setShader(&m_shaderResource.get(Shader::Id::Crop));
         rr->setShaderActive(false);
         subEnt->addComponent<xy::SfDrawableComponent<RoundedRectangle>>(rr);
      
+        text = std::make_unique<xy::SfDrawableComponent<sf::Text>>(m_messageBus);
+        auto& td = text->getDrawable();
+        td.setFont(m_stateContext.appInstance.getFont("assets/fonts/Console.ttf"));
+        td.setString("0");
+        xy::Util::Position::centreOrigin(td);
+        text->setPosition(inputSize / 2.f);
+        text->move(0.f, textOffset);
+        text->setShader(&m_shaderResource.get(Shader::Id::CropText));
+        text->setShaderActive(false);
+        subEnt->addComponent<xy::SfDrawableComponent<sf::Text>>(text);
+
         //TODO add logic
         
         entity->addChild(subEnt);
