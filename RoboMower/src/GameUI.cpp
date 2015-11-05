@@ -401,7 +401,23 @@ void GameUI::handleMessage(const xy::Message& msg)
     case MessageId::InputBoxMessage:
     {
         auto msgData = msg.getData<InputBoxEvent>();
-        if(msgData.action == InputBoxEvent::Clicked) showInputWindow(msgData.entityId);
+        if (msgData.action == InputBoxEvent::Clicked)
+        {
+            showInputWindow(msgData.entityId);
+        }
+        else if (msgData.action == InputBoxEvent::WindowClosed)
+        {
+            auto value = msgData.value;
+            xy::Command cmd;
+            cmd.entityID = msgData.entityId;
+            cmd.action = [value](xy::Entity& entity, float)
+            {
+                auto& text = entity.getComponent<xy::SfDrawableComponent<sf::Text>>()->getDrawable();
+                text.setString(std::to_string(value));
+                xy::Util::Position::centreOrigin(text);
+            };
+            m_scene.sendCommand(cmd);
+        }
     }
     break;
     default: break;

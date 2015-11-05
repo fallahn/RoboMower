@@ -38,11 +38,11 @@ InputWindow::InputWindow(xy::MessageBus& mb)
     m_background.setOutlineColor(borderColour);
     xy::Util::Position::centreOrigin(m_background);
 
-    m_text.setPosition(-50.f, -60.f);
+    m_text.setPosition(-56.f, -60.f);
     m_text.setString("0");
 
     m_cursor.setSize({ 10.f, 58.f });
-    m_cursor.setPosition(4.f, cursorTop);
+    m_cursor.setPosition(-1.f, cursorTop);
 }
 
 InputWindow::~InputWindow()
