@@ -51,7 +51,9 @@ private:
     xy::MessageBus& m_messageBus;
     xy::Entity* m_mouseCursor;
     xy::Entity* m_instructionStack;
+    bool m_inputWindowVisible;
     void addInstructionBlock(const sf::Vector2f& position, const sf::Vector2f& offset, Instruction);
+    void showInputWindow(sf::Uint64 destId);
 };
 
 #endif //GAME_UO_HPP_

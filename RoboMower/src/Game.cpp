@@ -45,7 +45,7 @@ void Game::handleEvent(const sf::Event& evt)
         switch (evt.key.code)
         {
 #ifdef _DEBUG_
-        case sf::Keyboard::BackSpace:
+        case sf::Keyboard::PageUp:
             m_stateStack.pushState(States::ID::Stats);
             break;
 #endif //_DEBUG_

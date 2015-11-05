@@ -57,9 +57,11 @@ struct InputBoxEvent
 {
     enum
     {
-        Clicked
+        Clicked,
+        WindowClosed
     }action;
-    sf::Uint64 entityId;
+    sf::Uint64 entityId = 0;
+    sf::Uint32 value = 0;
 };
 
 #endif //MESSAGE_HPP_

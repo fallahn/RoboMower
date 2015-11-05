@@ -16,12 +16,15 @@
 
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/Text.hpp>
+#include <SFML/System/Clock.hpp>
+
+#include <string>
 
 class InputWindow final : public xy::Component, public sf::Drawable
 {
 public:
     InputWindow(xy::MessageBus&);
-    ~InputWindow() = default;
+    ~InputWindow();
     InputWindow(const InputWindow&) = delete;
     InputWindow& operator = (const InputWindow&) = delete;
 
@@ -33,11 +36,24 @@ public:
     void setFont(const sf::Font&);
     void setCharacterSize(sf::Uint32);
 
+    void setTargetId(sf::Uint64);
+
+    sf::FloatRect globalBounds() const override;
+
 private:
 
     RoundedRectangle m_background;
     sf::RectangleShape m_cursor;
     sf::Text m_text;
+    sf::Uint64 m_targetId;
+    sf::FloatRect m_globalBounds;
+    sf::Int32 m_value;
+    std::string m_strValue;
+
+    sf::Clock m_blinkClock;
+    bool m_blink;
+
+    bool m_close;
 
     void draw(sf::RenderTarget&, sf::RenderStates) const override;
 };

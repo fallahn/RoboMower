@@ -21,6 +21,7 @@
 #include <components/InstructionBlockLogic.hpp>
 #include <components/StackLogicComponent.hpp>
 #include <components/ScrollHandleLogic.hpp>
+#include <components/InputWindow.hpp>
 #include <CommandCategories.hpp>
 #include <Messages.hpp>
 
@@ -93,7 +94,8 @@ GameUI::GameUI(xy::State::Context sc, xy::Scene& scene)
     m_scene             (scene),
     m_messageBus        (sc.appInstance.getMessageBus()),
     m_mouseCursor       (nullptr),
-    m_instructionStack  (nullptr)
+    m_instructionStack  (nullptr),
+    m_inputWindowVisible(false)
 {
     //command list
     auto rr = std::make_unique<xy::SfDrawableComponent<RoundedRectangle>>(m_messageBus);
@@ -259,9 +261,22 @@ void GameUI::update(float dt, const sf::Vector2f& mousePos)
 }
 
 void GameUI::handleEvent(const sf::Event& evt)
-{
+{ 
     switch (evt.type)
     {
+    case sf::Event::TextEntered:
+    case sf::Event::KeyPressed:
+    {
+        xy::Command cmd;
+        cmd.category = CommandCategory::InputPopup;
+        cmd.action = [evt](xy::Entity& entity, float)
+        {
+            entity.getComponent<InputWindow>()->handleTextEvent(evt);
+        };
+        m_scene.sendCommand(cmd);
+    }
+        
+        break;
     case sf::Event::MouseButtonPressed:
         if (evt.mouseButton.button == sf::Mouse::Left)
         {
@@ -301,6 +316,21 @@ void GameUI::handleEvent(const sf::Event& evt)
                 }
             };
             m_scene.sendCommand(cmd);
+
+            if (m_inputWindowVisible)
+            {
+                cmd.category = CommandCategory::InputPopup;
+                cmd.action = [this, mousePos](xy::Entity& entity, float)
+                {
+                    if (!entity.getComponent<InputWindow>()->globalBounds().contains(mousePos))
+                    {
+                        //TODO submit window value first?
+                        entity.destroy();
+                        m_inputWindowVisible = false;
+                    }
+                };
+                m_scene.sendCommand(cmd);
+            }
         }
         else if (evt.mouseButton.button == sf::Mouse::Right)
         {
@@ -370,9 +400,8 @@ void GameUI::handleMessage(const xy::Message& msg)
     break;
     case MessageId::InputBoxMessage:
     {
-        //TODO create an input box and place on screen
-        //TODO how to consume input neatly?
-        LOG("clicked input", xy::Logger::Type::Info);
+        auto msgData = msg.getData<InputBoxEvent>();
+        if(msgData.action == InputBoxEvent::Clicked) showInputWindow(msgData.entityId);
     }
     break;
     default: break;
@@ -439,4 +468,19 @@ void GameUI::addInstructionBlock(const sf::Vector2f& position, const sf::Vector2
     }
 
     m_instructionStack->addChild(entity);
+}
+
+void GameUI::showInputWindow(sf::Uint64 destId)
+{
+    auto entity = std::make_unique<xy::Entity>(m_messageBus);
+    entity->setWorldPosition({ 960.f, 540.f });
+    entity->addCommandCategories(CommandCategory::InputPopup);
+    auto inputWindow = std::make_unique<InputWindow>(m_messageBus);
+    inputWindow->setTargetId(destId);
+    inputWindow->setFont(m_stateContext.appInstance.getFont("assets/fonts/Console.ttf"));
+    inputWindow->setCharacterSize(80u);
+    entity->addComponent<InputWindow>(inputWindow);
+    m_scene.addEntity(entity, xy::Scene::Layer::FrontFront);
+
+    m_inputWindowVisible = true;
 }
