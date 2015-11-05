@@ -72,7 +72,7 @@ bool StatsOverlayState::handleEvent(const sf::Event& evt)
     {
         switch (evt.key.code)
         {
-        case sf::Keyboard::BackSpace:
+        case sf::Keyboard::PageUp:
             requestStackPop();
             break;
         default:break;
