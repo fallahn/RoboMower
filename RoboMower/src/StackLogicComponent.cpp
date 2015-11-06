@@ -7,6 +7,7 @@
 
 #include <components/StackLogicComponent.hpp>
 #include <components/InstructionBlockLogic.hpp>
+#include <components/LoopHandle.hpp>
 #include <RoundedRectangle.hpp>
 #include <Messages.hpp>
 #include <CommandCategories.hpp>
@@ -206,11 +207,12 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
                     msgData.component->setStackIndex(i);
 
                     bool child = (m_slots[i].instruction != Instruction::EngineOff && m_slots[i].instruction != Instruction::EngineOn);
+                    auto instruction = m_slots[i].instruction;
 
                     //send command to enable cropping shader
                     xy::Command cmd;
                     cmd.entityID = m_slots[i].occupierID;
-                    cmd.action = [child](xy::Entity& entity, float)
+                    cmd.action = [child, instruction](xy::Entity& entity, float)
                     {
                         entity.getComponent<xy::SfDrawableComponent<sf::Text>>()->setShaderActive();
                         entity.getComponent<xy::SfDrawableComponent<RoundedRectangle>>()->setShaderActive();
@@ -220,6 +222,18 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
                             auto& chent = *entity.getChildren()[0];
                             chent.getComponent<xy::SfDrawableComponent<RoundedRectangle>>()->setShaderActive();
                             chent.getComponent<xy::SfDrawableComponent<sf::Text>>()->setShaderActive();
+                            
+                            //update the handle if a loop instruction                            
+                            sf::Int32 idx = -1;
+                            if ((instruction == Instruction::Loop) && (idx = entity.getComponent<InstructionBlockLogic>()->getStackIndex()) > 0)
+                            {
+                                auto lh = chent.getComponent<LoopHandle>();
+                                lh->setEnabled(true);
+                                if (lh->getSize() > idx)
+                                {
+                                    lh->setSize(idx);
+                                }
+                            }
                         }
                     };
                     m_parentEntity->getScene()->sendCommand(cmd);
@@ -239,6 +253,7 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
             if (i >= 0)
             {
                 bool child = (m_slots[i].instruction != Instruction::EngineOff && m_slots[i].instruction != Instruction::EngineOn);
+                auto instruction = m_slots[i].instruction;
 
                 m_slots[i].occupierID = 0;
                 m_slots[i].instruction = Instruction::NOP;
@@ -249,7 +264,7 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
                 //send command to disable cropping shader
                 xy::Command cmd;
                 cmd.entityID = msgData.component->getParentUID();
-                cmd.action = [child](xy::Entity& entity, float)
+                cmd.action = [child, instruction](xy::Entity& entity, float)
                 {
                     entity.getComponent<xy::SfDrawableComponent<sf::Text>>()->setShaderActive(false);
                     entity.getComponent<xy::SfDrawableComponent<RoundedRectangle>>()->setShaderActive(false);
@@ -258,6 +273,10 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
                         auto& chent = *entity.getChildren()[0];
                         chent.getComponent<xy::SfDrawableComponent<RoundedRectangle>>()->setShaderActive(false);
                         chent.getComponent<xy::SfDrawableComponent<sf::Text>>()->setShaderActive(false);
+                        if (instruction == Instruction::Loop)
+                        {
+                            chent.getComponent<LoopHandle>()->setEnabled(false);
+                        }
                     }
                 };
                 m_parentEntity->getScene()->sendCommand(cmd);

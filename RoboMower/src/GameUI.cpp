@@ -22,6 +22,7 @@
 #include <components/StackLogicComponent.hpp>
 #include <components/ScrollHandleLogic.hpp>
 #include <components/InputWindow.hpp>
+#include <components/LoopHandle.hpp>
 #include <CommandCategories.hpp>
 #include <Messages.hpp>
 
@@ -65,6 +66,8 @@ namespace
     const sf::Color borderColour(15u, 30u, 100u);
 
     const float scrollBarRadius = 8.f;
+
+    const float inputBoxSpacing = 26.f;
 
     std::unique_ptr<xy::SfDrawableComponent<RoundedRectangle>> makeButtonBackground(xy::MessageBus& messageBus)
     {
@@ -455,7 +458,7 @@ void GameUI::addInstructionBlock(const sf::Vector2f& position, const sf::Vector2
     if (instruction != Instruction::EngineOff && instruction != Instruction::EngineOn)
     {
         auto subEnt = std::make_unique<xy::Entity>(m_messageBus);
-        subEnt->setPosition({ labelSize.x + 26.f, 0.f });
+        subEnt->setPosition({ labelSize.x + inputBoxSpacing, 0.f });
         subEnt->addCommandCategories(CommandCategory::InputBox);
         rr = makeInputBackground(m_messageBus);
         rr->setShader(&m_shaderResource.get(Shader::Id::Crop));
@@ -472,15 +475,18 @@ void GameUI::addInstructionBlock(const sf::Vector2f& position, const sf::Vector2
         text->setShader(&m_shaderResource.get(Shader::Id::CropText));
         text->setShaderActive(false);
         subEnt->addComponent<xy::SfDrawableComponent<sf::Text>>(text);
-
-        //TODO add logic
         
         entity->addChild(subEnt);
     }
 
     if (instruction == Instruction::Loop)
     {
-        //TODO add loop wire
+        //add loop wire
+        auto& child = entity->getChildren()[0];
+        auto loop = std::make_unique<LoopHandle>(m_messageBus, m_stateContext.appInstance.getTexture("assets/images/loop_handle.png"), labelSize.y + 22.f); //TODO get the padding value from stack
+        //loop->setEnabled(true);
+        loop->setPosition(-(labelSize.x + inputBoxSpacing), 0.f);
+        child->addComponent<LoopHandle>(loop);
     }
 
     m_instructionStack->addChild(entity);

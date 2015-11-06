@@ -78,6 +78,7 @@
     <ClCompile Include="src\GameUI.cpp" />
     <ClCompile Include="src\InputWindow.cpp" />
     <ClCompile Include="src\InstructionBlockLogic.cpp" />
+    <ClCompile Include="src\LoopHandle.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\MenuBackgroundState.cpp" />
     <ClCompile Include="src\MenuJoinState.cpp" />
@@ -95,6 +96,7 @@
     <ClInclude Include="include\components\ButtonLogic.hpp" />
     <ClInclude Include="include\components\InputWindow.hpp" />
     <ClInclude Include="include\components\InstructionBlockLogic.hpp" />
+    <ClInclude Include="include\components\LoopHandle.hpp" />
     <ClInclude Include="include\components\ScrollHandleLogic.hpp" />
     <ClInclude Include="include\components\StackLogicComponent.hpp" />
     <ClInclude Include="include\Game.hpp" />

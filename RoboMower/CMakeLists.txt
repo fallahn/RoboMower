@@ -68,12 +68,12 @@ include(${xygine_DIR}/CMakeLists.txt)
 
 set(SOURCE
   src/ButtonLogic.cpp
-# src/CircleDrawable.cpp
   src/Game.cpp
   src/GameState.cpp
   src/GameUI.cpp
   src/InputWindow.cpp
   src/InstructionBlockLogic.cpp
+  src/LoopHandle.cpp
   src/main.cpp
   src/MenuBackgroundState.cpp
   src/MenuJoinState.cpp
