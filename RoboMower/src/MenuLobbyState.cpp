@@ -25,11 +25,11 @@ namespace
 MenuLobbyState::MenuLobbyState(xy::StateStack& stack, Context context)
     : State                 (stack, context),
     m_messageBus            (context.appInstance.getMessageBus()),
-    m_font                  (context.appInstance.getFont("dfg")),
+    m_font                  (m_fontResource.get("dfg")),
     m_socket                (&context.appInstance.getSocket()),
     m_timeSinceLastPacket   (0.f)
 {
-    m_cursorSprite.setTexture(context.appInstance.getTexture("assets/images/ui/cursor.png"));
+    m_cursorSprite.setTexture(m_textureResource.get("assets/images/ui/cursor.png"));
     m_cursorSprite.setPosition(context.renderWindow.mapPixelToCoords(sf::Mouse::getPosition(context.renderWindow)));
     buildMenu();
 
@@ -159,11 +159,11 @@ void MenuLobbyState::handlePacket(sf::Packet& packet)
 
 void MenuLobbyState::buildMenu()
 {
-    const auto& font = getContext().appInstance.getFont("flaps");
+    const auto& font = m_fontResource.get("flaps");
     
-    auto startButton = std::make_shared<xy::ui::Button>(font, getContext().appInstance.getTexture("assets/images/ui/button.png"));
+    auto startButton = std::make_shared<xy::UI::Button>(font, m_textureResource.get("assets/images/ui/button.png"));
     startButton->setText("Start");
-    startButton->setAlignment(xy::ui::Alignment::Centre);
+    startButton->setAlignment(xy::UI::Alignment::Centre);
     startButton->setPosition(840.f, 770.f);
     startButton->setCallback([this]()
     {
@@ -181,9 +181,9 @@ void MenuLobbyState::buildMenu()
     });
     m_uiContainer.addControl(startButton);
 
-    auto backButton = std::make_shared<xy::ui::Button>(font, getContext().appInstance.getTexture("assets/images/ui/button.png"));
+    auto backButton = std::make_shared<xy::UI::Button>(font, m_textureResource.get("assets/images/ui/button.png"));
     backButton->setText("Back");
-    backButton->setAlignment(xy::ui::Alignment::Centre);
+    backButton->setAlignment(xy::UI::Alignment::Centre);
     backButton->setPosition(1080.f, 770.f);
     backButton->setCallback([this]()
     {

@@ -18,7 +18,7 @@ MenuPauseState::MenuPauseState(xy::StateStack& stack, Context context)
     : State     (stack, context),
     m_messageBus(context.appInstance.getMessageBus())
 {
-    const auto& font = context.appInstance.getFont("flaps");
+    const auto& font = m_fontResource.get("flaps");
     
     buildMenu(font);
 
@@ -26,7 +26,7 @@ MenuPauseState::MenuPauseState(xy::StateStack& stack, Context context)
     xy::Util::Position::centreOrigin(m_texts.back());
     m_texts.back().setPosition(960.f, 200.f);
 
-    m_cursorSprite.setTexture(context.appInstance.getTexture("assets/images/ui/cursor.png"));
+    m_cursorSprite.setTexture(m_textureResource.get("assets/images/ui/cursor.png"));
     m_cursorSprite.setPosition(context.renderWindow.mapPixelToCoords(sf::Mouse::getPosition(context.renderWindow)));
 
     auto msg = m_messageBus.post<xy::Message::UIEvent>(xy::Message::UIMessage);
@@ -69,9 +69,9 @@ void MenuPauseState::handleMessage(const xy::Message&){}
 //private
 void MenuPauseState::buildMenu(const sf::Font& font)
 {
-    auto button = std::make_shared<xy::ui::Button>(font, getContext().appInstance.getTexture("assets/images/ui/start_button.png"));
+    auto button = std::make_shared<xy::UI::Button>(font, m_textureResource.get("assets/images/ui/start_button.png"));
     button->setText("Continue");
-    button->setAlignment(xy::ui::Alignment::Centre);
+    button->setAlignment(xy::UI::Alignment::Centre);
     button->setPosition(960.f, 475.f);
     button->setCallback([this]()
     {
@@ -80,9 +80,9 @@ void MenuPauseState::buildMenu(const sf::Font& font)
     });
     m_uiContainer.addControl(button);
 
-    button = std::make_shared<xy::ui::Button>(font, getContext().appInstance.getTexture("assets/images/ui/start_button.png"));
+    button = std::make_shared<xy::UI::Button>(font, m_textureResource.get("assets/images/ui/start_button.png"));
     button->setText("Options");
-    button->setAlignment(xy::ui::Alignment::Centre);
+    button->setAlignment(xy::UI::Alignment::Centre);
     button->setPosition(960.f, 575.f);
     button->setCallback([this]()
     {
@@ -93,9 +93,9 @@ void MenuPauseState::buildMenu(const sf::Font& font)
     });
     m_uiContainer.addControl(button);
 
-    button = std::make_shared<xy::ui::Button>(font, getContext().appInstance.getTexture("assets/images/ui/start_button.png"));
+    button = std::make_shared<xy::UI::Button>(font, m_textureResource.get("assets/images/ui/start_button.png"));
     button->setText("Quit");
-    button->setAlignment(xy::ui::Alignment::Centre);
+    button->setAlignment(xy::UI::Alignment::Centre);
     button->setPosition(960.f, 675.f);
     button->setCallback([this]()
     {

@@ -12,6 +12,7 @@
 
 #include <xygine/State.hpp>
 #include <xygine/ui/Container.hpp>
+#include <xygine/Resource.hpp>
 
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
@@ -40,7 +41,10 @@ private:
     sf::Sprite m_cursorSprite;
     std::vector<sf::Text> m_texts;
 
-    xy::ui::Container m_uiContainer;
+    xy::UI::Container m_uiContainer;
+
+    xy::TextureResource m_textureResource;
+    xy::FontResource m_fontResource;
 
     void buildMenu(const sf::Font&);
     void close();

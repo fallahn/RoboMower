@@ -13,6 +13,7 @@
 #include <StateIds.hpp>
 
 #include <xygine/State.hpp>
+#include <xygine/Resource.hpp>
 #include <xygine/ui/Container.hpp>
 
 #include <SFML/Graphics/Text.hpp>
@@ -39,7 +40,8 @@ public:
     }
 private:
     xy::MessageBus& m_messageBus;
-    xy::ui::Container m_uiContainer;
+    xy::UI::Container m_uiContainer;
+    xy::FontResource m_fontResource;
 
     std::vector<sf::Text> m_texts;
 };

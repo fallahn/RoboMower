@@ -14,6 +14,7 @@
 
 #include <xygine/State.hpp>
 #include <xygine/ui/Container.hpp>
+#include <xygine/Resource.hpp>
 
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Sprite.hpp>
@@ -48,12 +49,15 @@ public:
 
 private:
     xy::MessageBus& m_messageBus;
-    xy::ui::Container m_uiContainer;
+    xy::UI::Container m_uiContainer;
 
     std::map<sf::Int16, sf::Text> m_texts;
     sf::Sprite m_cursorSprite;
 
     sf::Font& m_font;
+
+    xy::TextureResource m_textureResource;
+    xy::FontResource m_fontResource;
 
     sf::TcpSocket* m_socket;
     float m_timeSinceLastPacket;

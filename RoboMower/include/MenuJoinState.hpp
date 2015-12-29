@@ -13,6 +13,7 @@
 #include <StateIds.hpp>
 
 #include <xygine/State.hpp>
+#include <xygine/Resource.hpp>
 
 #include <xygine/ui/Container.hpp>
 #include <xygine/ui/Label.hpp>
@@ -39,10 +40,13 @@ public:
     }
 private:
     xy::MessageBus& m_messageBus;
-    xy::ui::Container m_uiContainer;
+    xy::UI::Container m_uiContainer;
     sf::Sprite m_cursorSprite;
 
-    xy::ui::Label::Ptr m_statusLabel;
+    xy::UI::Label::Ptr m_statusLabel;
+
+    xy::TextureResource m_textureResource;
+    xy::FontResource m_fontResource;
 
     void buildMenu();
     void sendCloseMessage();

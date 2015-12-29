@@ -15,6 +15,7 @@
 #include <xygine/App.hpp>
 #include <xygine/Reports.hpp>
 #include <xygine/SfDrawableComponent.hpp>
+#include <xygine/Resource.hpp>
 
 #include <RoundedRectangle.hpp>
 #include <components/ButtonLogic.hpp>
@@ -34,6 +35,7 @@
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Shader.hpp>
 
 namespace
 {
@@ -92,8 +94,10 @@ namespace
     }
 }
 
-GameUI::GameUI(xy::State::Context sc, xy::Scene& scene)
-    : m_stateContext    (sc),
+GameUI::GameUI(xy::State::Context sc, xy::TextureResource& tr, xy::FontResource& fr, xy::Scene& scene)
+    : m_fontResource    (fr),
+    m_textureResource   (tr),
+    m_stateContext      (sc),
     m_scene             (scene),
     m_messageBus        (sc.appInstance.getMessageBus()),
     m_mouseCursor       (nullptr),
@@ -108,13 +112,13 @@ GameUI::GameUI(xy::State::Context sc, xy::Scene& scene)
     shape.setOutlineColor(borderColour);
     shape.setSize(stackSize);
 
-    auto entity = std::make_unique<xy::Entity>(m_messageBus);
+    auto entity = xy::Entity::create(m_messageBus);
     entity->addComponent<xy::SfDrawableComponent<RoundedRectangle>>(rr);
     entity->setPosition(stackPosition);
     auto backPanel = m_scene.addEntity(entity, xy::Scene::Layer::FrontFront);
 
     //the logic is separated from the background so we can scroll it
-    auto subEnt = std::make_unique<xy::Entity>(m_messageBus);
+    auto subEnt = xy::Entity::create(m_messageBus);
     subEnt->addCommandCategories(CommandCategory::InstructionList);
     auto scl = std::make_unique<StackLogicComponent>(m_messageBus, labelSize, stackSize);
     subEnt->addComponent<StackLogicComponent>(scl);
@@ -130,7 +134,7 @@ GameUI::GameUI(xy::State::Context sc, xy::Scene& scene)
     shape2.setSize(traySize);
     shape2.setRadius(20.f);
 
-    entity = std::make_unique<xy::Entity>(m_messageBus);
+    entity = xy::Entity::create(m_messageBus);
     entity->addComponent<xy::SfDrawableComponent<RoundedRectangle>>(rr);
     entity->setPosition(trayPosition);
     m_scene.addEntity(entity, xy::Scene::Layer::FrontFront);
@@ -139,7 +143,7 @@ GameUI::GameUI(xy::State::Context sc, xy::Scene& scene)
     auto it = instructionLabels.begin();
     for (auto i = 0u; i < buttonCount; ++i, ++it)
     {
-        entity = std::make_unique<xy::Entity>(m_messageBus);
+        entity = xy::Entity::create(m_messageBus);
         entity->setPosition(labelPadding + (i * labelSpacing), labelTop);
         entity->addCommandCategories(CommandCategory::TrayIcon);
         auto rr = makeButtonBackground(m_messageBus);
@@ -149,7 +153,7 @@ GameUI::GameUI(xy::State::Context sc, xy::Scene& scene)
 
         auto text = std::make_unique<xy::SfDrawableComponent<sf::Text>>(m_messageBus);
         auto& td = text->getDrawable();
-        td.setFont(sc.appInstance.getFont("assets/fonts/Console.ttf"));
+        td.setFont(fr.get("assets/fonts/Console.ttf"));
         td.setString(it->second);
         td.setColor(sf::Color::Black);
         xy::Util::Position::centreOrigin(td);
@@ -168,7 +172,7 @@ GameUI::GameUI(xy::State::Context sc, xy::Scene& scene)
     shape3.setOutlineThickness(3.f);
     shape3.setSize({ scrollBarRadius * 2.f, stackSize.y });
     shape3.setRadius(scrollBarRadius);
-    entity = std::make_unique<xy::Entity>(m_messageBus);
+    entity = xy::Entity::create(m_messageBus);
     entity->setPosition(stackPosition + sf::Vector2f(stackSize.x + 20.f, 0.f));
     entity->addComponent<xy::SfDrawableComponent<RoundedRectangle>>(rr);
 
@@ -179,7 +183,7 @@ GameUI::GameUI(xy::State::Context sc, xy::Scene& scene)
     circle.setOutlineThickness(-1.f);
     circle.setOutlineColor(fillColour);
 
-    subEnt = std::make_unique<xy::Entity>(m_messageBus);
+    subEnt = xy::Entity::create(m_messageBus);
     subEnt->addComponent<xy::SfDrawableComponent<sf::CircleShape>>(cd);
 
     auto shl = std::make_unique<ScrollHandleLogic>(m_messageBus);
@@ -195,9 +199,9 @@ GameUI::GameUI(xy::State::Context sc, xy::Scene& scene)
     //add mouse cursor
     auto ad = std::make_unique<xy::SfDrawableComponent<sf::Sprite>>(m_messageBus);
     auto& sprite = ad->getDrawable();
-    sprite.setTexture(sc.appInstance.getTexture("assets/images/ui/cursor.png"));
+    sprite.setTexture(tr.get("assets/images/ui/cursor.png"));
 
-    entity = std::make_unique<xy::Entity>(m_messageBus);
+    entity = xy::Entity::create(m_messageBus);
     entity->addComponent<xy::SfDrawableComponent<sf::Sprite>>(ad);
     entity->addCommandCategories(CommandCategory::Cursor);
     entity->setPosition(sc.renderWindow.mapPixelToCoords(sf::Mouse::getPosition(sc.renderWindow)));
@@ -430,7 +434,7 @@ void GameUI::handleMessage(const xy::Message& msg)
 //private
 void GameUI::addInstructionBlock(const sf::Vector2f& position, const sf::Vector2f& offset, Instruction instruction)
 {
-    auto entity = std::make_unique<xy::Entity>(m_messageBus);
+    auto entity = xy::Entity::create(m_messageBus);
     entity->setPosition(position);
     entity->addCommandCategories(CommandCategory::InstructionBlock);
     auto rr = makeButtonBackground(m_messageBus);
@@ -440,7 +444,7 @@ void GameUI::addInstructionBlock(const sf::Vector2f& position, const sf::Vector2
 
     auto text = std::make_unique<xy::SfDrawableComponent<sf::Text>>(m_messageBus);
     auto& td = text->getDrawable();
-    td.setFont(m_stateContext.appInstance.getFont("assets/fonts/Console.ttf"));
+    td.setFont(m_fontResource.get("assets/fonts/Console.ttf"));
     td.setString(instructionLabels[instruction]);
     td.setColor(sf::Color::Black);
     xy::Util::Position::centreOrigin(td);
@@ -457,7 +461,7 @@ void GameUI::addInstructionBlock(const sf::Vector2f& position, const sf::Vector2
 
     if (instruction != Instruction::EngineOff && instruction != Instruction::EngineOn)
     {
-        auto subEnt = std::make_unique<xy::Entity>(m_messageBus);
+        auto subEnt = xy::Entity::create(m_messageBus);
         subEnt->setPosition({ labelSize.x + inputBoxSpacing, 0.f });
         subEnt->addCommandCategories(CommandCategory::InputBox);
         rr = makeInputBackground(m_messageBus);
@@ -467,7 +471,7 @@ void GameUI::addInstructionBlock(const sf::Vector2f& position, const sf::Vector2
      
         text = std::make_unique<xy::SfDrawableComponent<sf::Text>>(m_messageBus);
         auto& td = text->getDrawable();
-        td.setFont(m_stateContext.appInstance.getFont("assets/fonts/Console.ttf"));
+        td.setFont(m_fontResource.get("assets/fonts/Console.ttf"));
         td.setString("0");
         xy::Util::Position::centreOrigin(td);
         text->setPosition(inputSize / 2.f);
@@ -483,7 +487,7 @@ void GameUI::addInstructionBlock(const sf::Vector2f& position, const sf::Vector2
     {
         //add loop wire
         auto& child = entity->getChildren()[0];
-        auto loop = std::make_unique<LoopHandle>(m_messageBus, m_stateContext.appInstance.getTexture("assets/images/loop_handle.png"), labelSize.y + 22.f); //TODO get the padding value from stack
+        auto loop = std::make_unique<LoopHandle>(m_messageBus, m_textureResource.get("assets/images/loop_handle.png"), labelSize.y + 22.f); //TODO get the padding value from stack
         //loop->setEnabled(true);
         loop->setPosition(-(labelSize.x + inputBoxSpacing), 0.f);
         child->addComponent<LoopHandle>(loop);
@@ -494,12 +498,12 @@ void GameUI::addInstructionBlock(const sf::Vector2f& position, const sf::Vector2
 
 void GameUI::showInputWindow(sf::Uint64 destId)
 {
-    auto entity = std::make_unique<xy::Entity>(m_messageBus);
+    auto entity = xy::Entity::create(m_messageBus);
     entity->setWorldPosition({ 960.f, 540.f });
     entity->addCommandCategories(CommandCategory::InputPopup);
     auto inputWindow = std::make_unique<InputWindow>(m_messageBus);
     inputWindow->setTargetId(destId);
-    inputWindow->setFont(m_stateContext.appInstance.getFont("assets/fonts/Console.ttf"));
+    inputWindow->setFont(m_fontResource.get("assets/fonts/Console.ttf"));
     inputWindow->setCharacterSize(80u);
     entity->addComponent<InputWindow>(inputWindow);
     m_scene.addEntity(entity, xy::Scene::Layer::FrontFront);

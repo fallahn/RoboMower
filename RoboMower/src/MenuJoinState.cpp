@@ -20,7 +20,7 @@ MenuJoinState::MenuJoinState(xy::StateStack& stack, Context context)
     : State         (stack, context),
     m_messageBus    (context.appInstance.getMessageBus())
 {
-    m_cursorSprite.setTexture(context.appInstance.getTexture("assets/images/ui/cursor.png"));
+    m_cursorSprite.setTexture(m_textureResource.get("assets/images/ui/cursor.png"));
     m_cursorSprite.setPosition(context.renderWindow.mapPixelToCoords(sf::Mouse::getPosition(context.renderWindow)));
     buildMenu();
 
@@ -79,23 +79,23 @@ void MenuJoinState::handleMessage(const xy::Message& msg)
 //private
 void MenuJoinState::buildMenu()
 {
-    const auto& font = getContext().appInstance.getFont("flaps");
+    const auto& font = m_fontResource.get("flaps");
 
-    auto textbox = std::make_shared<xy::ui::TextBox>(font);
+    auto textbox = std::make_shared<xy::UI::TextBox>(font);
     textbox->setLabelText("IP Address:");
     textbox->setPosition(960.f, 500.f);
-    textbox->setAlignment(xy::ui::Alignment::Centre);
+    textbox->setAlignment(xy::UI::Alignment::Centre);
     textbox->setText("127.0.0.1");
     m_uiContainer.addControl(textbox);
 
-    m_statusLabel = std::make_shared<xy::ui::Label>(font);
-    m_statusLabel->setAlignment(xy::ui::Alignment::Centre);
+    m_statusLabel = std::make_shared<xy::UI::Label>(font);
+    m_statusLabel->setAlignment(xy::UI::Alignment::Centre);
     m_statusLabel->setPosition(960.f, 590.f);
     m_uiContainer.addControl(m_statusLabel);
 
-    auto joinButton = std::make_shared<xy::ui::Button>(font, getContext().appInstance.getTexture("assets/images/ui/button.png"));
+    auto joinButton = std::make_shared<xy::UI::Button>(font, m_textureResource.get("assets/images/ui/button.png"));
     joinButton->setText("Join");
-    joinButton->setAlignment(xy::ui::Alignment::Centre);
+    joinButton->setAlignment(xy::UI::Alignment::Centre);
     joinButton->setPosition(840.f, 770.f);
     joinButton->setCallback([textbox, this]()
     {
@@ -108,9 +108,9 @@ void MenuJoinState::buildMenu()
     });
     m_uiContainer.addControl(joinButton);
 
-    auto backButton = std::make_shared<xy::ui::Button>(font, getContext().appInstance.getTexture("assets/images/ui/button.png"));
+    auto backButton = std::make_shared<xy::UI::Button>(font, m_textureResource.get("assets/images/ui/button.png"));
     backButton->setText("Back");
-    backButton->setAlignment(xy::ui::Alignment::Centre);
+    backButton->setAlignment(xy::UI::Alignment::Centre);
     backButton->setPosition(1080.f, 770.f);
     backButton->setCallback([this]()
     {

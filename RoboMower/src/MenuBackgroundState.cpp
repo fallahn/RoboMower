@@ -18,7 +18,7 @@ MenuBackgroundState::MenuBackgroundState(xy::StateStack& stack, Context context)
     : State     (stack, context),
     m_messageBus(context.appInstance.getMessageBus())
 {
-    m_texts.emplace_back(version, context.appInstance.getFont("assets/fonts/VeraMono.ttf"), 18u);
+    m_texts.emplace_back(version, m_fontResource.get("assets/fonts/VeraMono.ttf"), 18u);
     m_texts.back().setPosition(10.f, 1050.f);
 }
 

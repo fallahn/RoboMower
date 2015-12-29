@@ -18,6 +18,7 @@
 #include <xygine/Entity.hpp>
 #include <xygine/Scene.hpp>
 #include <xygine/AudioManager.hpp>
+#include <xygine/Resource.hpp>
 
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
@@ -48,6 +49,10 @@ private:
 
     xy::MessageBus& m_messageBus;
     xy::Scene m_scene;
+
+    xy::TextureResource m_textureResource;
+    xy::FontResource m_fontResource;
+
     xy::AudioManager m_audioManager;
     GameUI m_gameUI;
 

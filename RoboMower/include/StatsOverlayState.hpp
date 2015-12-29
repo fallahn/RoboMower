@@ -13,6 +13,7 @@
 #include <xygine/State.hpp>
 #include <xygine/ui/Window.hpp>
 #include <xygine/ui/Label.hpp>
+#include <xygine/Resource.hpp>
 
 #include <vector>
 
@@ -31,10 +32,11 @@ public:
         return States::ID::Stats;
     }
 private:
-    std::vector<xy::ui::Window::Ptr> m_windows;
-    xy::ui::Label::Ptr m_statsText;
-    xy::ui::Label::Ptr m_consoleText;
+    std::vector<xy::UI::Window::Ptr> m_windows;
+    xy::UI::Label::Ptr m_statsText;
+    xy::UI::Label::Ptr m_consoleText;
 
+    xy::FontResource m_fontResource;
 };
 
 #endif //STATS_OVERLAY_HPP_

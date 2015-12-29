@@ -10,6 +10,7 @@
 #include <xygine/Reports.hpp>
 #include <xygine/Entity.hpp>
 #include <xygine/Command.hpp>
+#include <xygine/PostChromeAb.hpp>
 
 #include <xygine/App.hpp>
 #include <xygine/Log.hpp>
@@ -39,14 +40,15 @@ GameState::GameState(xy::StateStack& stateStack, Context context)
     : State         (stateStack, context),
     m_messageBus    (context.appInstance.getMessageBus()),
     m_scene         (m_messageBus),
-    m_gameUI        (context, m_scene)
+    m_gameUI        (context, m_textureResource, m_fontResource, m_scene)
 {
     //m_audioManager.mute(context.appInstance.getAudioSettings().muted);
     m_scene.setView(context.defaultView);
     //m_scene.drawDebug(true);
-    m_scene.setPostEffects(xy::Scene::PostEffect::ChromaticAbberation);
+    auto pp = xy::PostChromeAb::create();
+    m_scene.addPostProcess(pp);
 
-    m_reportText.setFont(context.appInstance.getFont("assets/fonts/Console.ttf"));
+    m_reportText.setFont(m_fontResource.get("assets/fonts/Console.ttf"));
     m_reportText.setPosition(1500.f, 30.f);
 
 }

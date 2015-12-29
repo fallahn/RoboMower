@@ -29,12 +29,14 @@ namespace xy
     class Entity;
     class MessageBus;
     class App;
+    class TextureResource;
+    class FontResource;
 }
 
 class GameUI final
 {
 public:
-    GameUI(xy::State::Context, xy::Scene&);
+    GameUI(xy::State::Context, xy::TextureResource&, xy::FontResource&, xy::Scene&);
     ~GameUI() = default;
     GameUI(const GameUI&) = delete;
     GameUI& operator = (const GameUI&) = delete;
@@ -45,6 +47,8 @@ public:
 
 private:
     xy::ShaderResource m_shaderResource;
+    xy::FontResource& m_fontResource;
+    xy::TextureResource& m_textureResource;
 
     xy::State::Context m_stateContext;
     xy::Scene& m_scene;

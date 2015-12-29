@@ -16,7 +16,7 @@ MenuMainState::MenuMainState(xy::StateStack& stack, Context context)
     : State     (stack, context),
     m_messageBus(context.appInstance.getMessageBus())
 {
-    m_cursorSprite.setTexture(context.appInstance.getTexture("assets/images/ui/cursor.png"));
+    m_cursorSprite.setTexture(m_textureResource.get("assets/images/ui/cursor.png"));
     m_cursorSprite.setPosition(context.renderWindow.mapPixelToCoords(sf::Mouse::getPosition(context.renderWindow)));
 
     buildMenu();
@@ -77,11 +77,11 @@ void MenuMainState::handleMessage(const xy::Message& msg)
 //private
 void MenuMainState::buildMenu()
 {
-    const auto& font = getContext().appInstance.getFont("assets/fonts/VeraMono.ttf");
+    const auto& font = m_fontResource.get("assets/fonts/VeraMono.ttf");
     
-    auto button = std::make_shared<xy::ui::Button>(font, getContext().appInstance.getTexture("assets/images/ui/start_button.png"));
+    auto button = std::make_shared<xy::UI::Button>(font, m_textureResource.get("assets/images/ui/start_button.png"));
     button->setText("Single Player");
-    button->setAlignment(xy::ui::Alignment::Centre);
+    button->setAlignment(xy::UI::Alignment::Centre);
     button->setPosition(960.f, 475.f);
     button->setCallback([this]()
     {
@@ -94,9 +94,9 @@ void MenuMainState::buildMenu()
     });
     m_uiContainer.addControl(button);
 
-    button = std::make_shared<xy::ui::Button>(font, getContext().appInstance.getTexture("assets/images/ui/start_button.png"));
+    button = std::make_shared<xy::UI::Button>(font, m_textureResource.get("assets/images/ui/start_button.png"));
     button->setText("Host Multiplayer");
-    button->setAlignment(xy::ui::Alignment::Centre);
+    button->setAlignment(xy::UI::Alignment::Centre);
     button->setPosition(960.f, 575.f);
     button->setCallback([this]()
     {
@@ -108,9 +108,9 @@ void MenuMainState::buildMenu()
     });
     m_uiContainer.addControl(button);
 
-    button = std::make_shared<xy::ui::Button>(font, getContext().appInstance.getTexture("assets/images/ui/start_button.png"));
+    button = std::make_shared<xy::UI::Button>(font, m_textureResource.get("assets/images/ui/start_button.png"));
     button->setText("Join Multiplayer");
-    button->setAlignment(xy::ui::Alignment::Centre);
+    button->setAlignment(xy::UI::Alignment::Centre);
     button->setPosition(960.f, 675.f);
     button->setCallback([this]()
     {
@@ -119,9 +119,9 @@ void MenuMainState::buildMenu()
     });
     m_uiContainer.addControl(button);
 
-    button = std::make_shared<xy::ui::Button>(font, getContext().appInstance.getTexture("assets/images/ui/start_button.png"));
+    button = std::make_shared<xy::UI::Button>(font, m_textureResource.get("assets/images/ui/start_button.png"));
     button->setText("Options");
-    button->setAlignment(xy::ui::Alignment::Centre);
+    button->setAlignment(xy::UI::Alignment::Centre);
     button->setPosition(960.f, 775.f);
     button->setCallback([this]()
     {
@@ -130,9 +130,9 @@ void MenuMainState::buildMenu()
     });
     m_uiContainer.addControl(button);
 
-    button = std::make_shared<xy::ui::Button>(font, getContext().appInstance.getTexture("assets/images/ui/start_button.png"));
+    button = std::make_shared<xy::UI::Button>(font, m_textureResource.get("assets/images/ui/start_button.png"));
     button->setText("Quit");
-    button->setAlignment(xy::ui::Alignment::Centre);
+    button->setAlignment(xy::UI::Alignment::Centre);
     button->setPosition(960.f, 875.f);
     button->setCallback([this]()
     {
