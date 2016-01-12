@@ -45,7 +45,7 @@ GameState::GameState(xy::StateStack& stateStack, Context context)
     //m_audioManager.mute(context.appInstance.getAudioSettings().muted);
     m_scene.setView(context.defaultView);
     //m_scene.drawDebug(true);
-    auto pp = xy::PostChromeAb::create();
+    auto pp = xy::PostProcess::create<xy::PostChromeAb>();
     m_scene.addPostProcess(pp);
 
     m_reportText.setFont(m_fontResource.get("assets/fonts/Console.ttf"));
