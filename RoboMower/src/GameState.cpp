@@ -34,7 +34,8 @@ namespace
     const float joyDeadZone = 25.f;
     const float joyMaxAxis = 100.f;
 }
-
+#include<xygine/parsers/picojson.h>
+#include <istream>
 GameState::GameState(xy::StateStack& stateStack, Context context)
     : State         (stateStack, context),
     m_messageBus    (context.appInstance.getMessageBus()),
@@ -49,7 +50,6 @@ GameState::GameState(xy::StateStack& stateStack, Context context)
 
     m_reportText.setFont(m_fontResource.get("assets/fonts/Console.ttf"));
     m_reportText.setPosition(1500.f, 30.f);
-
 }
 
 bool GameState::update(float dt)
