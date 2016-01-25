@@ -10,7 +10,7 @@
 #ifndef BUTTON_LOGIC_HPP_
 #define BUTTON_LOGIC_HPP_
 
-#include <xygine/Component.hpp>
+#include <xygine/components/Component.hpp>
 
 #include <InstructionSet.hpp>
 
@@ -27,7 +27,6 @@ public:
     xy::Component::Type type() const override { return xy::Component::Type::Script; }
 
     void entityUpdate(xy::Entity&, float) override;
-    void handleMessage(const xy::Message&) override;
 
     Instruction getInstruction() const;
     void doClick(const sf::Vector2f& abs, const sf::Vector2f& rel);

@@ -19,7 +19,10 @@ ScrollHandleLogic::ScrollHandleLogic(xy::MessageBus& mb)
     m_position      (0.f),
     m_update        (true)
 {
-
+    xy::Component::MessageHandler mh;
+    mh.id = MessageId::ScrollbarMessage;
+    mh.action = std::bind(&ScrollHandleLogic::handleMessage, this, std::placeholders::_1, std::placeholders::_2);
+    addMessageHandler(mh);
 }
 
 //public
@@ -38,14 +41,6 @@ void ScrollHandleLogic::entityUpdate(xy::Entity& entity, float dt)
         //update internals
         m_position = position.y / m_length;
         m_update = false;
-    }
-}
-
-void ScrollHandleLogic::handleMessage(const xy::Message& msg)
-{
-    if (msg.id == MessageId::ScrollbarMessage)
-    {
-        m_update = true;
     }
 }
 
@@ -68,4 +63,13 @@ void ScrollHandleLogic::setLength(float len)
 float ScrollHandleLogic::getPosition() const
 {
     return m_position;
+}
+
+//private
+void ScrollHandleLogic::handleMessage(xy::Component* c, const xy::Message& msg)
+{
+    //if (msg.id == MessageId::ScrollbarMessage)
+    {
+        m_update = true;
+    }
 }

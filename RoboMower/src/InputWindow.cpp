@@ -12,7 +12,7 @@
 #include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Window/Event.hpp>
 
-#include <xygine/Util.hpp>
+#include <xygine/util/Position.hpp>
 #include <xygine/Entity.hpp>
 
 namespace
@@ -67,11 +67,6 @@ void InputWindow::entityUpdate(xy::Entity& entity, float)
     }
 
     if (m_close) entity.destroy();
-}
-
-void InputWindow::handleMessage(const xy::Message&)
-{
-
 }
 
 void InputWindow::handleTextEvent(const sf::Event& evt)

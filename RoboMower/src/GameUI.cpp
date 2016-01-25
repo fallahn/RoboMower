@@ -10,11 +10,11 @@
 #include <xygine/Scene.hpp>
 #include <xygine/Entity.hpp>
 #include <xygine/MessageBus.hpp>
-#include <xygine/Util.hpp>
-#include <xygine/AnimatedDrawable.hpp>
+#include <xygine/util/Position.hpp>
+#include <xygine/components/AnimatedDrawable.hpp>
 #include <xygine/App.hpp>
 #include <xygine/Reports.hpp>
-#include <xygine/SfDrawableComponent.hpp>
+#include <xygine/components/SfDrawableComponent.hpp>
 #include <xygine/Resource.hpp>
 
 #include <RoundedRectangle.hpp>
@@ -29,7 +29,6 @@
 
 #include <shaders/ShaderIds.hpp>
 #include <shaders/CropShader.hpp>
-#include <xygine/Shaders.hpp>
 
 #include <SFML/Window/Mouse.hpp>
 #include <SFML/Window/Event.hpp>

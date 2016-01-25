@@ -10,7 +10,7 @@
 #ifndef LOOP_HANDLE_HPP_
 #define LOOP_HANDLE_HPP_
 
-#include <xygine/Component.hpp>
+#include <xygine/components/Component.hpp>
 
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/Vertex.hpp>
@@ -26,7 +26,6 @@ public:
 
     xy::Component::Type type() const override { return xy::Component::Type::Drawable; }
     void entityUpdate(xy::Entity&, float) override;
-    void handleMessage(const xy::Message&) override;
 
     sf::FloatRect globalBounds() const override;
     sf::FloatRect localBounds() const override;

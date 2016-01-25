@@ -165,7 +165,7 @@ void MenuLobbyState::buildMenu()
     startButton->setText("Start");
     startButton->setAlignment(xy::UI::Alignment::Centre);
     startButton->setPosition(840.f, 770.f);
-    startButton->setCallback([this]()
+    startButton->addCallback([this]()
     {
         //check we're host and are allowed to do this
         if (getContext().appInstance.hosting())
@@ -185,7 +185,7 @@ void MenuLobbyState::buildMenu()
     backButton->setText("Back");
     backButton->setAlignment(xy::UI::Alignment::Centre);
     backButton->setPosition(1080.f, 770.f);
-    backButton->setCallback([this]()
+    backButton->addCallback([this]()
     {
         requestStackPop();
 

@@ -10,7 +10,7 @@
 #ifndef ROUND_RECT_HPP_
 #define ROUND_RECT_HPP_
 
-#include <xygine/Component.hpp>
+#include <xygine/components/Component.hpp>
 #include <xygine/ShaderProperty.hpp>
 
 #include <SFML/Graphics/Shape.hpp>

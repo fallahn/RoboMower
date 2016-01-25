@@ -43,11 +43,6 @@ void LoopHandle::entityUpdate(xy::Entity& entity, float)
     m_globalBounds = entity.getWorldTransform().transformRect(m_localBounds);
 }
 
-void LoopHandle::handleMessage(const xy::Message& msg)
-{
-
-}
-
 sf::FloatRect LoopHandle::globalBounds() const
 {
     return m_globalBounds;

@@ -13,12 +13,13 @@
 #include <CommandCategories.hpp>
 
 #include <xygine/Entity.hpp>
-#include <xygine/Util.hpp>
 #include <xygine/Log.hpp>
 #include <xygine/Reports.hpp>
 #include <xygine/Scene.hpp>
-#include <xygine/ParticleController.hpp>
-#include <xygine/SfDrawableComponent.hpp>
+#include <xygine/components/ParticleController.hpp>
+#include <xygine/components/SfDrawableComponent.hpp>
+
+#include <SFML/Graphics/Text.hpp>
 
 namespace
 {
@@ -42,6 +43,15 @@ StackLogicComponent::StackLogicComponent(xy::MessageBus& mb, const sf::Vector2f&
     }
     m_localBounds.height = m_slots.back().slotLocalArea.top + slotSize.y + margin;
     m_maxScrollDistance = m_localBounds.height - m_maxScrollDistance;
+
+    xy::Component::MessageHandler mh;
+    mh.id = MessageId::InstructionBlockMessage;
+    mh.action = std::bind(&StackLogicComponent::instructionBlockHandler, this, std::placeholders::_1, std::placeholders::_2);
+    addMessageHandler(mh);
+
+    mh.id = MessageId::ScrollbarMessage;
+    mh.action = std::bind(&StackLogicComponent::scrollHandler, this, std::placeholders::_1, std::placeholders::_2);
+    addMessageHandler(mh);
 }
 
 //public
@@ -67,22 +77,40 @@ void StackLogicComponent::entityUpdate(xy::Entity& entity, float)
 #endif //_DEBUG_
 }
 
-void StackLogicComponent::handleMessage(const xy::Message& msg)
+void StackLogicComponent::onStart(xy::Entity& entity)
 {
-    if (msg.id == MessageId::InstructionBlockMessage)
+    m_parentEntity = &entity;
+}
+
+//private
+void StackLogicComponent::updateInstructionCount()
+{
+    m_instructionCount = 0;
+
+    for (const auto& s : m_slots)
     {
+        if (s.occupierID != 0) m_instructionCount++;
+    }
+
+    REPORT("Instruction Count", std::to_string(m_instructionCount));
+}
+
+void StackLogicComponent::instructionBlockHandler(xy::Component* c, const xy::Message& msg)
+{
+    //if (msg.id == MessageId::InstructionBlockMessage)
+    //{
         auto& msgData = msg.getData<InstructionBlockEvent>();
-        
+
         switch (msgData.action)
         {
         case InstructionBlockEvent::Moved:
-        {   
+        {
             auto size = std::min(m_instructionCount + 1, maxInstructions);
             for (auto i = 0u; i < size; ++i)
             {
                 const auto& area = m_slots[i].slotArea;
                 if (area.contains(msgData.position) && !m_slots[i].targeted)
-                {                   
+                {
                     auto targetIdx = msgData.component->getTargetIndex();
                     if (targetIdx != i)
                     {
@@ -93,7 +121,7 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
                     }
 
                     //we need to move out occupier if it exists
-                    if (m_slots[i].occupierID != 0) 
+                    if (m_slots[i].occupierID != 0)
                     {
                         //check previous slot is empty and move any icons up
                         if (i > 0 && m_slots[i - 1].occupierID == 0)
@@ -101,7 +129,7 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
                             auto idx = i - 1;
                             {
                                 sf::Vector2f targetPos(m_slots[idx].slotArea.left, m_slots[idx].slotArea.top);
-                                
+
                                 xy::Command cmd;
                                 cmd.entityID = m_slots[i].occupierID;
                                 cmd.action = [targetPos](xy::Entity& entity, float)
@@ -168,14 +196,14 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
                     msgData.component->setTarget({ 1920.f - m_slots[0].slotArea.width, 20.f }); //TODO somewhere with a bin icon, or set this on mouse up
                     msgData.component->setStackIndex(-1);
                     m_slots[idx].targeted = false;
-     
+
                     if (idx >= 0)
                     {
                         //block was dragged off stack so realign remaining
                         for (auto i = idx + 1; i < maxInstructions; ++i)
                         {
                             sf::Vector2f targetPos(m_slots[i - 1].slotArea.left, m_slots[i - 1].slotArea.top);
-                            
+
                             xy::Command cmd;
                             cmd.entityID = m_slots[i].occupierID;
                             cmd.action = [targetPos](xy::Entity& entity, float)
@@ -192,7 +220,7 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
                     }
                 }
             }
-        break;
+            break;
         }
         case InstructionBlockEvent::Dropped:
         {
@@ -200,7 +228,7 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
             for (auto i = 0u; i < m_slots.size(); ++i)
             {
                 if (m_slots[i].slotArea.contains(msgData.position))
-                {                     
+                {
                     m_slots[i].occupierID = msgData.component->getParentUID();
                     m_slots[i].instruction = msgData.component->getInstruction();
                     m_slots[i].targeted = false;
@@ -222,7 +250,7 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
                             auto& chent = *entity.getChildren()[0];
                             chent.getComponent<xy::SfDrawableComponent<RoundedRectangle>>()->setShaderActive();
                             chent.getComponent<xy::SfDrawableComponent<sf::Text>>()->setShaderActive();
-                            
+
                             //update the handle if a loop instruction                            
                             sf::Int32 idx = -1;
                             if ((instruction == Instruction::Loop) && (idx = entity.getComponent<InstructionBlockLogic>()->getStackIndex()) > 0)
@@ -282,7 +310,7 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
                 m_parentEntity->getScene()->sendCommand(cmd);
             }
         }
-            break;
+        break;
         case InstructionBlockEvent::Destroyed:
         {
             auto position = msgData.position;
@@ -295,12 +323,17 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
             };
             m_parentEntity->getScene()->sendCommand(cmd);
         }
-            break;
+        break;
         default: break;
         }
-    }
-    else if (msg.id == MessageId::ScrollbarMessage)
-    {
+    //}
+
+}
+
+void StackLogicComponent::scrollHandler(xy::Component* c, const xy::Message& msg)
+{
+    //else if (msg.id == MessageId::ScrollbarMessage)
+    //{
         auto& msgData = msg.getData<ScrollbarEvent>();
         const float distance = msgData.position * m_maxScrollDistance;
 
@@ -315,23 +348,5 @@ void StackLogicComponent::handleMessage(const xy::Message& msg)
         m_parentEntity->getScene()->sendCommand(cmd);
 
         m_updateTransform = true;
-    }
-}
-
-void StackLogicComponent::onStart(xy::Entity& entity)
-{
-    m_parentEntity = &entity;
-}
-
-//private
-void StackLogicComponent::updateInstructionCount()
-{
-    m_instructionCount = 0;
-
-    for (const auto& s : m_slots)
-    {
-        if (s.occupierID != 0) m_instructionCount++;
-    }
-
-    REPORT("Instruction Count", std::to_string(m_instructionCount));
+    //}
 }

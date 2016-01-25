@@ -14,9 +14,8 @@
 
 #include <xygine/App.hpp>
 #include <xygine/Log.hpp>
-#include <xygine/Util.hpp>
 
-#include <xygine/ParticleController.hpp>
+#include <xygine/components/ParticleController.hpp>
 #include <CommandCategories.hpp>
 
 #include <SFML/Graphics/RenderWindow.hpp>

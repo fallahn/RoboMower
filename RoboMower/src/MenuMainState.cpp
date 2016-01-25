@@ -83,7 +83,7 @@ void MenuMainState::buildMenu()
     button->setText("Single Player");
     button->setAlignment(xy::UI::Alignment::Centre);
     button->setPosition(960.f, 475.f);
-    button->setCallback([this]()
+    button->addCallback([this]()
     {
         auto msg = m_messageBus.post<xy::Message::NetworkEvent>(xy::Message::NetworkMessage);
         msg->action = xy::Message::NetworkEvent::RequestStartServer;
@@ -98,7 +98,7 @@ void MenuMainState::buildMenu()
     button->setText("Host Multiplayer");
     button->setAlignment(xy::UI::Alignment::Centre);
     button->setPosition(960.f, 575.f);
-    button->setCallback([this]()
+    button->addCallback([this]()
     {
         close();
 
@@ -112,7 +112,7 @@ void MenuMainState::buildMenu()
     button->setText("Join Multiplayer");
     button->setAlignment(xy::UI::Alignment::Centre);
     button->setPosition(960.f, 675.f);
-    button->setCallback([this]()
+    button->addCallback([this]()
     {
         close();
         requestStackPush(States::ID::MenuJoin);
@@ -123,7 +123,7 @@ void MenuMainState::buildMenu()
     button->setText("Options");
     button->setAlignment(xy::UI::Alignment::Centre);
     button->setPosition(960.f, 775.f);
-    button->setCallback([this]()
+    button->addCallback([this]()
     {
         close();
         requestStackPush(States::ID::MenuOptions);
@@ -134,7 +134,7 @@ void MenuMainState::buildMenu()
     button->setText("Quit");
     button->setAlignment(xy::UI::Alignment::Centre);
     button->setPosition(960.f, 875.f);
-    button->setCallback([this]()
+    button->addCallback([this]()
     {
         getContext().renderWindow.close();
     });

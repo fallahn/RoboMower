@@ -9,7 +9,7 @@
 #include <Messages.hpp>
 
 #include <xygine/Entity.hpp>
-#include <xygine/Util.hpp>
+#include <xygine/util/Vector.hpp>
 #include <xygine/Reports.hpp>
 
 namespace
@@ -67,11 +67,6 @@ void InstructionBlockLogic::entityUpdate(xy::Entity& entity, float dt)
         }
         break;
     }
-}
-
-void InstructionBlockLogic::handleMessage(const xy::Message& msg)
-{
-
 }
 
 void InstructionBlockLogic::setCarried(bool c)

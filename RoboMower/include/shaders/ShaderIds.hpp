@@ -10,7 +10,7 @@
 #ifndef SHADER_IDS_HPP_
 #define SHADER_IDS_HPP_
 
-#include <xygine/Shaders.hpp>
+#include <xygine/shaders/Default.hpp>
 
 namespace Shader
 {

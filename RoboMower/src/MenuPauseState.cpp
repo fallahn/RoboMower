@@ -8,7 +8,7 @@
 #include <MenuPauseState.hpp>
 
 #include <xygine/App.hpp>
-#include <xygine/Util.hpp>
+#include <xygine/util/Position.hpp>
 
 #include <xygine/ui/Button.hpp>
 
@@ -73,7 +73,7 @@ void MenuPauseState::buildMenu(const sf::Font& font)
     button->setText("Continue");
     button->setAlignment(xy::UI::Alignment::Centre);
     button->setPosition(960.f, 475.f);
-    button->setCallback([this]()
+    button->addCallback([this]()
     {
         requestStackPop();
         sendCloseMessage();
@@ -84,7 +84,7 @@ void MenuPauseState::buildMenu(const sf::Font& font)
     button->setText("Options");
     button->setAlignment(xy::UI::Alignment::Centre);
     button->setPosition(960.f, 575.f);
-    button->setCallback([this]()
+    button->addCallback([this]()
     {
         requestStackPop();
         requestStackPush(States::ID::MenuOptions);
@@ -97,7 +97,7 @@ void MenuPauseState::buildMenu(const sf::Font& font)
     button->setText("Quit");
     button->setAlignment(xy::UI::Alignment::Centre);
     button->setPosition(960.f, 675.f);
-    button->setCallback([this]()
+    button->addCallback([this]()
     {
         requestStackClear();
         requestStackPush(States::ID::MenuBackground);

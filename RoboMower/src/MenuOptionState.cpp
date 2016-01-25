@@ -7,7 +7,6 @@
 
 #include <MenuOptionState.hpp>
 
-#include <xygine/Util.hpp>
 #include <xygine/App.hpp>
 #include <xygine/Log.hpp>
 
@@ -130,7 +129,7 @@ void MenuOptionState::buildMenu(const sf::Font& font)
     soundSlider->setPosition(600.f, 470.f);
     soundSlider->setText("Volume");
     soundSlider->setMaxValue(1.f);
-    soundSlider->setCallback([this](const xy::UI::Slider* slider)
+    soundSlider->addCallback([this](const xy::UI::Slider* slider)
     {
         //send volume setting command
         auto msg = m_messageBus.post<xy::Message::UIEvent>(xy::Message::UIMessage);
@@ -144,7 +143,7 @@ void MenuOptionState::buildMenu(const sf::Font& font)
     auto muteCheckbox = std::make_shared<xy::UI::CheckBox>(font, m_textureResource.get("assets/images/ui/checkbox.png"));
     muteCheckbox->setPosition(1070.f, 430.f);
     muteCheckbox->setText("Mute");
-    muteCheckbox->setCallback([this](const xy::UI::CheckBox* checkBox)
+    muteCheckbox->addCallback([this](const xy::UI::CheckBox* checkBox)
     {
         auto msg = m_messageBus.post<xy::Message::UIEvent>(xy::Message::UIMessage);
         msg->type = (checkBox->checked()) ? xy::Message::UIEvent::RequestAudioMute : xy::Message::UIEvent::RequestAudioUnmute;
@@ -177,7 +176,7 @@ void MenuOptionState::buildMenu(const sf::Font& font)
     auto fullscreenCheckbox = std::make_shared<xy::UI::CheckBox>(font, m_textureResource.get("assets/images/ui/checkbox.png"));
     fullscreenCheckbox->setPosition(1070.f, 510.f);
     fullscreenCheckbox->setText("Full Screen");
-    fullscreenCheckbox->setCallback([this](const xy::UI::CheckBox*)
+    fullscreenCheckbox->addCallback([this](const xy::UI::CheckBox*)
     {
 
     }, xy::UI::CheckBox::Event::CheckChanged);
@@ -203,7 +202,7 @@ void MenuOptionState::buildMenu(const sf::Font& font)
     auto controllerCheckbox = std::make_shared<xy::UI::CheckBox>(font, m_textureResource.get("assets/images/ui/checkbox.png"));
     controllerCheckbox->setPosition(1070.f, 590.f);
     controllerCheckbox->setText("Enable Controller");
-    controllerCheckbox->setCallback([this](const xy::UI::CheckBox* checkBox)
+    controllerCheckbox->addCallback([this](const xy::UI::CheckBox* checkBox)
     {
         auto msg = m_messageBus.post<xy::Message::UIEvent>(xy::Message::UIMessage);
         msg->type = (checkBox->checked()) ? xy::Message::UIEvent::RequestControllerEnable : xy::Message::UIEvent::RequestControllerDisable;
@@ -216,7 +215,7 @@ void MenuOptionState::buildMenu(const sf::Font& font)
     applyButton->setText("Apply");
     applyButton->setAlignment(xy::UI::Alignment::Centre);
     applyButton->setPosition(840.f, 770.f);
-    applyButton->setCallback([fullscreenCheckbox, resolutionBox, this]()
+    applyButton->addCallback([fullscreenCheckbox, resolutionBox, this]()
     {
         auto res = resolutionBox->getSelectedValue();
 
@@ -235,7 +234,7 @@ void MenuOptionState::buildMenu(const sf::Font& font)
     backButton->setText("Back");
     backButton->setAlignment(xy::UI::Alignment::Centre);
     backButton->setPosition(1080.f, 770.f);
-    backButton->setCallback([this]()
+    backButton->addCallback([this]()
     {
         close();
         requestStackPush((getContext().appInstance.connected()) ? States::ID::MenuPaused : States::ID::MenuMain);

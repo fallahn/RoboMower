@@ -97,7 +97,7 @@ void MenuJoinState::buildMenu()
     joinButton->setText("Join");
     joinButton->setAlignment(xy::UI::Alignment::Centre);
     joinButton->setPosition(840.f, 770.f);
-    joinButton->setCallback([textbox, this]()
+    joinButton->addCallback([textbox, this]()
     {
         getContext().appInstance.setDestinationIP(textbox->getText());
         m_statusLabel->setString("Connecting...");
@@ -112,7 +112,7 @@ void MenuJoinState::buildMenu()
     backButton->setText("Back");
     backButton->setAlignment(xy::UI::Alignment::Centre);
     backButton->setPosition(1080.f, 770.f);
-    backButton->setCallback([this]()
+    backButton->addCallback([this]()
     {
         requestStackPop();
         sendCloseMessage();

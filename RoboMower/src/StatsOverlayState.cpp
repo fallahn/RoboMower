@@ -26,7 +26,7 @@ StatsOverlayState::StatsOverlayState(xy::StateStack& ss, Context c)
     palette.borderActive = { 0u, 20u, 190u };
     palette.borderNormal = { 0u, 15u, 120u };
 
-    m_windows.emplace_back(std::make_unique<xy::UI::Window>(font, 640, 480, palette));
+    m_windows.emplace_back(std::make_unique<xy::UI::Window>(c.renderWindow, font, 640, 480, palette));
     auto& window = m_windows.back();
     window->setPosition(20.f, 60.f);
     window->setTitle("Stats");
@@ -37,7 +37,7 @@ StatsOverlayState::StatsOverlayState(xy::StateStack& ss, Context c)
     m_statsText->setCharacterSize(26u);
     window->addControl(m_statsText);
 
-    m_windows.emplace_back(std::make_unique<xy::UI::Window>(font, 840, 880, palette));
+    m_windows.emplace_back(std::make_unique<xy::UI::Window>(c.renderWindow, font, 840, 880, palette));
     auto& otherwindow = m_windows.back();
     otherwindow->setPosition(700.f, 60.f);
     otherwindow->setTitle("Console");

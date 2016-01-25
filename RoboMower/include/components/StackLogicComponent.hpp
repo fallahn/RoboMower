@@ -10,7 +10,7 @@
 #ifndef STACK_LOGIC_COMPONENT_HPP_
 #define STACK_LOGIC_COMPONENT_HPP_
 
-#include <xygine/Component.hpp>
+#include <xygine/components/Component.hpp>
 
 #include <InstructionSet.hpp>
 
@@ -26,7 +26,6 @@ public:
 
     xy::Component::Type type() const override { return xy::Component::Type::Script; }
     void entityUpdate(xy::Entity&, float) override;
-    void handleMessage(const xy::Message&) override;
 
     void onStart(xy::Entity&) override;
 
@@ -51,6 +50,8 @@ private:
     std::size_t m_instructionCount;
 
     void updateInstructionCount();
+    void instructionBlockHandler(xy::Component* c, const xy::Message& msg);
+    void scrollHandler(xy::Component* c, const xy::Message& msg);
 };
 
 

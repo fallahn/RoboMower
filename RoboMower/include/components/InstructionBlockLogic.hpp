@@ -9,7 +9,7 @@
 #ifndef INSTRUCTION_BLOCK_LOGIC_HPP_
 #define INSTRUCTION_BLOCK_LOGIC_HPP_
 
-#include <xygine/Component.hpp>
+#include <xygine/components/Component.hpp>
 
 #include <InstructionSet.hpp>
 
@@ -25,7 +25,6 @@ public:
 
     Component::Type type() const override { return Component::Type::Script; }
     void entityUpdate(xy::Entity&, float) override;
-    void handleMessage(const xy::Message&) override;
 
     Instruction getInstruction() const { return m_instruction; }
     void setCarried(bool);

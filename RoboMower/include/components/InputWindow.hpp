@@ -12,7 +12,7 @@
 
 #include <RoundedRectangle.hpp>
 
-#include <xygine/Component.hpp>
+#include <xygine/components/Component.hpp>
 
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/Text.hpp>
@@ -30,7 +30,6 @@ public:
 
     xy::Component::Type type() const override { return xy::Component::Type::Drawable; }
     void entityUpdate(xy::Entity&, float) override;
-    void handleMessage(const xy::Message&) override;
 
     void handleTextEvent(const sf::Event&);
     void setFont(const sf::Font&);

@@ -20,8 +20,6 @@ void ButtonLogicScript::entityUpdate(xy::Entity& ent, float)
 
 }
 
-void ButtonLogicScript::handleMessage(const xy::Message&){}
-
 Instruction ButtonLogicScript::getInstruction() const
 {
     return m_instruction;

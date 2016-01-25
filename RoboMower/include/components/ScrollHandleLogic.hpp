@@ -10,7 +10,7 @@
 #ifndef SCROLL_HANDLE_LOGIC_HPP_
 #define SCROLL_HANDLE_LOGIC_HPP_
 
-#include <xygine/Component.hpp>
+#include <xygine/components/Component.hpp>
 
 class ScrollHandleLogic final : public xy::Component
 {
@@ -22,7 +22,6 @@ public:
 
     xy::Component::Type type() const override { return xy::Component::Type::Script; }
     void entityUpdate(xy::Entity&, float) override;
-    void handleMessage(const  xy::Message&) override;
 
     void setCarried(bool);
     bool carried() const;
@@ -38,6 +37,8 @@ private:
     float m_position;
 
     bool m_update;
+
+    void handleMessage(xy::Component*, const xy::Message&);
 };
 
 #endif //SCROLL_HANDLE_LOGIC_HPP_
