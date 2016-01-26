@@ -88,7 +88,8 @@ set(SOURCE
   src/RoundedRectangle.cpp
   src/ScrollHandleLogic.cpp
   src/StackLogicComponent.cpp
-  src/StatsOverlayState.cpp)
+  src/StatsOverlayState.cpp
+  src/Tilemap.cpp)
 #  ${RES_FILES})
   
 if(WIN32)

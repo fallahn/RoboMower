@@ -2,7 +2,7 @@
 // RoboMower - Copyright (C) Matt Marchant; All Rights Reserved
 // Unauthorized copying of this file via any medium is strictly prohibited
 // Proprietary and confidential
-// Written by Matt Marchant (matty_styles@hotmail.com) 2015
+// Written by Matt Marchant (matty_styles@hotmail.com) 2015 - 2016
 //==============================================================================
 
 #include <components/ButtonLogic.hpp>

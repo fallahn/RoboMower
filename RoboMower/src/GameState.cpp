@@ -2,10 +2,11 @@
 // RoboMower - Copyright (C) Matt Marchant; All Rights Reserved
 // Unauthorized copying of this file via any medium is strictly prohibited
 // Proprietary and confidential
-// Written by Matt Marchant (matty_styles@hotmail.com) 2015
+// Written by Matt Marchant (matty_styles@hotmail.com) 2015 - 2016
 //==============================================================================
 
 #include <GameState.hpp>
+#include <components/Tilemap.hpp>
 
 #include <xygine/Reports.hpp>
 #include <xygine/Entity.hpp>
@@ -34,8 +35,7 @@ namespace
     const float joyDeadZone = 25.f;
     const float joyMaxAxis = 100.f;
 }
-#include<xygine/parsers/picojson.h>
-#include <istream>
+
 GameState::GameState(xy::StateStack& stateStack, Context context)
     : State         (stateStack, context),
     m_messageBus    (context.appInstance.getMessageBus()),
@@ -50,6 +50,13 @@ GameState::GameState(xy::StateStack& stateStack, Context context)
 
     m_reportText.setFont(m_fontResource.get("assets/fonts/Console.ttf"));
     m_reportText.setPosition(1500.f, 30.f);
+
+    //le background
+    auto tilemap = xy::Component::create<Tilemap>(m_messageBus, m_textureResource.get("assets/images/tileset.png"));
+    auto ent = xy::Entity::create(m_messageBus);
+    ent->addComponent(tilemap);
+    ent->setPosition(500.f, 40.f);
+    m_scene.addEntity(ent, xy::Scene::Layer::BackRear);
 }
 
 bool GameState::update(float dt)

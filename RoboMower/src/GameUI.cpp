@@ -2,7 +2,7 @@
 // RoboMower - Copyright (C) Matt Marchant; All Rights Reserved
 // Unauthorized copying of this file via any medium is strictly prohibited
 // Proprietary and confidential
-// Written by Matt Marchant (matty_styles@hotmail.com) 2015
+// Written by Matt Marchant (matty_styles@hotmail.com) 2015 - 2016
 //==============================================================================
 
 #include <GameUI.hpp>
@@ -72,7 +72,7 @@ namespace
 
     std::unique_ptr<xy::SfDrawableComponent<RoundedRectangle>> makeButtonBackground(xy::MessageBus& messageBus)
     {
-        auto rr = std::make_unique<xy::SfDrawableComponent<RoundedRectangle>>(messageBus);
+        auto rr = xy::Component::create<xy::SfDrawableComponent<RoundedRectangle>>(messageBus);
         auto& shape = rr->getDrawable();
         shape.setFillColor({ 220u, 240u, 10u, 180u });
         shape.setOutlineThickness(6.f);
@@ -83,7 +83,7 @@ namespace
 
     std::unique_ptr<xy::SfDrawableComponent<RoundedRectangle>> makeInputBackground(xy::MessageBus& messageBus)
     {
-        auto rr = std::make_unique<xy::SfDrawableComponent<RoundedRectangle>>(messageBus);
+        auto rr = xy::Component::create<xy::SfDrawableComponent<RoundedRectangle>>(messageBus);
         auto& shape = rr->getDrawable();
         shape.setFillColor({ 220u, 40u, 210u, 180u });
         shape.setOutlineThickness(6.f);
@@ -104,7 +104,7 @@ GameUI::GameUI(xy::State::Context sc, xy::TextureResource& tr, xy::FontResource&
     m_inputWindowVisible(false)
 {
     //command list
-    auto rr = std::make_unique<xy::SfDrawableComponent<RoundedRectangle>>(m_messageBus);
+    auto rr = xy::Component::create<xy::SfDrawableComponent<RoundedRectangle>>(m_messageBus);
     auto& shape = rr->getDrawable();
     shape.setFillColor(fillColour);
     shape.setOutlineThickness(10.f);
@@ -112,7 +112,7 @@ GameUI::GameUI(xy::State::Context sc, xy::TextureResource& tr, xy::FontResource&
     shape.setSize(stackSize);
 
     auto entity = xy::Entity::create(m_messageBus);
-    entity->addComponent<xy::SfDrawableComponent<RoundedRectangle>>(rr);
+    entity->addComponent(rr);
     entity->setPosition(stackPosition);
     auto backPanel = m_scene.addEntity(entity, xy::Scene::Layer::FrontFront);
 
@@ -120,12 +120,12 @@ GameUI::GameUI(xy::State::Context sc, xy::TextureResource& tr, xy::FontResource&
     auto subEnt = xy::Entity::create(m_messageBus);
     subEnt->addCommandCategories(CommandCategory::InstructionList);
     auto scl = std::make_unique<StackLogicComponent>(m_messageBus, labelSize, stackSize);
-    subEnt->addComponent<StackLogicComponent>(scl);
+    subEnt->addComponent(scl);
     m_instructionStack = subEnt.get();
     backPanel->addChild(subEnt); //backPanel has to be added first so it has a valid scene pointer
 
     //command tray
-    rr = std::make_unique<xy::SfDrawableComponent<RoundedRectangle>>(m_messageBus);
+    rr = xy::Component::create<xy::SfDrawableComponent<RoundedRectangle>>(m_messageBus);
     auto& shape2 = rr->getDrawable();
     shape2.setFillColor(fillColour);
     shape2.setOutlineColor(borderColour);
@@ -134,7 +134,7 @@ GameUI::GameUI(xy::State::Context sc, xy::TextureResource& tr, xy::FontResource&
     shape2.setRadius(20.f);
 
     entity = xy::Entity::create(m_messageBus);
-    entity->addComponent<xy::SfDrawableComponent<RoundedRectangle>>(rr);
+    entity->addComponent(rr);
     entity->setPosition(trayPosition);
     m_scene.addEntity(entity, xy::Scene::Layer::FrontFront);
 
@@ -146,9 +146,9 @@ GameUI::GameUI(xy::State::Context sc, xy::TextureResource& tr, xy::FontResource&
         entity->setPosition(labelPadding + (i * labelSpacing), labelTop);
         entity->addCommandCategories(CommandCategory::TrayIcon);
         auto rr = makeButtonBackground(m_messageBus);
-        entity->addComponent<xy::SfDrawableComponent<RoundedRectangle>>(rr);
+        entity->addComponent(rr);
         auto bls = std::make_unique<ButtonLogicScript>(m_messageBus, it->first);
-        entity->addComponent<ButtonLogicScript>(bls);
+        entity->addComponent(bls);
 
         auto text = std::make_unique<xy::SfDrawableComponent<sf::Text>>(m_messageBus);
         auto& td = text->getDrawable();
@@ -159,12 +159,12 @@ GameUI::GameUI(xy::State::Context sc, xy::TextureResource& tr, xy::FontResource&
         text->setPosition(labelSize / 2.f);
         text->move(0.f, textOffset);
 
-        entity->addComponent<xy::SfDrawableComponent<sf::Text>>(text);
+        entity->addComponent(text);
         m_scene.addEntity(entity, xy::Scene::Layer::FrontFront);
     }
 
     //scroll bar
-    rr = std::make_unique<xy::SfDrawableComponent<RoundedRectangle>>(m_messageBus);
+    rr = xy::Component::create<xy::SfDrawableComponent<RoundedRectangle>>(m_messageBus);
     auto& shape3 = rr->getDrawable();
     shape3.setFillColor(fillColour);
     shape3.setOutlineColor(borderColour);
@@ -173,9 +173,9 @@ GameUI::GameUI(xy::State::Context sc, xy::TextureResource& tr, xy::FontResource&
     shape3.setRadius(scrollBarRadius);
     entity = xy::Entity::create(m_messageBus);
     entity->setPosition(stackPosition + sf::Vector2f(stackSize.x + 20.f, 0.f));
-    entity->addComponent<xy::SfDrawableComponent<RoundedRectangle>>(rr);
+    entity->addComponent(rr);
 
-    auto cd = std::make_unique<xy::SfDrawableComponent<sf::CircleShape>>(m_messageBus);
+    auto cd = xy::Component::create<xy::SfDrawableComponent<sf::CircleShape>>(m_messageBus);
     auto& circle = cd->getDrawable();
     circle.setRadius(scrollBarRadius);
     circle.setFillColor(borderColour);
@@ -183,11 +183,11 @@ GameUI::GameUI(xy::State::Context sc, xy::TextureResource& tr, xy::FontResource&
     circle.setOutlineColor(fillColour);
 
     subEnt = xy::Entity::create(m_messageBus);
-    subEnt->addComponent<xy::SfDrawableComponent<sf::CircleShape>>(cd);
+    subEnt->addComponent(cd);
 
-    auto shl = std::make_unique<ScrollHandleLogic>(m_messageBus);
+    auto shl = xy::Component::create<ScrollHandleLogic>(m_messageBus);
     shl->setLength(stackSize.y - 8.f);
-    subEnt->addComponent<ScrollHandleLogic>(shl);
+    subEnt->addComponent(shl);
 
     subEnt->addCommandCategories(CommandCategory::ScrollHandle);
     entity->addChild(subEnt);
@@ -196,12 +196,12 @@ GameUI::GameUI(xy::State::Context sc, xy::TextureResource& tr, xy::FontResource&
 
 
     //add mouse cursor
-    auto ad = std::make_unique<xy::SfDrawableComponent<sf::Sprite>>(m_messageBus);
+    auto ad = xy::Component::create<xy::SfDrawableComponent<sf::Sprite>>(m_messageBus);
     auto& sprite = ad->getDrawable();
     sprite.setTexture(tr.get("assets/images/ui/cursor.png"));
 
     entity = xy::Entity::create(m_messageBus);
-    entity->addComponent<xy::SfDrawableComponent<sf::Sprite>>(ad);
+    entity->addComponent(ad);
     entity->addCommandCategories(CommandCategory::Cursor);
     entity->setPosition(sc.renderWindow.mapPixelToCoords(sf::Mouse::getPosition(sc.renderWindow)));
 

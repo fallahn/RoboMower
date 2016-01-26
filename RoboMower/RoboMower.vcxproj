@@ -90,6 +90,7 @@
     <ClCompile Include="src\ScrollHandleLogic.cpp" />
     <ClCompile Include="src\StackLogicComponent.cpp" />
     <ClCompile Include="src\StatsOverlayState.cpp" />
+    <ClCompile Include="src\Tilemap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\CommandCategories.hpp" />
@@ -99,6 +100,7 @@
     <ClInclude Include="include\components\LoopHandle.hpp" />
     <ClInclude Include="include\components\ScrollHandleLogic.hpp" />
     <ClInclude Include="include\components\StackLogicComponent.hpp" />
+    <ClInclude Include="include\components\Tilemap.hpp" />
     <ClInclude Include="include\Game.hpp" />
     <ClInclude Include="include\GameState.hpp" />
     <ClInclude Include="include\GameUI.hpp" />

@@ -2,7 +2,7 @@
 // RoboMower - Copyright (C) Matt Marchant; All Rights Reserved
 // Unauthorized copying of this file via any medium is strictly prohibited
 // Proprietary and confidential
-// Written by Matt Marchant (matty_styles@hotmail.com) 2015
+// Written by Matt Marchant (matty_styles@hotmail.com) 2015 - 2016
 //==============================================================================
 
 #include <components/StackLogicComponent.hpp>
@@ -68,12 +68,12 @@ void StackLogicComponent::entityUpdate(xy::Entity& entity, float)
         m_updateTransform = false;
     }
 #ifdef _DEBUG_
-    std::string targeted;
-    for (auto i = 0u; i < m_slots.size() / 2; ++i)
-    {
-        targeted = (m_slots[i].targeted) ? "true" : "false";
-        REPORT("Slot " + std::to_string(i + 10), std::to_string(m_slots[i].occupierID) + ", " + targeted);
-    }
+    //std::string targeted;
+    //for (auto i = 0u; i < m_slots.size() / 2; ++i)
+    //{
+    //    targeted = (m_slots[i].targeted) ? "true" : "false";
+    //    REPORT("Slot " + std::to_string(i + 10), std::to_string(m_slots[i].occupierID) + ", " + targeted);
+    //}
 #endif //_DEBUG_
 }
 
