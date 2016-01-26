@@ -57,6 +57,9 @@ private:
         FlowersTwo,
         FlowersThree,
         FlowersFour,
+        RockOne,
+        RockTwo,
+        RockThree,
         Count
     };
     static std::vector<sf::FloatRect> tileRects;

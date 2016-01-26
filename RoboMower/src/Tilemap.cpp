@@ -88,6 +88,9 @@ void Tilemap::loadJson()
                 getValue("flower2", rootValue, Tile::FlowersTwo);
                 getValue("flower3", rootValue, Tile::FlowersThree);
                 getValue("flower4", rootValue, Tile::FlowersFour);
+                getValue("rock1", rootValue, Tile::RockOne);
+                getValue("rock2", rootValue, Tile::RockTwo);
+                getValue("rock3", rootValue, Tile::RockThree);
             }
             else
             {
@@ -197,7 +200,7 @@ void Tilemap::buildMap()
                 static const int proabability = 80;
                 if (xy::Util::Random::value(0, 100) > proabability)
                 {
-                    addTile(x * tileWidth, y * tileHeight, static_cast<Tile>(xy::Util::Random::value(Tile::FlowersOne, Tile::FlowersFour)), m_borderArray);
+                    addTile(x * tileWidth, y * tileHeight, static_cast<Tile>(xy::Util::Random::value(Tile::FlowersOne, Tile::RockThree)), m_borderArray);
                 }
             }
         }
