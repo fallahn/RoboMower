@@ -57,6 +57,8 @@ private:
     GameUI m_gameUI;
 
     sf::Text m_reportText;
+
+    void buildMap();
 };
 
 #endif //GAME_STATE_HPP_

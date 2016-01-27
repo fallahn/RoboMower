@@ -62,7 +62,7 @@ private:
         RockThree,
         Count
     };
-    static std::vector<sf::FloatRect> tileRects;
+    static std::vector<sf::Vector2f> tilePositions;
 
     sf::Texture& m_texture;
     std::vector<sf::Vertex> m_borderArray;

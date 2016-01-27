@@ -7,6 +7,7 @@
 
 #include <GameState.hpp>
 #include <components/Tilemap.hpp>
+#include <components/PlayerDrawable.hpp>
 
 #include <xygine/Reports.hpp>
 #include <xygine/Entity.hpp>
@@ -42,6 +43,8 @@ GameState::GameState(xy::StateStack& stateStack, Context context)
     m_scene         (m_messageBus),
     m_gameUI        (context, m_textureResource, m_fontResource, m_scene)
 {
+    launchLoadingScreen();
+    
     //m_audioManager.mute(context.appInstance.getAudioSettings().muted);
     m_scene.setView(context.defaultView);
     //m_scene.drawDebug(true);
@@ -51,12 +54,8 @@ GameState::GameState(xy::StateStack& stateStack, Context context)
     m_reportText.setFont(m_fontResource.get("assets/fonts/Console.ttf"));
     m_reportText.setPosition(1500.f, 30.f);
 
-    //le background
-    auto tilemap = xy::Component::create<Tilemap>(m_messageBus, m_textureResource.get("assets/images/tileset.png"));
-    auto ent = xy::Entity::create(m_messageBus);
-    ent->addComponent(tilemap);
-    ent->setPosition(500.f, 40.f);
-    m_scene.addEntity(ent, xy::Scene::Layer::BackRear);
+    buildMap();
+    quitLoadingScreen();
 }
 
 bool GameState::update(float dt)
@@ -166,3 +165,23 @@ void GameState::handleMessage(const xy::Message& msg)
 }
 
 //private
+void GameState::buildMap()
+{
+    static const sf::Vector2f mapPos(500.f, 40.f);
+ 
+    //le background
+    auto tilemap = xy::Component::create<Tilemap>(m_messageBus, m_textureResource.get("assets/images/tileset.png"));
+    auto ent = xy::Entity::create(m_messageBus);
+    ent->addComponent(tilemap);
+    ent->setPosition(mapPos);
+
+    //player
+    auto playerDrawable = xy::Component::create<PlayerDrawable>(m_messageBus, m_textureResource.get("assets/images/tileset.png"), false);
+    auto playerEnt = xy::Entity::create(m_messageBus);
+    playerEnt->addComponent(playerDrawable);
+    playerEnt->setPosition(224.f, 160.f);
+
+    ent->addChild(playerEnt);
+    
+    m_scene.addEntity(ent, xy::Scene::Layer::BackRear);
+}

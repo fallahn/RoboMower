@@ -87,6 +87,9 @@
     <ClCompile Include="src\Tilemap.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
+    <ClCompile Include="src\PlayerDrawable.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Game.hpp">
@@ -159,6 +162,9 @@
       <Filter>Header Files\components</Filter>
     </ClInclude>
     <ClInclude Include="include\components\Tilemap.hpp">
+      <Filter>Header Files\components</Filter>
+    </ClInclude>
+    <ClInclude Include="include\components\PlayerDrawable.hpp">
       <Filter>Header Files\components</Filter>
     </ClInclude>
   </ItemGroup>

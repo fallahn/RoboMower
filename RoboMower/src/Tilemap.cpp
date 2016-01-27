@@ -15,6 +15,8 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 
 #include <fstream>
+#include <bitset>
+#include <functional>
 
 namespace
 {
@@ -30,7 +32,7 @@ namespace
     const sf::Uint8 borderLeft = 3u;
 }
 //actually we probably only need to store positions
-std::vector<sf::FloatRect> Tilemap::tileRects(Tilemap::Count);
+std::vector<sf::Vector2f> Tilemap::tilePositions(Tilemap::Count);
 
 Tilemap::Tilemap(xy::MessageBus& mb, sf::Texture& texture)
     : xy::Component (mb, this),
@@ -94,7 +96,7 @@ void Tilemap::loadJson()
             }
             else
             {
-                xy::Logger::log("Tileset data: " + err, xy::Logger::Type::Error, xy::Logger::Output::All);
+                xy::Logger::log("tileset data: " + err, xy::Logger::Type::Error, xy::Logger::Output::All);
             }
         }
         else
@@ -120,19 +122,22 @@ void Tilemap::getValue(const std::string& name, const picojson::value& source, T
                 arr[0].is<double>() ? static_cast<float>(arr[0].get<double>()) : 0.f,
                 arr[1].is<double>() ? static_cast<float>(arr[1].get<double>()) : 0.f
                 );
-        tileRects[tile] = { pos, tileSize };
+        tilePositions[tile] = pos;
     }
 }
 
 void Tilemap::buildMap()
 {
+    //used to create details
+    std::bitset<tileCountX*tileCountY> bs(0);
+    
     //create border
     for (auto y = 0u; y < tileCountY; ++y)
     {
         for (auto x = 0u; x < tileCountX; ++x)
         {
             //we need to place tiles from top layer down
-
+            
             //top fence
             if ((y == borderTop - 1) && (x >= borderLeft && x < tileCountX - borderLeft))
             {
@@ -197,11 +202,72 @@ void Tilemap::buildMap()
             {
                 addTile(x * tileWidth, y * tileHeight, Tile::Dirt, m_borderArray);
 
-                static const int proabability = 80;
+                //decide if this tile should have detail on it
+                static const int proabability = 85;
                 if (xy::Util::Random::value(0, 100) > proabability)
                 {
-                    addTile(x * tileWidth, y * tileHeight, static_cast<Tile>(xy::Util::Random::value(Tile::FlowersOne, Tile::RockThree)), m_borderArray);
+                    bs[(y * tileCountX) + x] = 1;
                 }
+            }
+        }
+    }
+
+    //smooth the bitset by essentially using a convolution blur
+    std::function<int(std::size_t)> getNeighbours = [&bs](std::size_t idx)
+    {
+        std::size_t retVal = 0;
+        sf::Vector2u coord(idx % tileCountX, idx / tileCountX);
+
+        for (auto x = coord.x - 1; x <= coord.x + 1; ++x)
+        {
+            for (auto y = coord.y - 1; y <= coord.y + 1; ++y)
+            {
+                if (x >= 0 && x < tileCountX && y >= 0 && y < tileCountY)
+                {
+                    if (x != coord.x || y != coord.y)
+                    {
+                        retVal += bs[tileCountX * y + x];
+                    }
+                }
+                else
+                {
+                    retVal++;
+                }
+            }
+        }
+
+        return retVal;
+    };
+    for (auto i = 0u; i < 5; ++i)
+    {
+        for (auto j = 0u; j < bs.size(); ++j)
+        {
+            auto count = getNeighbours(j);
+            if (count < 4) bs[i] = 1;
+            else if (count > 4) bs[i] = 0;
+        }
+    }
+
+    //add the detail tiles
+    int tile = 0;
+    std::vector<int> usedTiles = { 0 };
+    for (auto i = 0u; i < bs.size(); ++i)
+    {
+        if (bs[i] == 1)
+        {
+            auto x = i % tileCountX;
+            auto y = i / tileCountX;
+            
+            while (std::find(usedTiles.begin(), usedTiles.end(), tile) != usedTiles.end())
+            {
+                tile = xy::Util::Random::value(Tile::FlowersOne, Tile::RockThree);
+            }
+            usedTiles.push_back(tile);
+            addTile(x * tileWidth, y * tileHeight, static_cast<Tile>(tile), m_borderArray);
+
+            if (usedTiles.size() == (Tile::RockThree - Tile::FlowersOne))
+            {
+                usedTiles = { 0 };
             }
         }
     }
@@ -218,10 +284,10 @@ void Tilemap::buildMap()
 
 void Tilemap::addTile(float x, float y, Tile tile, std::vector<sf::Vertex>& vertArray)
 {
-    vertArray.emplace_back(sf::Vertex({ x, y }, { tileRects[tile].left, tileRects[tile].top }));
-    vertArray.emplace_back(sf::Vertex({ x + tileWidth, y }, { tileRects[tile].left + tileSize.x, tileRects[tile].top }));
-    vertArray.emplace_back(sf::Vertex({ x + tileWidth, y + tileHeight }, { tileRects[tile].left + tileSize.x, tileRects[tile].top + tileSize.y }));
-    vertArray.emplace_back(sf::Vertex({ x, y + tileHeight }, { tileRects[tile].left, tileRects[tile].top + tileSize.y}));
+    vertArray.emplace_back(sf::Vertex({ x, y }, { tilePositions[tile].x, tilePositions[tile].y }));
+    vertArray.emplace_back(sf::Vertex({ x + tileWidth, y }, { tilePositions[tile].x + tileSize.x, tilePositions[tile].y }));
+    vertArray.emplace_back(sf::Vertex({ x + tileWidth, y + tileHeight }, { tilePositions[tile].x + tileSize.x, tilePositions[tile].y + tileSize.y }));
+    vertArray.emplace_back(sf::Vertex({ x, y + tileHeight }, { tilePositions[tile].x, tilePositions[tile].y + tileSize.y}));
 }
 
 void Tilemap::draw(sf::RenderTarget& rt, sf::RenderStates states) const
