@@ -1,10 +1,10 @@
 {
   "Editor": {
-    "EmitterPosition": "79, 92",
+    "EmitterPosition": "-3, 30",
     "BackgroundColour": 255,
     "EnableMovement": false
   },
-  "ReleaseCount": 1,
+  "ReleaseCount": 3,
   "Delay": 0.0,
   "Duration": -1.0,
   "Texture": "",
@@ -13,31 +13,35 @@
   "ParticleSize": "2, 8",
   "ParticlePosition": "0, 0",
   "FollowParent": false,
-  "Lifetime": 1.0,
+  "Lifetime": 0.5,
   "InitialVelocity": "0, 0",
   "RandomInitialVelocities": [
-    "8, -22",
-    "16, -64",
-    "-30, -24",
-    "9, -24",
-    "16, -6",
-    "8, -25",
-    "2, -18",
-    "-16, -17"
+    "-25, -80",
+    "-19, -80",
+    "-14, -80",
+    "-9, -80",
+    "-4, -80",
+    "2, -80",
+    "9, -80",
+    "16, -80",
+    "22, -80"
   ],
-  "EmitRate": 30.0,
+  "EmitRate": 40.0,
   "RandomInitialPositions": [
-    "3, 4",
-    "4, 0",
-    "1, -3",
-    "-1, 4"
+    "-19, -32",
+    "-14, -32",
+    "-7, -32",
+    "-1, -32",
+    "6, -32",
+    "11, -32",
+    "18, -32"
   ],
   "Affectors": [
     {
       "Type": "Force",
       "Data": [
         0.0,
-        80.0
+        25.0
       ]
     },
     {
