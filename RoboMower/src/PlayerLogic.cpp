@@ -44,7 +44,7 @@ void PlayerLogic::entityUpdate(xy::Entity& entity, float dt)
     }
     else
     {
-        auto& particles = entity.getComponents<xy::ParticleSystem>();
+        auto particles = entity.getComponents<xy::ParticleSystem>();
         for (auto& ps : particles) ps->stop();
         
         //find new direction and update our entity
