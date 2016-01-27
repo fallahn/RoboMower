@@ -1,6 +1,6 @@
 {
   "Editor": {
-    "EmitterPosition": "-36, -65",
+    "EmitterPosition": "64, -46",
     "BackgroundColour": 255,
     "EnableMovement": false
   },
@@ -9,8 +9,8 @@
   "Duration": -1.0,
   "Texture": "",
   "Colour": 966336255,
-  "BlendMode": "Alpha",
-  "ParticleSize": "2, 6",
+  "BlendMode": "Add",
+  "ParticleSize": "2, 8",
   "ParticlePosition": "0, 0",
   "FollowParent": false,
   "Lifetime": 1.0,
@@ -35,6 +35,13 @@
       "Data": [
         0.0,
         -80.0
+      ]
+    },
+    {
+      "Type": "Scale",
+      "Data": [
+        1.2,
+        1.2
       ]
     }
   ]

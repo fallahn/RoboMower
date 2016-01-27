@@ -9,8 +9,8 @@
   "Duration": -1.0,
   "Texture": "",
   "Colour": 966336255,
-  "BlendMode": "Alpha",
-  "ParticleSize": "2, 6",
+  "BlendMode": "Add",
+  "ParticleSize": "8, 2",
   "ParticlePosition": "0, 0",
   "FollowParent": false,
   "Lifetime": 1.0,
@@ -36,6 +36,13 @@
       "Data": [
         80.0,
         0.0
+      ]
+    },
+    {
+      "Type": "Scale",
+      "Data": [
+        1.2,
+        1.2
       ]
     }
   ]

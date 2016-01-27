@@ -86,6 +86,7 @@ set(SOURCE
   src/MenuOptionState.cpp
   src/MenuPauseState.cpp
   src/PlayerDrawable.cpp
+  src/PlayerLogic.cpp
   src/RoundedRectangle.cpp
   src/ScrollHandleLogic.cpp
   src/StackLogicComponent.cpp

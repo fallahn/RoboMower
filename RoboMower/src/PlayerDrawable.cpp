@@ -9,6 +9,7 @@
 
 #include <xygine/Entity.hpp>
 #include <xygine/util/Json.hpp>
+#include <xygine/util/Random.hpp>
 
 #include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
@@ -21,6 +22,21 @@ namespace
     //tiles are drawn 4x larger than the tile set size
     const float tileWidth = 64.f;
     const float tileHeight = 64.f;
+
+    const std::vector<float> jiggles = 
+    {
+        xy::Util::Random::value(-2.f, 2.f),
+        xy::Util::Random::value(-2.f, 2.f),
+        xy::Util::Random::value(-2.f, 2.f),
+        xy::Util::Random::value(-2.f, 2.f),
+        xy::Util::Random::value(-2.f, 2.f),
+        xy::Util::Random::value(-2.f, 2.f),
+        xy::Util::Random::value(-2.f, 2.f),
+        xy::Util::Random::value(-2.f, 2.f),
+        xy::Util::Random::value(-2.f, 2.f),
+        xy::Util::Random::value(-2.f, 2.f),
+        xy::Util::Random::value(-2.f, 2.f)
+    };
 }
 
 PlayerDrawable::PlayerDrawable(xy::MessageBus& mb, sf::Texture& texture, bool local)
@@ -29,7 +45,8 @@ PlayerDrawable::PlayerDrawable(xy::MessageBus& mb, sf::Texture& texture, bool lo
     m_origins       (Count),
     m_currentSprite (nullptr),
     m_vertexCount   (0),
-    m_texture       (texture)
+    m_texture       (texture),
+    m_jiggleIndex   (0u)
 {
     createSprites(local);
     setDirection(Right);
@@ -38,14 +55,17 @@ PlayerDrawable::PlayerDrawable(xy::MessageBus& mb, sf::Texture& texture, bool lo
 //public
 void PlayerDrawable::entityUpdate(xy::Entity& ent, float dt)
 {
-    //TODO switch sprite/origin based on direction.
-    //TODO start/stop relvant particle system
-    //TODO animate origin for jiggle when motor is on :) (create a table for random jiggle)
+    //animate origin for jiggle when motor is on
+    auto origin = m_origins[m_direction];
+    origin.x += jiggles[m_jiggleIndex];
+    m_jiggleIndex = (m_jiggleIndex + 1) % jiggles.size();
+    origin.y += jiggles[m_jiggleIndex];
+    m_jiggleIndex = (m_jiggleIndex + 1) % jiggles.size();
+    setOrigin(origin);
+
     //TODO when we rotate can we blend between sprites?
 }
 
-
-//private
 void PlayerDrawable::setDirection(Direction dir)
 {
     switch (dir)
@@ -72,6 +92,7 @@ void PlayerDrawable::setDirection(Direction dir)
     m_direction = dir;
 }
 
+//private
 void PlayerDrawable::createSprites(bool local)
 {
     std::ifstream file("assets/images/tileset.tst");

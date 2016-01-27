@@ -8,6 +8,7 @@
 #include <GameState.hpp>
 #include <components/Tilemap.hpp>
 #include <components/PlayerDrawable.hpp>
+#include <components/PlayerLogic.hpp>
 
 #include <xygine/Reports.hpp>
 #include <xygine/Entity.hpp>
@@ -17,7 +18,7 @@
 #include <xygine/App.hpp>
 #include <xygine/Log.hpp>
 
-#include <xygine/components/ParticleController.hpp>
+#include <xygine/components/ParticleSystem.hpp>
 #include <CommandCategories.hpp>
 
 #include <SFML/Graphics/RenderWindow.hpp>
@@ -176,10 +177,28 @@ void GameState::buildMap()
     ent->setPosition(mapPos);
 
     //player
-    auto playerDrawable = xy::Component::create<PlayerDrawable>(m_messageBus, m_textureResource.get("assets/images/tileset.png"), false);
+    auto playerDrawable = xy::Component::create<PlayerDrawable>(m_messageBus, m_textureResource.get("assets/images/tileset.png"), true);
     auto playerEnt = xy::Entity::create(m_messageBus);
     playerEnt->addComponent(playerDrawable);
     playerEnt->setPosition(224.f, 160.f);
+
+    auto playerLogic = xy::Component::create<PlayerLogic>(m_messageBus);
+    playerEnt->addComponent(playerLogic);
+
+    xy::ParticleSystem::Definition pd;
+    pd.loadFromFile("assets/particles/mow_up.xyp", m_textureResource);
+    auto ps = pd.createSystem(m_messageBus);
+    playerEnt->addComponent(ps)->setName("particle_up");
+    pd.loadFromFile("assets/particles/mow_down.xyp", m_textureResource);
+    ps = pd.createSystem(m_messageBus);
+    playerEnt->addComponent(ps)->setName("particle_down");
+    pd.loadFromFile("assets/particles/mow_left.xyp", m_textureResource);
+    ps = pd.createSystem(m_messageBus);
+    playerEnt->addComponent(ps)->setName("particle_left");
+    pd.loadFromFile("assets/particles/mow_right.xyp", m_textureResource);
+    ps = pd.createSystem(m_messageBus);
+    ps->start(pd.releaseCount, pd.delay, pd.duration);
+    playerEnt->addComponent(ps)->setName("particle_right");
 
     ent->addChild(playerEnt);
     

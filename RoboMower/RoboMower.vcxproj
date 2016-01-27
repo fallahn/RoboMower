@@ -87,6 +87,7 @@
     <ClCompile Include="src\MenuOptionState.cpp" />
     <ClCompile Include="src\MenuPauseState.cpp" />
     <ClCompile Include="src\PlayerDrawable.cpp" />
+    <ClCompile Include="src\PlayerLogic.cpp" />
     <ClCompile Include="src\RoundedRectangle.cpp" />
     <ClCompile Include="src\ScrollHandleLogic.cpp" />
     <ClCompile Include="src\StackLogicComponent.cpp" />
@@ -100,6 +101,7 @@
     <ClInclude Include="include\components\InstructionBlockLogic.hpp" />
     <ClInclude Include="include\components\LoopHandle.hpp" />
     <ClInclude Include="include\components\PlayerDrawable.hpp" />
+    <ClInclude Include="include\components\PlayerLogic.hpp" />
     <ClInclude Include="include\components\ScrollHandleLogic.hpp" />
     <ClInclude Include="include\components\StackLogicComponent.hpp" />
     <ClInclude Include="include\components\Tilemap.hpp" />

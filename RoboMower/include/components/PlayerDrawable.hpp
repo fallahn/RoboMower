@@ -18,18 +18,21 @@
 class PlayerDrawable final : public xy::Component, public sf::Drawable, public sf::Transformable
 {
 public:
+    enum Direction
+    {
+        Up, Down, Left, Right, Count
+    };
+
     PlayerDrawable(xy::MessageBus&, sf::Texture&, bool local);
     PlayerDrawable() = default;
 
     xy::Component::Type type() const override { return xy::Component::Type::Drawable; }
     void entityUpdate(xy::Entity&, float) override;
+    void setDirection(Direction);
 
 private:
 
-    enum Direction
-    {
-        Up, Down, Left, Right, Count
-    }m_direction;
+    Direction m_direction;
     std::vector<sf::Vector2f> m_origins;
     std::vector<sf::Vertex> m_upSprite;
     std::vector<sf::Vertex> m_downSprite;
@@ -40,7 +43,7 @@ private:
     std::size_t m_vertexCount;
     sf::Texture& m_texture;
     
-    void setDirection(Direction);
+    std::size_t m_jiggleIndex;
 
     void createSprites(bool local);
     void buildSprite(const sf::Vector2f&, const sf::Vector2f&, Direction);
