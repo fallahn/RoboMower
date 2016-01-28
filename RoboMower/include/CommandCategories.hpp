@@ -19,7 +19,8 @@ enum CommandCategory
     InstructionList    = 0x10,
     ScrollHandle       = 0x20,
     InputBox           = 0x40,
-    InputPopup         = 0x80
+    InputPopup         = 0x80,
+    TransportControl   = 0x100
 };
 
 #endif //COMMAND_CATEGORIES_HPP_

@@ -25,17 +25,17 @@ namespace
 
     const std::vector<float> jiggles = 
     {
-        xy::Util::Random::value(-2.f, 2.f),
-        xy::Util::Random::value(-2.f, 2.f),
-        xy::Util::Random::value(-2.f, 2.f),
-        xy::Util::Random::value(-2.f, 2.f),
-        xy::Util::Random::value(-2.f, 2.f),
-        xy::Util::Random::value(-2.f, 2.f),
-        xy::Util::Random::value(-2.f, 2.f),
-        xy::Util::Random::value(-2.f, 2.f),
-        xy::Util::Random::value(-2.f, 2.f),
-        xy::Util::Random::value(-2.f, 2.f),
-        xy::Util::Random::value(-2.f, 2.f)
+        xy::Util::Random::value(-1.f, 1.f),
+        xy::Util::Random::value(-1.f, 1.f),
+        xy::Util::Random::value(-1.f, 1.f),
+        xy::Util::Random::value(-1.f, 1.f),
+        xy::Util::Random::value(-1.f, 1.f),
+        xy::Util::Random::value(-1.f, 1.f),
+        xy::Util::Random::value(-1.f, 1.f),
+        xy::Util::Random::value(-1.f, 1.f),
+        xy::Util::Random::value(-1.f, 1.f),
+        xy::Util::Random::value(-1.f, 1.f),
+        xy::Util::Random::value(-1.f, 1.f)
     };
 }
 

@@ -168,7 +168,7 @@ void GameState::handleMessage(const xy::Message& msg)
 //private
 void GameState::buildMap()
 {
-    static const sf::Vector2f mapPos(500.f, 40.f);
+    static const sf::Vector2f mapPos(440.f, 40.f);
  
     //le background
     auto tilemap = xy::Component::create<Tilemap>(m_messageBus, m_textureResource.get("assets/images/tileset.png"));
@@ -197,7 +197,6 @@ void GameState::buildMap()
     playerEnt->addComponent(ps)->setName("particle_left");
     pd.loadFromFile("assets/particles/mow_right.xyp", m_textureResource);
     ps = pd.createSystem(m_messageBus);
-    ps->start(pd.releaseCount, pd.delay, pd.duration);
     playerEnt->addComponent(ps)->setName("particle_right");
 
     ent->addChild(playerEnt);

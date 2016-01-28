@@ -60,4 +60,4 @@ private:
     void showInputWindow(sf::Uint64 destId);
 };
 
-#endif //GAME_UO_HPP_
+#endif //GAME_UI_HPP_

@@ -47,7 +47,7 @@ namespace
         { Instruction::Right, "Right" },
         { Instruction::Loop, "Loop" }
     };
-    const sf::Uint8 buttonCount = 6u;
+    const sf::Uint8 buttonCount = 5u;// 6u; //temp disable looping until we fix UI
 
     const float labelSpacing = 240.f;
     const float labelPadding = 445.f;
@@ -57,14 +57,20 @@ namespace
     const sf::Vector2f labelSize(220.f, 30.f);
     const sf::Vector2f inputSize(50.f, 30.f);
 
-    const sf::Vector2f stackPosition(50.f, 50.f);
-    const sf::Vector2f stackSize(320.f, 980.f);
+    const sf::Vector2f stackPosition(50.f, 40.f);
+    const sf::Vector2f stackSize(320.f, 990.f);
 
     const sf::Vector2f trayPosition(430.f, 960.f);
     const sf::Vector2f traySize(1450.f, 70.f);
 
+    const sf::Vector2f transportPosition(1754.f, 40.f);
+    const sf::Vector2f transportSize(124.f, 890.f);
+
     const sf::Color fillColour(180u, 40u, 20u, 180u);
     const sf::Color borderColour(15u, 30u, 100u);
+
+    const sf::Color buttonFillColour(220u, 240u, 10u, 180u);
+    const sf::Color buttonBorderColor(10u, 230u, 10u);
 
     const float scrollBarRadius = 8.f;
 
@@ -74,9 +80,9 @@ namespace
     {
         auto rr = xy::Component::create<xy::SfDrawableComponent<RoundedRectangle>>(messageBus);
         auto& shape = rr->getDrawable();
-        shape.setFillColor({ 220u, 240u, 10u, 180u });
+        shape.setFillColor(buttonFillColour);
         shape.setOutlineThickness(6.f);
-        shape.setOutlineColor({ 10u, 230u, 10u });
+        shape.setOutlineColor(buttonBorderColor);
         shape.setSize(labelSize);
         return std::move(rr);
     }
@@ -89,6 +95,18 @@ namespace
         shape.setOutlineThickness(6.f);
         shape.setOutlineColor({ 10u, 230u, 10u });
         shape.setSize(inputSize);
+        return std::move(rr);
+    }
+
+    std::unique_ptr<xy::SfDrawableComponent<sf::CircleShape>> makeTransportButton(xy::MessageBus& messageBus)
+    {
+        auto rr = xy::Component::create<xy::SfDrawableComponent<sf::CircleShape>>(messageBus);
+        auto& shape = rr->getDrawable();
+        //shape.setFillColor(buttonFillColour);
+        shape.setOutlineThickness(6.f);
+        shape.setOutlineColor(buttonBorderColor);
+        shape.setRadius(40.f);
+        shape.setOrigin(40.f, 40.f);
         return std::move(rr);
     }
 }
@@ -222,6 +240,47 @@ GameUI::GameUI(xy::State::Context sc, xy::TextureResource& tr, xy::FontResource&
     auto& textShader = m_shaderResource.get(Shader::Id::CropText);
     textShader.setParameter("u_position", sf::Vector2f(pos));
     textShader.setParameter("u_size", sf::Vector2f(size));
+
+
+    //transport controls
+    rr = xy::Component::create<xy::SfDrawableComponent<RoundedRectangle>>(m_messageBus);
+    auto& shape4 = rr->getDrawable();
+    shape4.setFillColor(fillColour);
+    shape4.setOutlineColor(borderColour);
+    shape4.setOutlineThickness(8.f);
+    shape4.setSize(transportSize);
+    
+    entity = xy::Entity::create(m_messageBus);
+    entity->setPosition(transportPosition);
+    entity->addCommandCategories(CommandCategory::TransportControl);
+    entity->addComponent(rr);
+
+    auto texture = &tr.get("assets/images/transport.png");
+
+    auto playButton = makeTransportButton(m_messageBus);
+    playButton->setName("play_button");
+    playButton->getDrawable().setPosition(transportSize / 2.f);
+    playButton->getDrawable().move(0.f, -120.f);
+    playButton->getDrawable().setTexture(texture);
+    playButton->getDrawable().setTextureRect({ 0, 0, 80, 80 });
+    entity->addComponent(playButton);
+
+    auto pauseButton = makeTransportButton(m_messageBus);
+    pauseButton->setName("pause_button");
+    pauseButton->getDrawable().setPosition(transportSize / 2.f);
+    pauseButton->getDrawable().setTexture(texture);
+    pauseButton->getDrawable().setTextureRect({ 0, 80, 80, 80 });
+    entity->addComponent(pauseButton);
+
+    auto rewindButton = makeTransportButton(m_messageBus);
+    rewindButton->setName("rewind_button");
+    rewindButton->getDrawable().setPosition(transportSize / 2.f);
+    rewindButton->getDrawable().move(0.f, 120.f);
+    rewindButton->getDrawable().setTexture(texture);
+    rewindButton->getDrawable().setTextureRect({ 0, 160, 80, 80 });
+    entity->addComponent(rewindButton);
+
+    scene.addEntity(entity, xy::Scene::Layer::FrontFront);
 }
 
 //public
@@ -360,6 +419,40 @@ void GameUI::handleEvent(const sf::Event& evt)
             cmd.action = [](xy::Entity& entity, float)
             {
                 entity.getComponent<ScrollHandleLogic>()->setCarried(false);
+            };
+            m_scene.sendCommand(cmd);
+
+
+            //check if we're over a transport button and raise a clicked event
+            auto mousePos = m_mouseCursor->getPosition();
+            cmd.category = CommandCategory::TransportControl;
+            cmd.action = [mousePos, this](xy::Entity& entity, float dt)
+            {
+                auto position = entity.getWorldPosition();
+                auto buttons = entity.getComponents<xy::SfDrawableComponent<sf::CircleShape>>();
+                for (auto b : buttons)
+                {
+                    auto bounds = b->getDrawable().getGlobalBounds();
+                    bounds.left += position.x;
+                    bounds.top += position.y;
+                    if (bounds.contains(mousePos))
+                    {
+                        auto msg = m_messageBus.post<TransportEvent>(MessageId::TransportMessage);
+                        if (b->getName() == "play_button")
+                        {
+                            msg->button = TransportEvent::Play;
+                        }
+                        else if (b->getName() == "pause_button")
+                        {
+                            msg->button = TransportEvent::Pause;
+                        }
+                        else
+                        {
+                            msg->button = TransportEvent::Rewind;
+                        }
+                        break;
+                    }
+                }
             };
             m_scene.sendCommand(cmd);
         }

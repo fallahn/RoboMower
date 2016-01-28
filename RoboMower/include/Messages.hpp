@@ -21,7 +21,9 @@ enum MessageId
     TrayIconMessage = xy::Message::Count,
     InstructionBlockMessage,
     ScrollbarMessage,
-    InputBoxMessage
+    InputBoxMessage,
+    PlayerMessage,
+    TransportMessage
 };
 
 struct TrayIconEvent
@@ -62,6 +64,24 @@ struct InputBoxEvent
     }action;
     sf::Uint64 entityId = 0;
     sf::Uint32 value = 0;
+};
+
+struct PlayerEvent
+{
+    enum
+    {
+        FinishedCurrentCommand
+    }action;
+};
+
+struct TransportEvent
+{
+    enum
+    {
+        Play,
+        Pause,
+        Rewind
+    }button;
 };
 
 #endif //MESSAGE_HPP_
