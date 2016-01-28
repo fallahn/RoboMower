@@ -46,7 +46,6 @@ GameState::GameState(xy::StateStack& stateStack, Context context)
 {
     launchLoadingScreen();
     
-    //m_audioManager.mute(context.appInstance.getAudioSettings().muted);
     m_scene.setView(context.defaultView);
     //m_scene.drawDebug(true);
     auto pp = xy::PostProcess::create<xy::PostChromeAb>();
@@ -65,7 +64,6 @@ bool GameState::update(float dt)
     auto mousePos = rw.mapPixelToCoords(sf::Mouse::getPosition(rw));
     
     m_gameUI.update(dt, mousePos);
-    m_audioManager.update(dt);
     m_scene.update(dt);
 
     m_reportText.setString(xy::StatsReporter::reporter.getString());
@@ -161,7 +159,6 @@ bool GameState::handleEvent(const sf::Event& evt)
 void GameState::handleMessage(const xy::Message& msg)
 { 
     m_gameUI.handleMessage(msg);
-    m_audioManager.handleMessage(msg);
     m_scene.handleMessage(msg);
 }
 

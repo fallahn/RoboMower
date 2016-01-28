@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xygine", "xygine\xygine.vcxproj", "{A279F449-8C13-4804-BEA7-21FA0407C9BA}"
 EndProject
@@ -10,20 +10,34 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RoboMower", "RoboMower\Robo
 		{A279F449-8C13-4804-BEA7-21FA0407C9BA} = {A279F449-8C13-4804-BEA7-21FA0407C9BA}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NetworkRef", "netref\NetworkOne.vcxproj", "{0F5D9C50-168B-47A0-8DAF-3A344ECC00D5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
 		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{A279F449-8C13-4804-BEA7-21FA0407C9BA}.Debug|Win32.ActiveCfg = Debug|Win32
 		{A279F449-8C13-4804-BEA7-21FA0407C9BA}.Debug|Win32.Build.0 = Debug|Win32
+		{A279F449-8C13-4804-BEA7-21FA0407C9BA}.Debug|x64.ActiveCfg = Debug|Win32
 		{A279F449-8C13-4804-BEA7-21FA0407C9BA}.Release|Win32.ActiveCfg = Release|Win32
 		{A279F449-8C13-4804-BEA7-21FA0407C9BA}.Release|Win32.Build.0 = Release|Win32
+		{A279F449-8C13-4804-BEA7-21FA0407C9BA}.Release|x64.ActiveCfg = Release|Win32
 		{FE2B5DA6-CA22-4128-A937-32E761D8B84A}.Debug|Win32.ActiveCfg = Debug|Win32
 		{FE2B5DA6-CA22-4128-A937-32E761D8B84A}.Debug|Win32.Build.0 = Debug|Win32
+		{FE2B5DA6-CA22-4128-A937-32E761D8B84A}.Debug|x64.ActiveCfg = Debug|Win32
 		{FE2B5DA6-CA22-4128-A937-32E761D8B84A}.Release|Win32.ActiveCfg = Release|Win32
 		{FE2B5DA6-CA22-4128-A937-32E761D8B84A}.Release|Win32.Build.0 = Release|Win32
+		{FE2B5DA6-CA22-4128-A937-32E761D8B84A}.Release|x64.ActiveCfg = Release|Win32
+		{0F5D9C50-168B-47A0-8DAF-3A344ECC00D5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0F5D9C50-168B-47A0-8DAF-3A344ECC00D5}.Debug|x64.ActiveCfg = Debug|x64
+		{0F5D9C50-168B-47A0-8DAF-3A344ECC00D5}.Debug|x64.Build.0 = Debug|x64
+		{0F5D9C50-168B-47A0-8DAF-3A344ECC00D5}.Release|Win32.ActiveCfg = Release|Win32
+		{0F5D9C50-168B-47A0-8DAF-3A344ECC00D5}.Release|x64.ActiveCfg = Release|x64
+		{0F5D9C50-168B-47A0-8DAF-3A344ECC00D5}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

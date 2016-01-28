@@ -17,7 +17,6 @@
 #include <xygine/State.hpp>
 #include <xygine/Entity.hpp>
 #include <xygine/Scene.hpp>
-#include <xygine/AudioManager.hpp>
 #include <xygine/Resource.hpp>
 
 #include <SFML/Graphics/Text.hpp>
@@ -53,7 +52,6 @@ private:
     xy::TextureResource m_textureResource;
     xy::FontResource m_fontResource;
 
-    xy::AudioManager m_audioManager;
     GameUI m_gameUI;
 
     sf::Text m_reportText;

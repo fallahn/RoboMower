@@ -66,9 +66,17 @@ void Game::handleMessage(const xy::Message& msg)
         switch (msgData.action)
         {
         case xy::Message::NetworkEvent::RequestStartServer:
-            if (createLocalServer())
+            if (/*createLocalServer()*/true)
             {
                 m_stateStack.pushState(msgData.stateID);
+            }
+            else
+            {
+                //return to main menu
+                m_stateStack.pushState(States::ID::MenuBackground);
+                m_stateStack.pushState(States::ID::MenuMain);
+
+                //TODO message failure so error message can be displayed
             }
             break;
         default: break;
@@ -105,7 +113,7 @@ void Game::pauseApp(float dt)
 
 void Game::draw()
 {
-    getRenderWindow().clear(clearColour);
+    getRenderWindow().clear(/*clearColour*/);
     m_stateStack.draw();
     getRenderWindow().display();
 }
