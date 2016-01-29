@@ -22,11 +22,17 @@
     <Filter Include="Header Files\components">
       <UniqueIdentifier>{1f31cd96-e385-4570-bad9-c60e0ca54255}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Components">
-      <UniqueIdentifier>{07513dee-5363-4b5f-b0c7-9e190b30aacb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\shaders">
       <UniqueIdentifier>{e4dcd422-5ebe-4214-ab7f-98d78adf858d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\network">
+      <UniqueIdentifier>{0d5ff631-bac2-437f-a4ab-7ae22d650dbe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\network">
+      <UniqueIdentifier>{56c5dcb7-d1fd-4bf6-9500-f98c6b4b3926}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\components">
+      <UniqueIdentifier>{07513dee-5363-4b5f-b0c7-9e190b30aacb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -61,37 +67,40 @@
       <Filter>Source Files\states</Filter>
     </ClCompile>
     <ClCompile Include="src\ButtonLogic.cpp">
-      <Filter>Source Files\Components</Filter>
+      <Filter>Source Files\components</Filter>
     </ClCompile>
     <ClCompile Include="src\InstructionBlockLogic.cpp">
-      <Filter>Source Files\Components</Filter>
+      <Filter>Source Files\components</Filter>
     </ClCompile>
     <ClCompile Include="src\GameUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\StackLogicComponent.cpp">
-      <Filter>Source Files\Components</Filter>
+      <Filter>Source Files\components</Filter>
     </ClCompile>
     <ClCompile Include="src\ScrollHandleLogic.cpp">
-      <Filter>Source Files\Components</Filter>
+      <Filter>Source Files\components</Filter>
     </ClCompile>
     <ClCompile Include="src\RoundedRectangle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\InputWindow.cpp">
-      <Filter>Source Files\Components</Filter>
+      <Filter>Source Files\components</Filter>
     </ClCompile>
     <ClCompile Include="src\LoopHandle.cpp">
-      <Filter>Source Files\Components</Filter>
+      <Filter>Source Files\components</Filter>
     </ClCompile>
     <ClCompile Include="src\Tilemap.cpp">
-      <Filter>Source Files\Components</Filter>
+      <Filter>Source Files\components</Filter>
     </ClCompile>
     <ClCompile Include="src\PlayerDrawable.cpp">
-      <Filter>Source Files\Components</Filter>
+      <Filter>Source Files\components</Filter>
     </ClCompile>
     <ClCompile Include="src\PlayerLogic.cpp">
-      <Filter>Source Files\Components</Filter>
+      <Filter>Source Files\components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Server.cpp">
+      <Filter>Source Files\network</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -172,6 +181,12 @@
     </ClInclude>
     <ClInclude Include="include\components\PlayerLogic.hpp">
       <Filter>Header Files\components</Filter>
+    </ClInclude>
+    <ClInclude Include="include\network\Server.hpp">
+      <Filter>Header Files\network</Filter>
+    </ClInclude>
+    <ClInclude Include="include\network\NetworkConfig.hpp">
+      <Filter>Header Files\network</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

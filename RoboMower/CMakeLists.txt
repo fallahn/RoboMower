@@ -89,6 +89,7 @@ set(SOURCE
   src/PlayerLogic.cpp
   src/RoundedRectangle.cpp
   src/ScrollHandleLogic.cpp
+  src/Server.cpp
   src/StackLogicComponent.cpp
   src/StatsOverlayState.cpp
   src/Tilemap.cpp)
