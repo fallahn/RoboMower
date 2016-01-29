@@ -37,12 +37,13 @@ struct ClientInfo final
 class Server final
 {
 public:
-    explicit Server(const PacketHandler&);
+    Server();
     ~Server();
 
     Server(const Server&) = delete;
     Server& operator = (const Server&) = delete;
 
+    void setPacketHandler(const PacketHandler&);
     void setTimeoutHandler(const TimeoutHandler&);
 
     bool send(ClientID, sf::Packet&);
@@ -94,6 +95,7 @@ private:
     std::atomic<size_t> m_totalBytesReceived;
 
     void init();
+    void handlePacket(const sf::IpAddress&, PortNumber, PacketID, sf::Packet&);
 };
 
 #endif //RM_SERVER_HPP_

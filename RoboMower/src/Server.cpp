@@ -19,9 +19,8 @@ namespace
     const sf::Int32 CLIENT_TIMEOUT = 10000;
 }
 
-Server::Server(const PacketHandler& ph)
+Server::Server()
     : m_lastClientID    (-1),
-    m_packetHandler     (ph),
     m_running           (false),
     m_listenThread      (&Server::listen, this),
     m_updateThread      (&Server::update, this),
@@ -37,6 +36,11 @@ Server::~Server()
 }
 
 //public
+void Server::setPacketHandler(const PacketHandler& ph)
+{
+    m_packetHandler = ph;
+}
+
 void Server::setTimeoutHandler(const TimeoutHandler& th)
 {
     m_timoutHandler = th;
@@ -125,44 +129,7 @@ void Server::listen()
             continue;
         }
 
-        //handle heartbeat packets
-        if (packetType == Network::HeartBeat)
-        {
-            bool foundClient = false;
-
-            sf::Lock lock(m_mutex);
-            for (auto& c : m_clients)
-            {
-                if (c.second.ipAddress != ip || c.second.portNumber != port)
-                {
-                    continue;
-                }
-                foundClient = true;
-
-                if (!c.second.heartbeatWaiting)
-                {
-                    LOG("SERVER - Invalid heartbeat packet received...", xy::Logger::Type::Warning);
-                    break;
-                }
-
-                c.second.ping = m_serverTime.asMilliseconds() - c.second.heartbeatSent.asMilliseconds();
-                c.second.lastHeartbeat = m_serverTime;
-                c.second.heartbeatWaiting = false;
-                c.second.heartbeatRetry = 0u;
-                break;
-            }
-
-            if (!foundClient)
-            {
-                xy::Logger::log("SERVER - Received heartbeat from unknown client", xy::Logger::Type::Warning, xy::Logger::Output::All);
-            }
-
-        }
-        //else pass to cutom handler if it exists
-        else// if (m_packetHandler) //we can assume a handler as it's required on construction
-        {
-            m_packetHandler(ip, port, packetID, packet, this);
-        }
+        handlePacket(ip, port, packetID, packet);
     }
 
     LOG("SERVER - Stopped listening...", xy::Logger::Type::Info);
@@ -216,17 +183,17 @@ void Server::update(const sf::Time& time)
             if (!it->second.heartbeatWaiting || (elapsedTime >= HEARTBEAT_RATE * (it->second.heartbeatRetry + 1)))
             {
                 sf::Packet heartbeat;
-                heartbeat << Network::HeartBeat;
+                heartbeat << PacketID(Network::HeartBeat);
                 heartbeat << m_serverTime.asMilliseconds();
                 send(it->first, heartbeat);
-                LOG("SERVER - ping!", xy::Logger::Type::Info);
+                //LOG("SERVER - ping!", xy::Logger::Type::Info);
 
                 if (it->second.heartbeatRetry == 0)
                 {
                     it->second.heartbeatSent = m_serverTime;
                 }
                 it->second.heartbeatWaiting = true;
-                //++it;
+                ++it->second.heartbeatRetry;
 
                 m_totalBytesSent += heartbeat.getDataSize();
             }
@@ -251,7 +218,7 @@ ClientID Server::addClient(const sf::IpAddress& ip, PortNumber port)
     ClientID id = m_lastClientID++;
     ClientInfo clientInfo(ip, port, m_serverTime);
     m_clients.emplace(id, clientInfo);
-    LOG("SERVER - Added client with ID: " + std::to_string(id), xy::Logger::Type::Info);
+    LOG("SERVER - Added client with ID: " + std::to_string(id) + " on port: " + std::to_string(port), xy::Logger::Type::Info);
     return id;
 }
 
@@ -300,7 +267,7 @@ bool Server::removeClient(ClientID id)
     if (result == m_clients.end()) return false;
 
     sf::Packet packet;
-    packet << Network::Disconnect;
+    packet << PacketID(Network::Disconnect);
     send(id, packet); //hmm. Can't actually guarentee this will be received though...
     m_clients.erase(result);
     return true;
@@ -314,7 +281,7 @@ bool Server::removeClient(const sf::IpAddress& ip, PortNumber port)
         if (it->second.ipAddress == ip && it->second.portNumber == port)
         {
             sf::Packet packet;
-            packet << Network::Disconnect;
+            packet << PacketID(Network::Disconnect);
             send(it->first, packet); //again no guarentee of delivery
             m_clients.erase(it);
             return true;
@@ -329,7 +296,7 @@ void Server::disconnectAll()
     if (m_running)
     {
         sf::Packet packet;
-        packet << Network::Disconnect;
+        packet << PacketID(Network::Disconnect);
         broadcast(packet);
         sf::Lock lock(m_mutex);
         m_clients.clear();
@@ -392,4 +359,63 @@ void Server::init()
     m_running = false;
     m_totalBytesSent = 0u;
     m_totalBytesReceived = 0u;
+}
+
+void Server::handlePacket(const sf::IpAddress& ip, PortNumber port, PacketID id, sf::Packet& packet)
+{
+    ClientID clientID = getClientID(ip, port);
+    if (clientID >= 0)
+    {
+        if (id == Network::Disconnect)
+        {
+            removeClient(ip, port);
+            sf::Packet p;
+            p << PacketID(Network::Message);
+            std::string message;
+            message = "Client left! " + ip.toString() + ":" + std::to_string(port);
+            p << message;
+            broadcast(p, clientID);
+        }
+        else if (id == Network::Message)
+        {
+            std::string receivedMessage;
+            packet >> receivedMessage;
+            std::string message = ip.toString() + ":" + std::to_string(port) + " :" + receivedMessage;
+            sf::Packet p;
+            p << PacketID(Network::Message);
+            p << message;
+            broadcast(p, clientID);
+        }
+        else if (id == Network::HeartBeat)
+        {
+            auto c = m_clients.find(clientID);
+            if (c == m_clients.end())
+            {
+                LOG("SERVER - Heartbeat from unknown client...", xy::Logger::Type::Warning);
+                return;
+            }
+            if (!c->second.heartbeatWaiting)
+            {
+                LOG("SERVER - Invalid heartbeat packet received...", xy::Logger::Type::Warning);
+                return;
+            }
+
+            c->second.ping = m_serverTime.asMilliseconds() - c->second.heartbeatSent.asMilliseconds();
+            c->second.lastHeartbeat = m_serverTime;
+            c->second.heartbeatWaiting = false;
+            c->second.heartbeatRetry = 0u;
+        }
+    }
+    else
+    {
+        if (id == Network::Connect)
+        {
+            ClientID nid = addClient(ip, port);
+            sf::Packet packet;
+            packet << PacketID(Network::Connect);
+            send(nid, packet);
+        }
+    }
+
+    if (m_packetHandler) m_packetHandler(ip, port, id, packet, this);
 }

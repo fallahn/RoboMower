@@ -24,6 +24,10 @@ MenuMainState::MenuMainState(xy::StateStack& stack, Context context)
     auto msg = m_messageBus.post<xy::Message::UIEvent>(xy::Message::UIMessage);
     msg->type = xy::Message::UIEvent::MenuOpened;
     msg->stateId = States::ID::MenuMain;
+
+    auto msg2 = m_messageBus.post<xy::Message::NetworkEvent>(xy::Message::NetworkMessage);
+    msg2->action = xy::Message::NetworkEvent::RequestDisconnect;
+    msg2->stateID = States::ID::MenuMain;
 }
 
 //public

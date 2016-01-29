@@ -21,50 +21,10 @@
 namespace
 {
     sf::Color clearColour(40u, 40u, 40u);
-
-    //TODO there should be a better place for this?
-    PacketHandler packetHandler = [](const sf::IpAddress& ip, PortNumber port, PacketID pid, sf::Packet& packet, Server* server)
-    {
-        ClientID id = server->getClientID(ip, port);
-        if (id >= 0)
-        {
-            if (pid == Network::Disconnect)
-            {
-                server->removeClient(ip, port);
-                sf::Packet p;
-                p << Network::Message;
-                std::string message;
-                message = "Client left! " + ip.toString() + ":" + std::to_string(port);
-                p << message;
-                server->broadcast(p, id);
-            }
-            else if (pid == Network::Message)
-            {
-                std::string receivedMessage;
-                packet >> receivedMessage;
-                std::string message = ip.toString() + ":" + std::to_string(port) + " :" + receivedMessage;
-                sf::Packet p;
-                p << Network::Message;
-                p << message;
-                server->broadcast(p, id);
-            }
-        }
-        else
-        {
-            if (pid == Network::Connect)
-            {
-                ClientID id = server->addClient(ip, port);
-                sf::Packet packet;
-                packet << Network::Connect;
-                server->send(id, packet);
-            }
-        }
-    };
 }
 
 Game::Game()
-    : m_stateStack  ({ getRenderWindow(), *this }),
-    m_server        (packetHandler)
+    : m_stateStack  ({ getRenderWindow(), *this })
 {
     registerStates();
 
@@ -119,6 +79,8 @@ void Game::handleMessage(const xy::Message& msg)
                 //TODO message failure so error message can be displayed
             }
             break;
+        case xy::Message::NetworkEvent::RequestDisconnect:
+            m_server.stop();
         default: break;
         }
         break;
