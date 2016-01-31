@@ -34,9 +34,14 @@ struct ClientInfo final
         lastHeartbeat   (heartBeat) {}
 };
 
+using ClientList = std::unordered_map<ClientID, ClientInfo>;
+
 class Server final
 {
 public:
+    using PacketHandler = std::function<void(const sf::IpAddress&, PortNumber, PacketType, sf::Packet&, Server*)>;
+    using TimeoutHandler = std::function<void(ClientID)>;
+
     Server();
     ~Server();
 
@@ -49,10 +54,6 @@ public:
     bool send(ClientID, sf::Packet&);
     bool send(const sf::IpAddress&, PortNumber, sf::Packet&);
     void broadcast(sf::Packet&, ClientID ignore = Network::NullID);
-
-    void listen();
-    void update();
-    void update(const sf::Time&);
 
     ClientID addClient(const sf::IpAddress&, PortNumber);
     ClientID getClientID(const sf::IpAddress&, PortNumber);
@@ -94,8 +95,12 @@ private:
     std::atomic<size_t> m_totalBytesSent;
     std::atomic<size_t> m_totalBytesReceived;
 
+    void listen();
+    void update();
+    void update(const sf::Time&);
+
     void init();
-    void handlePacket(const sf::IpAddress&, PortNumber, PacketID, sf::Packet&);
+    void handlePacket(const sf::IpAddress&, PortNumber, PacketType, sf::Packet&);
 };
 
 #endif //RM_SERVER_HPP_

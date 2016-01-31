@@ -55,6 +55,10 @@ GameState::GameState(xy::StateStack& stateStack, Context context)
     m_reportText.setPosition(1500.f, 30.f);
 
     buildMap();
+
+    m_client.setServerInfo({ "127.0.0.1" }, 5600);
+    m_client.connect();
+
     quitLoadingScreen();
 }
 

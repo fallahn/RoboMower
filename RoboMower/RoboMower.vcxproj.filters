@@ -102,6 +102,9 @@
     <ClCompile Include="src\Server.cpp">
       <Filter>Source Files\network</Filter>
     </ClCompile>
+    <ClCompile Include="src\Client.cpp">
+      <Filter>Source Files\network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Game.hpp">
@@ -186,6 +189,9 @@
       <Filter>Header Files\network</Filter>
     </ClInclude>
     <ClInclude Include="include\network\NetworkConfig.hpp">
+      <Filter>Header Files\network</Filter>
+    </ClInclude>
+    <ClInclude Include="include\network\Client.hpp">
       <Filter>Header Files\network</Filter>
     </ClInclude>
   </ItemGroup>

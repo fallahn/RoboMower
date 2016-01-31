@@ -15,19 +15,21 @@
 #include <unordered_map>
 #include <functional>
 
+//make this a class to enforce 1 byte encoding when
+//putting into a packet
+enum class PacketType: sf::Int8
+//enum PacketType
+{
+    Disconnect = -1,
+    Connect,
+    HeartBeat,
+    Message = 4,
+        
+    Bounds //must always be last
+};
+
 namespace Network
 {
-    enum PacketType
-    {
-        Disconnect = -1,
-        Connect,
-        HeartBeat,
-        Message = 4,
-        //TODO typedef this so we can add custom types
-
-        Bounds //must always be last
-    };
-
     enum
     {
         HighestTimestamp = 2147483647,
@@ -42,9 +44,5 @@ struct ClientInfo;
 using PacketID = sf::Int8;
 using ClientID = sf::Int32;
 using PortNumber = sf::Uint16;
-
-using ClientList = std::unordered_map<ClientID, ClientInfo>;
-using PacketHandler = std::function<void(const sf::IpAddress&, PortNumber, PacketID, sf::Packet&, Server*)>;
-using TimeoutHandler = std::function<void(ClientID)>;
 
 #endif //RM_NETWORK_CONFIG_HPP_

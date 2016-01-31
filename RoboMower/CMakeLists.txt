@@ -72,6 +72,7 @@ include(${xygine_DIR}/CMakeLists.txt)
 
 set(SOURCE
   src/ButtonLogic.cpp
+  src/Client.cpp
   src/Game.cpp
   src/GameState.cpp
   src/GameUI.cpp

@@ -86,122 +86,6 @@ void Server::broadcast(sf::Packet& packet, ClientID ignore)
     }
 }
 
-void Server::listen()
-{
-    sf::IpAddress ip;
-    PortNumber port = 0u;
-    sf::Packet packet;
-
-    LOG("SERVER - Started listening...", xy::Logger::Type::Info);
-
-    while (m_running)
-    {       
-        packet.clear();
-        auto status = m_incomingSocket.receive(packet, ip, port);
-        if (status != sf::Socket::Done)
-        {
-            if (m_running)
-            {
-                LOG("SERVER - Error rx packet from: " + ip.toString() + ":" + std::to_string(port) + ", Code: " + std::to_string(status), xy::Logger::Type::Warning);
-                continue;
-            }
-            else
-            {
-                LOG("SERVER - Socket unbound", xy::Logger::Type::Warning);
-                break;
-            }
-        }
-        m_totalBytesReceived += packet.getDataSize();
-
-        PacketID packetID = 0;
-        if (!(packet >> packetID))
-        {
-            //invalid packet
-            LOG("SERVER - Invalid packet ID received: " + std::to_string(packetID), xy::Logger::Type::Warning);
-            continue;
-        }
-
-        Network::PacketType packetType = static_cast<Network::PacketType>(packetID);
-        if (packetType < Network::Disconnect || packetType >= Network::Bounds)
-        {
-            //invalid type
-            LOG("SERVER - Invalid packet type received: " + std::to_string(packetType), xy::Logger::Type::Warning);
-            continue;
-        }
-
-        handlePacket(ip, port, packetID, packet);
-    }
-
-    LOG("SERVER - Stopped listening...", xy::Logger::Type::Info);
-}
-
-void Server::update()
-{
-    sf::Clock updateClock;
-    while (m_running)
-    {
-        update(updateClock.restart());
-    }
-}
-
-void Server::update(const sf::Time& time)
-{
-    m_serverTime += time;
-    //check for time overflow
-    if (m_serverTime.asMilliseconds() < 0)
-    {
-        //use sfml data types when networking
-        auto maxTime = sf::Int32(Network::HighestTimestamp);
-        m_serverTime -= sf::milliseconds(maxTime);
-        sf::Lock lock(m_mutex);
-        for (auto& c : m_clients)
-        {
-            c.second.lastHeartbeat = sf::milliseconds(std::abs(c.second.lastHeartbeat.asMilliseconds()) - maxTime);
-        }
-    }
-
-    sf::Lock lock(m_mutex);
-    for (auto it = m_clients.begin(); it != m_clients.end();)
-    {
-        auto elapsedTime = m_serverTime.asMilliseconds() - it->second.lastHeartbeat.asMilliseconds();
-        //update client heartbeat
-        if (elapsedTime > HEARTBEAT_RATE)
-        {
-            //remove timeouts
-            if (elapsedTime > CLIENT_TIMEOUT || it->second.heartbeatRetry > HEARTBEAT_RETRIES)
-            {
-                LOG("SERVER - Client " + std::to_string(it->first) + " has timed out", xy::Logger::Type::Info);
-                if (m_timoutHandler)
-                {
-                    m_timoutHandler(it->first);
-                }
-                it = m_clients.erase(it);
-                continue;
-            }
-            
-            //send heartbeat to remaining
-            if (!it->second.heartbeatWaiting || (elapsedTime >= HEARTBEAT_RATE * (it->second.heartbeatRetry + 1)))
-            {
-                sf::Packet heartbeat;
-                heartbeat << PacketID(Network::HeartBeat);
-                heartbeat << m_serverTime.asMilliseconds();
-                send(it->first, heartbeat);
-                //LOG("SERVER - ping!", xy::Logger::Type::Info);
-
-                if (it->second.heartbeatRetry == 0)
-                {
-                    it->second.heartbeatSent = m_serverTime;
-                }
-                it->second.heartbeatWaiting = true;
-                ++it->second.heartbeatRetry;
-
-                m_totalBytesSent += heartbeat.getDataSize();
-            }
-        }
-        ++it;
-    }
-}
-
 ClientID Server::addClient(const sf::IpAddress& ip, PortNumber port)
 {
     sf::Lock lock(m_mutex);
@@ -267,7 +151,7 @@ bool Server::removeClient(ClientID id)
     if (result == m_clients.end()) return false;
 
     sf::Packet packet;
-    packet << PacketID(Network::Disconnect);
+    packet << PacketID(PacketType::Disconnect);
     send(id, packet); //hmm. Can't actually guarentee this will be received though...
     m_clients.erase(result);
     return true;
@@ -281,7 +165,7 @@ bool Server::removeClient(const sf::IpAddress& ip, PortNumber port)
         if (it->second.ipAddress == ip && it->second.portNumber == port)
         {
             sf::Packet packet;
-            packet << PacketID(Network::Disconnect);
+            packet << PacketID(PacketType::Disconnect);
             send(it->first, packet); //again no guarentee of delivery
             m_clients.erase(it);
             return true;
@@ -296,7 +180,7 @@ void Server::disconnectAll()
     if (m_running)
     {
         sf::Packet packet;
-        packet << PacketID(Network::Disconnect);
+        packet << PacketID(PacketType::Disconnect);
         broadcast(packet);
         sf::Lock lock(m_mutex);
         m_clients.clear();
@@ -353,6 +237,122 @@ sf::Mutex& Server::getMutex()
 }
 
 //private
+void Server::listen()
+{
+    sf::IpAddress ip;
+    PortNumber port = 0u;
+    sf::Packet packet;
+
+    LOG("SERVER - Started listening...", xy::Logger::Type::Info);
+
+    while (m_running)
+    {
+        packet.clear();
+        auto status = m_incomingSocket.receive(packet, ip, port);
+        if (status != sf::Socket::Done)
+        {
+            if (m_running)
+            {
+                LOG("SERVER - Error rx packet from: " + ip.toString() + ":" + std::to_string(port) + ", Code: " + std::to_string(status), xy::Logger::Type::Warning);
+                continue;
+            }
+            else
+            {
+                LOG("SERVER - Socket unbound", xy::Logger::Type::Warning);
+                break;
+            }
+        }
+        m_totalBytesReceived += packet.getDataSize();
+
+        PacketID packetID = 0;
+        if (!(packet >> packetID))
+        {
+            //invalid packet
+            LOG("SERVER - Invalid packet ID received: " + std::to_string(packetID), xy::Logger::Type::Warning);
+            continue;
+        }
+
+        PacketType packetType = static_cast<PacketType>(packetID);
+        if (packetType < PacketType::Disconnect || packetType >= PacketType::Bounds)
+        {
+            //invalid type
+            LOG("SERVER - Invalid packet type received: " + std::to_string(PacketID(packetType)), xy::Logger::Type::Warning);
+            continue;
+        }
+
+        handlePacket(ip, port, packetType, packet);
+    }
+
+    LOG("SERVER - Stopped listening...", xy::Logger::Type::Info);
+}
+
+void Server::update()
+{
+    sf::Clock updateClock;
+    while (m_running)
+    {
+        update(updateClock.restart());
+    }
+}
+
+void Server::update(const sf::Time& time)
+{
+    m_serverTime += time;
+    //check for time overflow
+    if (m_serverTime.asMilliseconds() < 0)
+    {
+        //use sfml data types when networking
+        auto maxTime = sf::Int32(Network::HighestTimestamp);
+        m_serverTime -= sf::milliseconds(maxTime);
+        sf::Lock lock(m_mutex);
+        for (auto& c : m_clients)
+        {
+            c.second.lastHeartbeat = sf::milliseconds(std::abs(c.second.lastHeartbeat.asMilliseconds()) - maxTime);
+        }
+    }
+
+    sf::Lock lock(m_mutex);
+    for (auto it = m_clients.begin(); it != m_clients.end();)
+    {
+        auto elapsedTime = m_serverTime.asMilliseconds() - it->second.lastHeartbeat.asMilliseconds();
+        //update client heartbeat
+        if (elapsedTime > HEARTBEAT_RATE)
+        {
+            //remove timeouts
+            if (elapsedTime > CLIENT_TIMEOUT || it->second.heartbeatRetry > HEARTBEAT_RETRIES)
+            {
+                LOG("SERVER - Client " + std::to_string(it->first) + " has timed out", xy::Logger::Type::Info);
+                if (m_timoutHandler)
+                {
+                    m_timoutHandler(it->first);
+                }
+                it = m_clients.erase(it);
+                continue;
+            }
+
+            //send heartbeat to remaining
+            if (!it->second.heartbeatWaiting || (elapsedTime >= HEARTBEAT_RATE * (it->second.heartbeatRetry + 1)))
+            {
+                sf::Packet heartbeat;
+                heartbeat << PacketID(PacketType::HeartBeat);
+                heartbeat << m_serverTime.asMilliseconds();
+                send(it->first, heartbeat);
+                //LOG("SERVER - ping!", xy::Logger::Type::Info);
+
+                if (it->second.heartbeatRetry == 0)
+                {
+                    it->second.heartbeatSent = m_serverTime;
+                }
+                it->second.heartbeatWaiting = true;
+                ++it->second.heartbeatRetry;
+
+                m_totalBytesSent += heartbeat.getDataSize();
+            }
+        }
+        ++it;
+    }
+}
+
 void Server::init()
 {
     m_lastClientID = 0u;
@@ -361,59 +361,69 @@ void Server::init()
     m_totalBytesReceived = 0u;
 }
 
-void Server::handlePacket(const sf::IpAddress& ip, PortNumber port, PacketID id, sf::Packet& packet)
+void Server::handlePacket(const sf::IpAddress& ip, PortNumber port, PacketType id, sf::Packet& packet)
 {
+    //TODO do we want to consume packets by returning from the
+    //switch block, or allow users to act on these packet types too?
     ClientID clientID = getClientID(ip, port);
     if (clientID >= 0)
     {
-        if (id == Network::Disconnect)
+        switch (id)
         {
-            removeClient(ip, port);
-            sf::Packet p;
-            p << PacketID(Network::Message);
-            std::string message;
-            message = "Client left! " + ip.toString() + ":" + std::to_string(port);
-            p << message;
-            broadcast(p, clientID);
-        }
-        else if (id == Network::Message)
-        {
-            std::string receivedMessage;
-            packet >> receivedMessage;
-            std::string message = ip.toString() + ":" + std::to_string(port) + " :" + receivedMessage;
-            sf::Packet p;
-            p << PacketID(Network::Message);
-            p << message;
-            broadcast(p, clientID);
-        }
-        else if (id == Network::HeartBeat)
-        {
-            auto c = m_clients.find(clientID);
-            if (c == m_clients.end())
+        case PacketType::Disconnect:
             {
-                LOG("SERVER - Heartbeat from unknown client...", xy::Logger::Type::Warning);
+                removeClient(ip, port);
+                sf::Packet p;
+                p << PacketID(PacketType::Message);
+                std::string message;
+                message = "Client left! " + ip.toString() + ":" + std::to_string(port);
+                p << message;
+                broadcast(p, clientID);
                 return;
             }
-            if (!c->second.heartbeatWaiting)
+        case PacketType::Message:
             {
-                LOG("SERVER - Invalid heartbeat packet received...", xy::Logger::Type::Warning);
+                std::string receivedMessage;
+                packet >> receivedMessage;
+                std::string message = ip.toString() + ":" + std::to_string(port) + " says: " + receivedMessage;
+                sf::Packet p;
+                p << PacketID(PacketType::Message);
+                p << message;
+                broadcast(p, clientID);
                 return;
             }
+        case PacketType::HeartBeat:
+            {
+                auto c = m_clients.find(clientID);
+                if (c == m_clients.end())
+                {
+                    LOG("SERVER - Heartbeat from unknown client...", xy::Logger::Type::Warning);
+                    return;
+                }
+                if (!c->second.heartbeatWaiting)
+                {
+                    LOG("SERVER - Invalid heartbeat packet received...", xy::Logger::Type::Warning);
+                    return;
+                }
 
-            c->second.ping = m_serverTime.asMilliseconds() - c->second.heartbeatSent.asMilliseconds();
-            c->second.lastHeartbeat = m_serverTime;
-            c->second.heartbeatWaiting = false;
-            c->second.heartbeatRetry = 0u;
+                c->second.ping = m_serverTime.asMilliseconds() - c->second.heartbeatSent.asMilliseconds();
+                c->second.lastHeartbeat = m_serverTime;
+                c->second.heartbeatWaiting = false;
+                c->second.heartbeatRetry = 0u;
+                return;
+            }
+        default: break;
         }
     }
     else
     {
-        if (id == Network::Connect)
+        if (id == PacketType::Connect)
         {
             ClientID nid = addClient(ip, port);
             sf::Packet packet;
-            packet << PacketID(Network::Connect);
+            packet << PacketID(PacketType::Connect);
             send(nid, packet);
+            return;
         }
     }
 
