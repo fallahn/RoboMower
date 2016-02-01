@@ -71,6 +71,7 @@ SET(xygine_DIR ../xygine/src)
 include(${xygine_DIR}/CMakeLists.txt)
 
 set(SOURCE
+  src/AckSystem.cpp
   src/ButtonLogic.cpp
   src/ClientConnection.cpp
   src/Game.cpp
@@ -86,6 +87,7 @@ set(SOURCE
   src/MenuMainState.cpp
   src/MenuOptionState.cpp
   src/MenuPauseState.cpp
+  src/PacketQueue.cpp
   src/PlayerDrawable.cpp
   src/PlayerLogic.cpp
   src/RoundedRectangle.cpp

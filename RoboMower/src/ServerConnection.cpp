@@ -19,6 +19,8 @@ namespace
     const sf::Int32 CLIENT_TIMEOUT = 10000;
 }
 
+using namespace Network;
+
 ServerConnection::ServerConnection()
     : m_lastClientID    (-1),
     m_running           (false),

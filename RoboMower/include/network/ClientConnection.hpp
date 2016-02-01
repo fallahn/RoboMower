@@ -17,50 +17,55 @@
 
 #include <atomic>
 
-class ClientConnection final
+namespace Network
 {
-public:
-    using PacketHandler = std::function<void(PacketType, sf::Packet&, ClientConnection*)>;
+    class ClientConnection final
+    {
+    public:
+        using PacketHandler = std::function<void(PacketType, sf::Packet&, ClientConnection*)>;
 
-    ClientConnection();
-    ~ClientConnection();
+        ClientConnection();
+        ~ClientConnection();
 
-    bool connect();
-    bool disconnect();
-    void update(float);
+        ClientConnection(const ClientConnection&) = delete;
+        ClientConnection& operator = (const ClientConnection&) = delete;
 
-    bool send(sf::Packet&);
+        bool connect();
+        bool disconnect();
+        void update(float);
 
-    const sf::Time& getTime() const;
-    const sf::Time& getLastHeartbeat() const;
-    void setTime(const sf::Time&);
-    void setServerInfo(const sf::IpAddress&, PortNumber);
+        bool send(sf::Packet&);
 
-    void setPacketHandler(const PacketHandler&);
-    void removePacketHandler();
+        const sf::Time& getTime() const;
+        const sf::Time& getLastHeartbeat() const;
+        void setTime(const sf::Time&);
+        void setServerInfo(const sf::IpAddress&, PortNumber);
 
-    bool connected() const;
+        void setPacketHandler(const PacketHandler&);
+        void removePacketHandler();
 
-    sf::Mutex& getMutex();
+        bool connected() const;
 
-private:
+        sf::Mutex& getMutex();
 
-    sf::UdpSocket m_socket;
-    sf::IpAddress m_serverIp;
-    PortNumber m_serverPort;
+    private:
 
-    PacketHandler m_packetHandler;
-    std::atomic_bool m_connected;
+        sf::UdpSocket m_socket;
+        sf::IpAddress m_serverIp;
+        PortNumber m_serverPort;
 
-    sf::Time m_serverTime;
-    sf::Time m_lastHeartbeat;
+        PacketHandler m_packetHandler;
+        std::atomic_bool m_connected;
 
-    sf::Thread m_listenThread;
-    sf::Mutex m_mutex;
+        sf::Time m_serverTime;
+        sf::Time m_lastHeartbeat;
 
-    void handlePacket(PacketType, sf::Packet&);
+        sf::Thread m_listenThread;
+        sf::Mutex m_mutex;
 
-    void listen();    
-};
+        void handlePacket(PacketType, sf::Packet&);
 
+        void listen();
+    };
+}
 #endif //RM_NET_CLIENT_HPP_

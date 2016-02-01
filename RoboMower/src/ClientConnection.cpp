@@ -17,6 +17,8 @@ namespace
     const sf::Int32 CONNECTION_TIMEOUT = 5000;
 }
 
+using namespace Network;
+
 ClientConnection::ClientConnection()
     : m_serverPort(0u),
     m_connected(false),

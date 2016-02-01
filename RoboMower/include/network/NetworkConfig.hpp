@@ -15,21 +15,21 @@
 #include <unordered_map>
 #include <functional>
 
-//make this a class to enforce 1 byte encoding when
-//putting into a packet
-enum class PacketType: sf::Int8
-//enum PacketType
-{
-    Disconnect = -1,
-    Connect,
-    HeartBeat,
-    //Message = 4,
-        
-    Bounds //must always be last
-};
-
 namespace Network
 {
+    //make this a class to enforce 1 byte encoding when
+    //putting into a packet
+    enum class PacketType: sf::Int8
+    //enum PacketType
+    {
+        Disconnect = -1,
+        Connect,
+        HeartBeat,
+        //Message = 4,
+        
+        Bounds //must always be last
+    };
+
     enum
     {
         HighestTimestamp = 2147483647,

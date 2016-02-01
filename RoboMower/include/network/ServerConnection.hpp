@@ -18,88 +18,90 @@
 
 #include <atomic>
 
-struct ClientInfo final
-{
-    sf::IpAddress ipAddress;
-    PortNumber portNumber;
-    sf::Time lastHeartbeat;
-    sf::Time heartbeatSent;
-    bool heartbeatWaiting = false;
-    sf::Uint16 heartbeatRetry = 0u;
-    sf::Uint32 ping = 0;
+//namespace Network
+//{
+    struct ClientInfo final
+    {
+        sf::IpAddress ipAddress;
+        PortNumber portNumber;
+        sf::Time lastHeartbeat;
+        sf::Time heartbeatSent;
+        bool heartbeatWaiting = false;
+        sf::Uint16 heartbeatRetry = 0u;
+        sf::Uint32 ping = 0;
 
-    ClientInfo(const sf::IpAddress& ip, PortNumber port, const sf::Time& heartBeat)
-        : ipAddress     (ip),
-        portNumber      (port),
-        lastHeartbeat   (heartBeat) {}
-};
+        ClientInfo(const sf::IpAddress& ip, PortNumber port, const sf::Time& heartBeat)
+            : ipAddress(ip),
+            portNumber(port),
+            lastHeartbeat(heartBeat) {}
+    };
 
-using ClientList = std::unordered_map<ClientID, ClientInfo>;
+    using ClientList = std::unordered_map<ClientID, ClientInfo>;
 
-class ServerConnection final
-{
-public:
-    using PacketHandler = std::function<void(const sf::IpAddress&, PortNumber, PacketType, sf::Packet&, ServerConnection*)>;
-    using TimeoutHandler = std::function<void(ClientID)>;
+    class ServerConnection final
+    {
+    public:
+        using PacketHandler = std::function<void(const sf::IpAddress&, PortNumber, Network::PacketType, sf::Packet&, ServerConnection*)>;
+        using TimeoutHandler = std::function<void(ClientID)>;
 
-    ServerConnection();
-    ~ServerConnection();
+        ServerConnection();
+        ~ServerConnection();
 
-    ServerConnection(const ServerConnection&) = delete;
-    ServerConnection& operator = (const ServerConnection&) = delete;
+        ServerConnection(const ServerConnection&) = delete;
+        ServerConnection& operator = (const ServerConnection&) = delete;
 
-    void setPacketHandler(const PacketHandler&);
-    void setTimeoutHandler(const TimeoutHandler&);
+        void setPacketHandler(const PacketHandler&);
+        void setTimeoutHandler(const TimeoutHandler&);
 
-    bool send(ClientID, sf::Packet&);
-    bool send(const sf::IpAddress&, PortNumber, sf::Packet&);
-    void broadcast(sf::Packet&, ClientID ignore = Network::NullID);
+        bool send(ClientID, sf::Packet&);
+        bool send(const sf::IpAddress&, PortNumber, sf::Packet&);
+        void broadcast(sf::Packet&, ClientID ignore = Network::NullID);
 
-    ClientID addClient(const sf::IpAddress&, PortNumber);
-    ClientID getClientID(const sf::IpAddress&, PortNumber);
-    bool hasClient(ClientID) const;
-    bool hasClient(const sf::IpAddress&, PortNumber);
-    bool getClientInfo(ClientID, ClientInfo&);
-    bool removeClient(ClientID);
-    bool removeClient(const sf::IpAddress&, PortNumber);
+        ClientID addClient(const sf::IpAddress&, PortNumber);
+        ClientID getClientID(const sf::IpAddress&, PortNumber);
+        bool hasClient(ClientID) const;
+        bool hasClient(const sf::IpAddress&, PortNumber);
+        bool getClientInfo(ClientID, ClientInfo&);
+        bool removeClient(ClientID);
+        bool removeClient(const sf::IpAddress&, PortNumber);
 
-    void disconnectAll();
-    bool start();
-    bool stop();
+        void disconnectAll();
+        bool start();
+        bool stop();
 
-    void update(float);
+        void update(float);
 
-    bool running() const;
+        bool running() const;
 
-    std::size_t getClientCount() const;
+        std::size_t getClientCount() const;
 
-    sf::Mutex& getMutex();
+        sf::Mutex& getMutex();
 
-private:
+    private:
 
-    ClientID m_lastClientID;
+        ClientID m_lastClientID;
 
-    sf::UdpSocket m_incomingSocket;
-    sf::UdpSocket m_outgoingSocket;
+        sf::UdpSocket m_incomingSocket;
+        sf::UdpSocket m_outgoingSocket;
 
-    PacketHandler m_packetHandler;
-    TimeoutHandler m_timoutHandler;
+        PacketHandler m_packetHandler;
+        TimeoutHandler m_timoutHandler;
 
-    ClientList m_clients;
-    sf::Time m_serverTime;
+        ClientList m_clients;
+        sf::Time m_serverTime;
 
-    std::atomic_bool m_running;
+        std::atomic_bool m_running;
 
-    sf::Thread m_listenThread;
-    sf::Mutex m_mutex;
+        sf::Thread m_listenThread;
+        sf::Mutex m_mutex;
 
-    std::atomic<size_t> m_totalBytesSent;
-    std::atomic<size_t> m_totalBytesReceived;
+        std::atomic<size_t> m_totalBytesSent;
+        std::atomic<size_t> m_totalBytesReceived;
 
-    void listen();  
+        void listen();
 
-    void init();
-    void handlePacket(const sf::IpAddress&, PortNumber, PacketType, sf::Packet&);
-};
-
+        void init();
+        void handlePacket(const sf::IpAddress&, PortNumber, Network::PacketType, sf::Packet&);
+    };
+//}
 #endif //RM_SERVER_HPP_

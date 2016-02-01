@@ -54,7 +54,7 @@ private:
     xy::FontResource m_fontResource;
 
     GameUI m_gameUI;
-    ClientConnection m_client;
+    Network::ClientConnection m_client;
 
     sf::Text m_reportText;
 
