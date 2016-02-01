@@ -99,10 +99,10 @@
     <ClCompile Include="src\PlayerLogic.cpp">
       <Filter>Source Files\components</Filter>
     </ClCompile>
-    <ClCompile Include="src\Server.cpp">
+    <ClCompile Include="src\ClientConnection.cpp">
       <Filter>Source Files\network</Filter>
     </ClCompile>
-    <ClCompile Include="src\Client.cpp">
+    <ClCompile Include="src\ServerConnection.cpp">
       <Filter>Source Files\network</Filter>
     </ClCompile>
   </ItemGroup>
@@ -185,13 +185,13 @@
     <ClInclude Include="include\components\PlayerLogic.hpp">
       <Filter>Header Files\components</Filter>
     </ClInclude>
-    <ClInclude Include="include\network\Server.hpp">
-      <Filter>Header Files\network</Filter>
-    </ClInclude>
     <ClInclude Include="include\network\NetworkConfig.hpp">
       <Filter>Header Files\network</Filter>
     </ClInclude>
-    <ClInclude Include="include\network\Client.hpp">
+    <ClInclude Include="include\network\ClientConnection.hpp">
+      <Filter>Header Files\network</Filter>
+    </ClInclude>
+    <ClInclude Include="include\network\ServerConnection.hpp">
       <Filter>Header Files\network</Filter>
     </ClInclude>
   </ItemGroup>

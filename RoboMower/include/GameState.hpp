@@ -13,7 +13,7 @@
 #include <StateIds.hpp>
 #include <InstructionSet.hpp>
 #include <GameUI.hpp>
-#include <network/Client.hpp>
+#include <network/ClientConnection.hpp>
 
 #include <xygine/State.hpp>
 #include <xygine/Entity.hpp>
@@ -54,7 +54,7 @@ private:
     xy::FontResource m_fontResource;
 
     GameUI m_gameUI;
-    Client m_client;
+    ClientConnection m_client;
 
     sf::Text m_reportText;
 

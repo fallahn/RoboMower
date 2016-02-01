@@ -5,7 +5,7 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015 - 2016
 //==============================================================================
 
-#include <network/Server.hpp>
+#include <network/ServerConnection.hpp>
 
 #include <xygine/Log.hpp>
 
@@ -19,34 +19,33 @@ namespace
     const sf::Int32 CLIENT_TIMEOUT = 10000;
 }
 
-Server::Server()
+ServerConnection::ServerConnection()
     : m_lastClientID    (-1),
     m_running           (false),
-    m_listenThread      (&Server::listen, this),
-    m_updateThread      (&Server::update, this),
+    m_listenThread      (&ServerConnection::listen, this),
     m_totalBytesSent    (0u),
     m_totalBytesReceived(0u)
 {
 
 }
 
-Server::~Server()
+ServerConnection::~ServerConnection()
 {
     stop();
 }
 
 //public
-void Server::setPacketHandler(const PacketHandler& ph)
+void ServerConnection::setPacketHandler(const PacketHandler& ph)
 {
     m_packetHandler = ph;
 }
 
-void Server::setTimeoutHandler(const TimeoutHandler& th)
+void ServerConnection::setTimeoutHandler(const TimeoutHandler& th)
 {
     m_timoutHandler = th;
 }
 
-bool Server::send(ClientID id, sf::Packet& packet)
+bool ServerConnection::send(ClientID id, sf::Packet& packet)
 {
     sf::Lock lock(m_mutex);
 
@@ -63,7 +62,7 @@ bool Server::send(ClientID id, sf::Packet& packet)
     return true;
 }
 
-bool Server::send(const sf::IpAddress& ip, PortNumber port, sf::Packet& packet)
+bool ServerConnection::send(const sf::IpAddress& ip, PortNumber port, sf::Packet& packet)
 {
     if (m_outgoingSocket.send(packet, ip, port) != sf::Socket::Done)
     {
@@ -74,7 +73,7 @@ bool Server::send(const sf::IpAddress& ip, PortNumber port, sf::Packet& packet)
     return true;
 }
 
-void Server::broadcast(sf::Packet& packet, ClientID ignore)
+void ServerConnection::broadcast(sf::Packet& packet, ClientID ignore)
 {
     sf::Lock lock(m_mutex);
     for (auto& c : m_clients)
@@ -86,7 +85,7 @@ void Server::broadcast(sf::Packet& packet, ClientID ignore)
     }
 }
 
-ClientID Server::addClient(const sf::IpAddress& ip, PortNumber port)
+ClientID ServerConnection::addClient(const sf::IpAddress& ip, PortNumber port)
 {
     sf::Lock lock(m_mutex);
     //check not already added
@@ -106,7 +105,7 @@ ClientID Server::addClient(const sf::IpAddress& ip, PortNumber port)
     return id;
 }
 
-ClientID Server::getClientID(const sf::IpAddress& ip, PortNumber port)
+ClientID ServerConnection::getClientID(const sf::IpAddress& ip, PortNumber port)
 {
     sf::Lock lock(m_mutex);
     for (const auto& c : m_clients)
@@ -120,17 +119,17 @@ ClientID Server::getClientID(const sf::IpAddress& ip, PortNumber port)
     return ClientID(Network::NullID);
 }
 
-bool Server::hasClient(ClientID id) const
+bool ServerConnection::hasClient(ClientID id) const
 {
     return (m_clients.find(id) != m_clients.end());
 }
 
-bool Server::hasClient(const sf::IpAddress& ip, PortNumber port)
+bool ServerConnection::hasClient(const sf::IpAddress& ip, PortNumber port)
 {
     return (getClientID(ip, port) >= 0);
 }
 
-bool Server::getClientInfo(ClientID id, ClientInfo& info)
+bool ServerConnection::getClientInfo(ClientID id, ClientInfo& info)
 {
     sf::Lock lock(m_mutex);
     for (const auto& c : m_clients)
@@ -144,7 +143,7 @@ bool Server::getClientInfo(ClientID id, ClientInfo& info)
     return false;
 }
 
-bool Server::removeClient(ClientID id)
+bool ServerConnection::removeClient(ClientID id)
 {
     sf::Lock lock(m_mutex);
     auto result = m_clients.find(id);
@@ -157,7 +156,7 @@ bool Server::removeClient(ClientID id)
     return true;
 }
 
-bool Server::removeClient(const sf::IpAddress& ip, PortNumber port)
+bool ServerConnection::removeClient(const sf::IpAddress& ip, PortNumber port)
 {
     sf::Lock lock(m_mutex);
     for (auto it = m_clients.begin(); it != m_clients.end(); ++it)
@@ -175,7 +174,7 @@ bool Server::removeClient(const sf::IpAddress& ip, PortNumber port)
     return false;
 }
 
-void Server::disconnectAll()
+void ServerConnection::disconnectAll()
 {
     if (m_running)
     {
@@ -187,7 +186,7 @@ void Server::disconnectAll()
     }
 }
 
-bool Server::start()
+bool ServerConnection::start()
 {
     if (m_incomingSocket.bind(sf::Uint16(Network::ServerPort)) != sf::Socket::Done)
     {
@@ -203,13 +202,12 @@ bool Server::start()
 
         m_running = true;
         m_listenThread.launch();
-        m_updateThread.launch();
         return true;
     }
     return false;
 }
 
-bool Server::stop()
+bool ServerConnection::stop()
 {
     if (m_running)
     {
@@ -221,83 +219,10 @@ bool Server::stop()
     return false;
 }
 
-bool Server::running() const
+void ServerConnection::update(float dt)
 {
-    return m_running;
-}
+    m_serverTime += sf::seconds(dt);
 
-std::size_t Server::getClientCount() const
-{
-    return m_clients.size();
-}
-
-sf::Mutex& Server::getMutex()
-{
-    return m_mutex;
-}
-
-//private
-void Server::listen()
-{
-    sf::IpAddress ip;
-    PortNumber port = 0u;
-    sf::Packet packet;
-
-    LOG("SERVER - Started listening...", xy::Logger::Type::Info);
-
-    while (m_running)
-    {
-        packet.clear();
-        auto status = m_incomingSocket.receive(packet, ip, port);
-        if (status != sf::Socket::Done)
-        {
-            if (m_running)
-            {
-                LOG("SERVER - Error rx packet from: " + ip.toString() + ":" + std::to_string(port) + ", Code: " + std::to_string(status), xy::Logger::Type::Warning);
-                continue;
-            }
-            else
-            {
-                LOG("SERVER - Socket unbound", xy::Logger::Type::Warning);
-                break;
-            }
-        }
-        m_totalBytesReceived += packet.getDataSize();
-
-        PacketID packetID = 0;
-        if (!(packet >> packetID))
-        {
-            //invalid packet
-            LOG("SERVER - Invalid packet ID received: " + std::to_string(packetID), xy::Logger::Type::Warning);
-            continue;
-        }
-
-        PacketType packetType = static_cast<PacketType>(packetID);
-        if (packetType < PacketType::Disconnect || packetType >= PacketType::Bounds)
-        {
-            //invalid type
-            LOG("SERVER - Invalid packet type received: " + std::to_string(PacketID(packetType)), xy::Logger::Type::Warning);
-            continue;
-        }
-
-        handlePacket(ip, port, packetType, packet);
-    }
-
-    LOG("SERVER - Stopped listening...", xy::Logger::Type::Info);
-}
-
-void Server::update()
-{
-    sf::Clock updateClock;
-    while (m_running)
-    {
-        update(updateClock.restart());
-    }
-}
-
-void Server::update(const sf::Time& time)
-{
-    m_serverTime += time;
     //check for time overflow
     if (m_serverTime.asMilliseconds() < 0)
     {
@@ -353,7 +278,72 @@ void Server::update(const sf::Time& time)
     }
 }
 
-void Server::init()
+bool ServerConnection::running() const
+{
+    return m_running;
+}
+
+std::size_t ServerConnection::getClientCount() const
+{
+    return m_clients.size();
+}
+
+sf::Mutex& ServerConnection::getMutex()
+{
+    return m_mutex;
+}
+
+//private
+void ServerConnection::listen()
+{
+    sf::IpAddress ip;
+    PortNumber port = 0u;
+    sf::Packet packet;
+
+    LOG("SERVER - Started listening...", xy::Logger::Type::Info);
+
+    while (m_running)
+    {
+        packet.clear();
+        auto status = m_incomingSocket.receive(packet, ip, port);
+        if (status != sf::Socket::Done)
+        {
+            if (m_running)
+            {
+                LOG("SERVER - Error rx packet from: " + ip.toString() + ":" + std::to_string(port) + ", Code: " + std::to_string(status), xy::Logger::Type::Warning);
+                continue;
+            }
+            else
+            {
+                LOG("SERVER - Socket unbound", xy::Logger::Type::Warning);
+                break;
+            }
+        }
+        m_totalBytesReceived += packet.getDataSize();
+
+        PacketID packetID = 0;
+        if (!(packet >> packetID))
+        {
+            //invalid packet
+            LOG("SERVER - Invalid packet ID received: " + std::to_string(packetID), xy::Logger::Type::Warning);
+            continue;
+        }
+
+        PacketType packetType = static_cast<PacketType>(packetID);
+        if (packetType < PacketType::Disconnect || packetType >= PacketType::Bounds)
+        {
+            //invalid type
+            LOG("SERVER - Invalid packet type received: " + std::to_string(PacketID(packetType)), xy::Logger::Type::Warning);
+            continue;
+        }
+
+        handlePacket(ip, port, packetType, packet);
+    }
+
+    LOG("SERVER - Stopped listening...", xy::Logger::Type::Info);
+}
+
+void ServerConnection::init()
 {
     m_lastClientID = 0u;
     m_running = false;
@@ -361,7 +351,7 @@ void Server::init()
     m_totalBytesReceived = 0u;
 }
 
-void Server::handlePacket(const sf::IpAddress& ip, PortNumber port, PacketType id, sf::Packet& packet)
+void ServerConnection::handlePacket(const sf::IpAddress& ip, PortNumber port, PacketType id, sf::Packet& packet)
 {
     //TODO do we want to consume packets by returning from the
     //switch block, or allow users to act on these packet types too?
@@ -372,24 +362,15 @@ void Server::handlePacket(const sf::IpAddress& ip, PortNumber port, PacketType i
         {
         case PacketType::Disconnect:
             {
-                removeClient(ip, port);
+                /*removeClient(ip, port);
                 sf::Packet p;
                 p << PacketID(PacketType::Message);
                 std::string message;
                 message = "Client left! " + ip.toString() + ":" + std::to_string(port);
                 p << message;
-                broadcast(p, clientID);
-                return;
-            }
-        case PacketType::Message:
-            {
-                std::string receivedMessage;
-                packet >> receivedMessage;
-                std::string message = ip.toString() + ":" + std::to_string(port) + " says: " + receivedMessage;
-                sf::Packet p;
-                p << PacketID(PacketType::Message);
-                p << message;
-                broadcast(p, clientID);
+                broadcast(p, clientID);*/
+                //TODO replace with generic 'client left' packet so other clients
+                //can choose how to act upon it
                 return;
             }
         case PacketType::HeartBeat:

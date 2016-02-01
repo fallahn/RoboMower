@@ -5,7 +5,7 @@
 // Written by Matt Marchant (matty_styles@hotmail.com) 2015 - 2016
 //==============================================================================
 
-#include <network/Client.hpp>
+#include <network/ClientConnection.hpp>
 
 #include <xygine/Log.hpp>
 
@@ -17,22 +17,21 @@ namespace
     const sf::Int32 CONNECTION_TIMEOUT = 5000;
 }
 
-Client::Client()
+ClientConnection::ClientConnection()
     : m_serverPort(0u),
     m_connected(false),
-    m_listenThread(&Client::listen, this),
-    m_updateThread(&Client::update, this)
+    m_listenThread(&ClientConnection::listen, this)
 {
 
 }
 
-Client::~Client()
+ClientConnection::~ClientConnection()
 {
     disconnect();
 }
 
 //public
-bool Client::connect()
+bool ClientConnection::connect()
 {
     if (!m_connected)
     {
@@ -88,7 +87,7 @@ bool Client::connect()
             m_socket.setBlocking(true);
             m_lastHeartbeat = m_serverTime;
             m_listenThread.launch();
-            m_updateThread.launch();
+            //m_updateThread.launch();
             return true;
         }
         LOG("CLIENT - Connect attempt timed out.", xy::Logger::Type::Error);
@@ -99,7 +98,7 @@ bool Client::connect()
     return false;
 }
 
-bool Client::disconnect()
+bool ClientConnection::disconnect()
 {
     if(!m_connected) return false;
 
@@ -115,56 +114,73 @@ bool Client::disconnect()
     return (status == sf::Socket::Done);
 }
 
-bool Client::send(sf::Packet& packet)
+void ClientConnection::update(float dt)
+{
+    m_serverTime += sf::seconds(dt);
+    if (m_serverTime.asMilliseconds() < 0)
+    {
+        m_serverTime -= sf::milliseconds(Network::HighestTimestamp);
+        m_lastHeartbeat = m_serverTime;
+        return;
+    }
+
+    if (m_serverTime.asMilliseconds() - m_lastHeartbeat.asMilliseconds() > CLIENT_TIMEOUT)
+    {
+        LOG("CLIENT - Server connection timed out", xy::Logger::Type::Info);
+        disconnect();
+    }
+}
+
+bool ClientConnection::send(sf::Packet& packet)
 {
     if (!m_connected) return false;
 
     return (m_socket.send(packet, m_serverIp, m_serverPort) == sf::Socket::Done);
 }
 
-const sf::Time& Client::getTime() const
+const sf::Time& ClientConnection::getTime() const
 {
     return m_serverTime;
 }
 
-const sf::Time& Client::getLastHeartbeat() const
+const sf::Time& ClientConnection::getLastHeartbeat() const
 {
     return m_lastHeartbeat;
 }
 
-void Client::setTime(const sf::Time& time)
+void ClientConnection::setTime(const sf::Time& time)
 {
     m_serverTime = time;
 }
 
-void Client::setServerInfo(const sf::IpAddress& ip, PortNumber port)
+void ClientConnection::setServerInfo(const sf::IpAddress& ip, PortNumber port)
 {
     m_serverIp = ip;
     m_serverPort = port;
 }
 
-void Client::setPacketHandler(const PacketHandler& ph)
+void ClientConnection::setPacketHandler(const PacketHandler& ph)
 {
     m_packetHandler = ph;
 }
 
-void Client::removePacketHandler()
+void ClientConnection::removePacketHandler()
 {
     m_packetHandler = nullptr;
 }
 
-bool Client::connected() const
+bool ClientConnection::connected() const
 {
     return m_connected;
 }
 
-sf::Mutex& Client::getMutex()
+sf::Mutex& ClientConnection::getMutex()
 {
     return m_mutex;
 }
 
 //private
-void Client::handlePacket(PacketType type, sf::Packet& packet)
+void ClientConnection::handlePacket(PacketType type, sf::Packet& packet)
 {
     switch (type)
     {
@@ -189,14 +205,13 @@ void Client::handlePacket(PacketType type, sf::Packet& packet)
     default:break;
     }
 
-
     if (m_packetHandler)
     {
         m_packetHandler(type, packet, this);
     }
 }
 
-void Client::listen()
+void ClientConnection::listen()
 {
     sf::Packet packet;
     sf::IpAddress rxIP;
@@ -243,31 +258,5 @@ void Client::listen()
 
         //handle the packet
         handlePacket(packetType, packet);
-    }
-}
-
-void Client::update()
-{
-    sf::Clock updateClock;
-    while (m_connected)
-    {
-        update(updateClock.restart());
-    }
-}
-
-void Client::update(const sf::Time& time)
-{
-    m_serverTime += time;
-    if (m_serverTime.asMilliseconds() < 0)
-    {
-        m_serverTime -= sf::milliseconds(Network::HighestTimestamp);
-        m_lastHeartbeat = m_serverTime;
-        return;
-    }
-
-    if (m_serverTime.asMilliseconds() - m_lastHeartbeat.asMilliseconds() > CLIENT_TIMEOUT)
-    {
-        LOG("CLIENT - Server connection timed out", xy::Logger::Type::Info);
-        disconnect();
     }
 }

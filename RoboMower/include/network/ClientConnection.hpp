@@ -17,16 +17,17 @@
 
 #include <atomic>
 
-class Client final
+class ClientConnection final
 {
 public:
-    using PacketHandler = std::function<void(PacketType, sf::Packet&, Client*)>;
+    using PacketHandler = std::function<void(PacketType, sf::Packet&, ClientConnection*)>;
 
-    Client();
-    ~Client();
+    ClientConnection();
+    ~ClientConnection();
 
     bool connect();
     bool disconnect();
+    void update(float);
 
     bool send(sf::Packet&);
 
@@ -55,14 +56,11 @@ private:
     sf::Time m_lastHeartbeat;
 
     sf::Thread m_listenThread;
-    sf::Thread m_updateThread;
     sf::Mutex m_mutex;
 
     void handlePacket(PacketType, sf::Packet&);
 
-    void listen();
-    void update();
-    void update(const sf::Time&);
+    void listen();    
 };
 
 #endif //RM_NET_CLIENT_HPP_

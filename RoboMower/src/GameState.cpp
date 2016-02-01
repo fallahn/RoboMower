@@ -69,6 +69,7 @@ bool GameState::update(float dt)
     
     m_gameUI.update(dt, mousePos);
     m_scene.update(dt);
+    m_client.update(dt);
 
     m_reportText.setString(xy::StatsReporter::reporter.getString());
 

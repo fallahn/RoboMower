@@ -73,7 +73,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\ButtonLogic.cpp" />
-    <ClCompile Include="src\Client.cpp" />
+    <ClCompile Include="src\ClientConnection.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\GameState.cpp" />
     <ClCompile Include="src\GameUI.cpp" />
@@ -91,7 +91,7 @@
     <ClCompile Include="src\PlayerLogic.cpp" />
     <ClCompile Include="src\RoundedRectangle.cpp" />
     <ClCompile Include="src\ScrollHandleLogic.cpp" />
-    <ClCompile Include="src\Server.cpp" />
+    <ClCompile Include="src\ServerConnection.cpp" />
     <ClCompile Include="src\StackLogicComponent.cpp" />
     <ClCompile Include="src\StatsOverlayState.cpp" />
     <ClCompile Include="src\Tilemap.cpp" />
@@ -118,9 +118,9 @@
     <ClInclude Include="include\MenuOptionState.hpp" />
     <ClInclude Include="include\MenuPauseState.hpp" />
     <ClInclude Include="include\Messages.hpp" />
-    <ClInclude Include="include\network\Client.hpp" />
+    <ClInclude Include="include\network\ClientConnection.hpp" />
     <ClInclude Include="include\network\NetworkConfig.hpp" />
-    <ClInclude Include="include\network\Server.hpp" />
+    <ClInclude Include="include\network\ServerConnection.hpp" />
     <ClInclude Include="include\RoundedRectangle.hpp" />
     <ClInclude Include="include\shaders\ShaderIds.hpp" />
     <ClInclude Include="include\shaders\CropShader.hpp" />

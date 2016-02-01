@@ -23,7 +23,7 @@ enum class PacketType: sf::Int8
     Disconnect = -1,
     Connect,
     HeartBeat,
-    Message = 4,
+    //Message = 4,
         
     Bounds //must always be last
 };

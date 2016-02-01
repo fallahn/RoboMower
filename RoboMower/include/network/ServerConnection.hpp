@@ -36,17 +36,17 @@ struct ClientInfo final
 
 using ClientList = std::unordered_map<ClientID, ClientInfo>;
 
-class Server final
+class ServerConnection final
 {
 public:
-    using PacketHandler = std::function<void(const sf::IpAddress&, PortNumber, PacketType, sf::Packet&, Server*)>;
+    using PacketHandler = std::function<void(const sf::IpAddress&, PortNumber, PacketType, sf::Packet&, ServerConnection*)>;
     using TimeoutHandler = std::function<void(ClientID)>;
 
-    Server();
-    ~Server();
+    ServerConnection();
+    ~ServerConnection();
 
-    Server(const Server&) = delete;
-    Server& operator = (const Server&) = delete;
+    ServerConnection(const ServerConnection&) = delete;
+    ServerConnection& operator = (const ServerConnection&) = delete;
 
     void setPacketHandler(const PacketHandler&);
     void setTimeoutHandler(const TimeoutHandler&);
@@ -66,6 +66,8 @@ public:
     void disconnectAll();
     bool start();
     bool stop();
+
+    void update(float);
 
     bool running() const;
 
@@ -89,15 +91,12 @@ private:
     std::atomic_bool m_running;
 
     sf::Thread m_listenThread;
-    sf::Thread m_updateThread;
     sf::Mutex m_mutex;
 
     std::atomic<size_t> m_totalBytesSent;
     std::atomic<size_t> m_totalBytesReceived;
 
-    void listen();
-    void update();
-    void update(const sf::Time&);
+    void listen();  
 
     void init();
     void handlePacket(const sf::IpAddress&, PortNumber, PacketType, sf::Packet&);

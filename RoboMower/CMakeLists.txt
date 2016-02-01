@@ -72,7 +72,7 @@ include(${xygine_DIR}/CMakeLists.txt)
 
 set(SOURCE
   src/ButtonLogic.cpp
-  src/Client.cpp
+  src/ClientConnection.cpp
   src/Game.cpp
   src/GameState.cpp
   src/GameUI.cpp
@@ -90,7 +90,7 @@ set(SOURCE
   src/PlayerLogic.cpp
   src/RoundedRectangle.cpp
   src/ScrollHandleLogic.cpp
-  src/Server.cpp
+  src/ServerConnection.cpp
   src/StackLogicComponent.cpp
   src/StatsOverlayState.cpp
   src/Tilemap.cpp)

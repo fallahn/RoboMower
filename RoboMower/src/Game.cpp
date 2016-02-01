@@ -106,11 +106,12 @@ void Game::handleMessage(const xy::Message& msg)
 void Game::updateApp(float dt)
 {
     m_stateStack.update(dt);
+    m_server.update(dt);
 }
 
 void Game::pauseApp(float dt)
 {
-    //do nothing, we're paused!
+    m_server.update(dt);
 }
 
 void Game::draw()
