@@ -15,17 +15,30 @@
 
 #include <list>
 
+
 namespace Network
 {
     using SeqID = sf::Uint32;
+
+    static inline bool moreRecent(SeqID a, SeqID b, SeqID max)
+    {
+        auto halfMax = max / 2u;
+        return
+            (
+                ((a > b) && (a - b <= halfMax))
+                ||
+                ((b > a) && (b - a > halfMax))
+                );
+    }
+
     struct PacketData final
     {
-        SeqID sequence; //TODO as long as wrap around works we can save some bw making this a short
-        sf::Int32 timeOffset; //offset in milliseconds
-        sf::Int32 size;
+        SeqID sequence = 0u; //TODO as long as wrap around works we can save some bw making this a short
+        float timeOffset = 0.f;
+        sf::Int32 size = 0;
     };
 
-    class PacketQueue final : std::list<PacketData>
+    class PacketQueue final : public std::list<PacketData>
     {
     public:
         PacketQueue() = default;

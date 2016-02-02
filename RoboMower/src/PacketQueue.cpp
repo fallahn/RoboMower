@@ -11,20 +11,6 @@
 
 using namespace Network;
 
-namespace
-{
-    bool moreRecent(SeqID a, SeqID b, SeqID max)
-    {
-        auto halfMax = max / 2u;
-        return
-        (
-            ((a > b) && (a - b <= halfMax))
-            ||
-            ((b > a) && (b - a > halfMax))
-        );
-    }
-}
-
 bool PacketQueue::exists(SeqID sequenceID)
 {
     return std::find_if(begin(), end(), 

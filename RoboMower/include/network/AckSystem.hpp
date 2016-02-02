@@ -58,7 +58,6 @@ namespace Network
         float m_sentBandwidth;
         float m_ackedBandwidth;
         float m_rtt;
-        float m_rtt_max; //should be const?
 
         std::vector<SeqID> m_acks;
         PacketQueue m_sentQueue;
