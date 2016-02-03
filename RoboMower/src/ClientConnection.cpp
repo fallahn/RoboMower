@@ -111,6 +111,7 @@ bool ClientConnection::disconnect()
     //when disconnected has properly been sent
     auto status = m_socket.send(packet, m_serverIp, m_serverPort);
     m_connected = false;
+    //m_listenThread.wait();
     m_socket.unbind();
 
     return (status == sf::Socket::Done);
@@ -261,4 +262,5 @@ void ClientConnection::listen()
         //handle the packet
         handlePacket(packetType, packet);
     }
+    LOG("CLIENT - Listen thread quit.", xy::Logger::Type::Info);
 }

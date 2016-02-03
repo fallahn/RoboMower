@@ -215,6 +215,7 @@ bool ServerConnection::stop()
     {
         disconnectAll();
         m_running = false;
+        //m_listenThread.wait();
         m_incomingSocket.unbind();
         return true;
     }
@@ -343,6 +344,7 @@ void ServerConnection::listen()
     }
 
     LOG("SERVER - Stopped listening...", xy::Logger::Type::Info);
+    LOG("SERVER - Listen thread quit.", xy::Logger::Type::Info);
 }
 
 void ServerConnection::init()
