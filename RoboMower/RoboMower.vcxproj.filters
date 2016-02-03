@@ -111,6 +111,9 @@
     <ClCompile Include="src\AckSystem.cpp">
       <Filter>Source Files\network</Filter>
     </ClCompile>
+    <ClCompile Include="src\FlowControl.cpp">
+      <Filter>Source Files\network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Game.hpp">
@@ -204,6 +207,9 @@
       <Filter>Header Files\network</Filter>
     </ClInclude>
     <ClInclude Include="include\network\AckSystem.hpp">
+      <Filter>Header Files\network</Filter>
+    </ClInclude>
+    <ClInclude Include="include\network\FlowControl.hpp">
       <Filter>Header Files\network</Filter>
     </ClInclude>
   </ItemGroup>
