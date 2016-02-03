@@ -25,9 +25,8 @@ namespace Network
         Disconnect = -1,
         Connect,
         HeartBeat,
-        //Message = 4,
-        
-        Bounds //must always be last
+        ServerFull,
+        Count
     };
 
     enum
@@ -36,10 +35,9 @@ namespace Network
         ServerPort = 5600,
         NullID = -1
     };
-}
 
-class Server;
-struct ClientInfo;
+    static const sf::Uint32 PROTOCOL_ID = 0x444C4142u;
+}
 
 using PacketID = sf::Int8;
 using ClientID = sf::Int32;

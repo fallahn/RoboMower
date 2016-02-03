@@ -24,6 +24,7 @@ using namespace Network;
 
 ServerConnection::ServerConnection()
     : m_lastClientID    (-1),
+    m_maxClients        (4u),
     m_running           (false),
     m_listenThread      (&ServerConnection::listen, this),
     m_totalBytesSent    (0u),
@@ -56,6 +57,7 @@ bool ServerConnection::send(ClientID id, sf::Packet& packet)
     if (result == m_clients.end()) return false;
 
     sf::Packet stampedPacket;
+    stampedPacket << Network::PROTOCOL_ID;
     stampedPacket << result->second.ackSystem->createHeader();
     stampedPacket.append(packet.getData(), packet.getDataSize());
 
@@ -65,6 +67,8 @@ bool ServerConnection::send(ClientID id, sf::Packet& packet)
         return false;
     }
 
+    result->second.ackSystem->packetSent(packet.getDataSize());
+
     m_totalBytesSent += packet.getDataSize();
     return true;
 }
@@ -72,11 +76,13 @@ bool ServerConnection::send(ClientID id, sf::Packet& packet)
 bool ServerConnection::send(const sf::IpAddress& ip, PortNumber port, sf::Packet& packet)
 {
     sf::Packet stampedPacket;
+    stampedPacket << Network::PROTOCOL_ID;
 
     auto id = getClientID(ip, port);
     if (id != NullID)
     {
         stampedPacket << m_clients[id].ackSystem->createHeader();
+        m_clients[id].ackSystem->packetSent(packet.getDataSize());
     }
     else
     {
@@ -89,6 +95,7 @@ bool ServerConnection::send(const sf::IpAddress& ip, PortNumber port, sf::Packet
         LOG("SERVER - Failed sending packet to " + ip.toString(), xy::Logger::Type::Warning);
         return false;
     }
+    
     m_totalBytesSent += packet.getDataSize();
     return true;
 }
@@ -279,6 +286,7 @@ void ServerConnection::update(float dt)
                     m_timoutHandler(it->first);
                 }
                 it = m_clients.erase(it);
+                //TODO broadcast client leaving notification
                 continue;
             }
 
@@ -319,6 +327,16 @@ std::size_t ServerConnection::getClientCount() const
     return m_clients.size();
 }
 
+void ServerConnection::setMaxClients(std::size_t count)
+{
+    m_maxClients = count;
+}
+
+std::size_t ServerConnection::getMaxClients() const
+{
+    return m_maxClients;
+}
+
 sf::Mutex& ServerConnection::getMutex()
 {
     return m_mutex;
@@ -352,34 +370,27 @@ void ServerConnection::listen()
         }
         m_totalBytesReceived += packet.getDataSize();
 
-        AckSystem::Header header;
-        if (!(packet >> header))
+        sf::Uint32 pID;
+        if (!(packet >> pID) || pID != Network::PROTOCOL_ID)
         {
-            //invalid packet
-            LOG("SERVER - Bad packet header received", xy::Logger::Type::Warning);
+            LOG("SERVER - invalid or missing protocol ID", xy::Logger::Type::Warning);
             continue;
         }
-        else
+
+        AckSystem::Header header;
+        packet >> header;
+        auto clientID = getClientID(ip, port);
+        if (clientID != NullID)
         {
-            auto clientID = getClientID(ip, port);
-            if (clientID != NullID)
-            {
-                m_clients[clientID].ackSystem->packetReceived(header.sequence, packet.getDataSize());
-                m_clients[clientID].ackSystem->processAck(header.ack, header.ackBits);
-            }
+            m_clients[clientID].ackSystem->packetReceived(header.sequence, packet.getDataSize());
+            m_clients[clientID].ackSystem->processAck(header.ack, header.ackBits);
+            //TODO discard this packet if it's older than the newest rx'd
         }
 
         PacketID packetID = 0;
         packet >> packetID;
-        PacketType packetType = static_cast<PacketType>(packetID);
-        if (packetType < PacketType::Disconnect || packetType >= PacketType::Bounds)
-        {
-            //invalid type
-            LOG("SERVER - Invalid packet type received: " + std::to_string(PacketID(packetType)), xy::Logger::Type::Warning);
-            continue;
-        }
 
-        handlePacket(ip, port, packetType, packet);
+        handlePacket(ip, port, static_cast<PacketType>(packetID), packet);
     }
 
     LOG("SERVER - Stopped listening...", xy::Logger::Type::Info);
@@ -405,14 +416,9 @@ void ServerConnection::handlePacket(const sf::IpAddress& ip, PortNumber port, Pa
         {
         case PacketType::Disconnect:
             {
-                /*removeClient(ip, port);
-                sf::Packet p;
-                p << PacketID(PacketType::Message);
-                std::string message;
-                message = "Client left! " + ip.toString() + ":" + std::to_string(port);
-                p << message;
-                broadcast(p, clientID);*/
-                //TODO replace with generic 'client left' packet so other clients
+                removeClient(ip, port);
+                /*broadcast(p, clientID);*/
+                //TODO add generic 'client left' packet so other clients
                 //can choose how to act upon it
                 return;
             }
@@ -443,10 +449,22 @@ void ServerConnection::handlePacket(const sf::IpAddress& ip, PortNumber port, Pa
     {
         if (id == PacketType::Connect)
         {
-            ClientID nid = addClient(ip, port);
-            sf::Packet p;
-            p << PacketID(PacketType::Connect);
-            send(nid, p);
+            if (m_clients.size() < m_maxClients)
+            {
+                ClientID nid = addClient(ip, port);
+                sf::Packet p;
+                p << PacketID(PacketType::Connect);
+                send(nid, p);
+                LOG("SERVER - Sent connection acceptance", xy::Logger::Type::Info);
+            }
+            else
+            {
+                //send refusal :(
+                sf::Packet p;
+                p << PacketID(PacketType::ServerFull);
+                send(ip, port, p);
+                LOG("SERVER - Sent connection refusal, server full.", xy::Logger::Type::Info);
+            }
             return;
         }
     }

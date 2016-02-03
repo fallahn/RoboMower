@@ -24,7 +24,7 @@ private:
 
     xy::StateStack m_stateStack;
 
-    ServerConnection m_server;
+    Network::ServerConnection m_server;
 
     void handleEvent(const sf::Event&) override;
     void handleMessage(const xy::Message&) override;

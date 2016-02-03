@@ -150,11 +150,6 @@ void AckSystem::packetReceived(SeqID seqID, sf::Int32 size)
     }
 }
 
-sf::Uint32 AckSystem::generateAckBits()
-{
-    return genAckBits(getRemoteSequence(), m_receivedQueue, m_maxID);
-}
-
 void AckSystem::processAck(SeqID ack, sf::Uint32 ackBits)
 {
     return procAck(ack, ackBits, m_pendingAckQueue, m_ackedQueue, m_acks, m_ackedPackets, m_rtt, m_maxID);
@@ -188,22 +183,22 @@ const std::vector<SeqID>& AckSystem::getAcks() const
     return m_acks;
 }
 
-sf::Uint32 AckSystem::getSentPackets() const
+sf::Uint32 AckSystem::getSentPacketCount() const
 {
     return m_sentPackets;
 }
 
-sf::Uint32 AckSystem::getReceivedPackets() const
+sf::Uint32 AckSystem::getReceivedPacketCount() const
 {
     return m_receivedPackets;
 }
 
-sf::Uint32 AckSystem::getLostPackets() const
+sf::Uint32 AckSystem::getLostPacketCount() const
 {
     return m_lostPackets;
 }
 
-sf::Uint32 AckSystem::getAckedPackets() const
+sf::Uint32 AckSystem::getAckedPacketCount() const
 {
     return m_ackedPackets;
 }
@@ -226,9 +221,9 @@ float AckSystem::getRoundTripTime() const
 AckSystem::Header AckSystem::createHeader()
 {
     Header header;
-    header.sequence = getLocalSequence();
-    header.ack = getRemoteSequence();
-    header.ackBits = generateAckBits();
+    header.sequence = m_localSequence;
+    header.ack = m_remoteSequence;
+    header.ackBits = genAckBits(getRemoteSequence(), m_receivedQueue, m_maxID);
     return header;
 }
 //private

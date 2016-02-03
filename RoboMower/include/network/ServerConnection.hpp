@@ -20,8 +20,8 @@
 #include <atomic>
 #include <memory>
 
-//namespace Network
-//{
+namespace Network
+{
     struct ClientInfo final
     {
         sf::IpAddress ipAddress;
@@ -82,12 +82,15 @@
         bool running() const;
 
         std::size_t getClientCount() const;
+        void setMaxClients(std::size_t);
+        std::size_t getMaxClients() const;
 
         sf::Mutex& getMutex();
 
     private:
 
         ClientID m_lastClientID;
+        std::size_t m_maxClients;
 
         sf::UdpSocket m_incomingSocket;
         sf::UdpSocket m_outgoingSocket;
@@ -111,5 +114,5 @@
         void init();
         void handlePacket(const sf::IpAddress&, PortNumber, Network::PacketType, sf::Packet&);
     };
-//}
+}
 #endif //RM_SERVER_HPP_

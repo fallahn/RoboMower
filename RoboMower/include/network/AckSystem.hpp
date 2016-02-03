@@ -21,20 +21,20 @@ namespace Network
     public:
         struct Header final
         {
-            SeqID sequence = 0;
+            SeqID sequence = 1;
             SeqID ack = 0;
             sf::Uint32 ackBits = 0;
         };
 
         explicit AckSystem(SeqID maxID = 0xFFFF);
         ~AckSystem() = default;
-        //AckSystem(const AckSystem&) = delete;
-        //AckSystem& operator = (AckSystem&) = delete;
+        AckSystem(const AckSystem&) = delete;
+        AckSystem& operator = (AckSystem&) = delete;
 
         void reset();
         void packetSent(sf::Int32);
         void packetReceived(SeqID, sf::Int32);
-        sf::Uint32 generateAckBits();
+
         void processAck(SeqID, sf::Uint32);
         void update(float);
 
@@ -43,10 +43,10 @@ namespace Network
         SeqID getMaxSequence() const;
 
         const std::vector<SeqID>& getAcks() const;
-        sf::Uint32 getSentPackets() const;
-        sf::Uint32 getReceivedPackets() const;
-        sf::Uint32 getLostPackets() const;
-        sf::Uint32 getAckedPackets() const;
+        sf::Uint32 getSentPacketCount() const;
+        sf::Uint32 getReceivedPacketCount() const;
+        sf::Uint32 getLostPacketCount() const;
+        sf::Uint32 getAckedPacketCount() const;
         float getSentBandwidth() const;
         float getAckedBandwidth() const;
         float getRoundTripTime() const;

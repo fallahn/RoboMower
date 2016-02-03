@@ -42,6 +42,7 @@ bool ClientConnection::connect()
         LOG("CLIENT - Bound connection to port: " + std::to_string(m_socket.getLocalPort()), xy::Logger::Type::Info);
 
         sf::Packet packet;
+        packet << Network::PROTOCOL_ID;
         packet << m_ackSystem.createHeader();
         packet << PacketID(PacketType::Connect);
         //TODO attach other client info such as player name
@@ -66,22 +67,39 @@ bool ClientConnection::connect()
             sf::Socket::Status s = m_socket.receive(packet, rxIP, rxPort);
             if (s != sf::Socket::Done)
             {
+                LOG("CLIENT - Failed rx connection packet", xy::Logger::Type::Error);
                 continue;
             }
             if (rxIP != m_serverIp)
             {
+                LOG("CLIENT - Failed rx connection remote IP", xy::Logger::Type::Error);
                 continue;
             }
 
-            PacketID id;
-            if (!(packet >> id))
+            sf::Uint32 pID;
+            if (!(packet >> pID) || pID != Network::PROTOCOL_ID)
             {
-                break;
+                LOG("CLIENT - Failed rx invalid protocol: " + std::to_string(pID), xy::Logger::Type::Error);
+                continue;
             }
 
+            AckSystem::Header header;
+            packet >> header;
+            m_ackSystem.packetReceived(header.sequence, packet.getDataSize());
+            m_ackSystem.processAck(header.ack, header.ackBits);
+
+            PacketID id;
+            packet >> id;
             PacketType packetType = static_cast<PacketType>(id);
             if (packetType != PacketType::Connect)
             {
+                if (packetType == PacketType::ServerFull)
+                {
+                    LOG("CLIENT - Server refused connection, server full.", xy::Logger::Type::Info);
+                    m_socket.unbind();
+                    m_socket.setBlocking(false);
+                    return false;
+                }
                 continue;
             }
 
@@ -97,6 +115,7 @@ bool ClientConnection::connect()
         LOG("CLIENT - Connect attempt timed out.", xy::Logger::Type::Error);
         m_socket.unbind();
         m_socket.setBlocking(false);
+        return false;
     }
     LOG("CLIENT - Already connected to: " + m_serverIp.toString(), xy::Logger::Type::Error);
     return false;
@@ -107,13 +126,14 @@ bool ClientConnection::disconnect()
     if(!m_connected) return false;
 
     sf::Packet packet;
+    packet << Network::PROTOCOL_ID;
+    packet << m_ackSystem.createHeader();
     packet << PacketID(PacketType::Disconnect);
 
-    //TODO fix this up when updating the protocol so we know 
-    //when disconnected has properly been sent
+    //TODO should we wait for ack?
     auto status = m_socket.send(packet, m_serverIp, m_serverPort);
     m_connected = false;
-    //m_listenThread.wait();
+    
 #ifdef __linux__
     //horrible hack as trying to unbind a blocking socket
     //on linux appears not to work
@@ -141,10 +161,10 @@ void ClientConnection::update(float dt)
     }
 
     m_ackSystem.update(dt);
-    REPORT("Client Recieved", std::to_string(m_ackSystem.getReceivedPackets()));
-    REPORT("Client Sent", std::to_string(m_ackSystem.getSentPackets()));
-    REPORT("Client Acked", std::to_string(m_ackSystem.getAckedPackets()));
-    REPORT("Client Lost", std::to_string(m_ackSystem.getLostPackets()));
+    REPORT("Client Recieved", std::to_string(m_ackSystem.getReceivedPacketCount()));
+    REPORT("Client Sent", std::to_string(m_ackSystem.getSentPacketCount()));
+    REPORT("Client Acked", std::to_string(m_ackSystem.getAckedPacketCount()));
+    REPORT("Client Lost", std::to_string(m_ackSystem.getLostPacketCount()));
 }
 
 bool ClientConnection::send(sf::Packet& packet)
@@ -152,6 +172,7 @@ bool ClientConnection::send(sf::Packet& packet)
     if (!m_connected) return false;
 
     sf::Packet stampedPacket;
+    stampedPacket << Network::PROTOCOL_ID;
     stampedPacket << m_ackSystem.createHeader();
     stampedPacket.append(packet.getData(), packet.getDataSize());
 
@@ -212,6 +233,7 @@ void ClientConnection::handlePacket(PacketType type, sf::Packet& packet)
     case PacketType::HeartBeat:
         {
             sf::Packet p;
+            p << Network::PROTOCOL_ID;
             p << m_ackSystem.createHeader();
             p << PacketID(PacketType::HeartBeat);
             if (m_socket.send(p, m_serverIp, m_serverPort) != sf::Socket::Done)
@@ -272,31 +294,25 @@ void ClientConnection::listen()
             continue;
         }
 
-        AckSystem::Header header;
-        if (!(packet >> header))
+        sf::Uint32 pID;
+        if (!(packet >> pID) || pID != Network::PROTOCOL_ID)
         {
-            //ignore bad headers
-            LOG("CLIENT - Bad packet header received", xy::Logger::Type::Warning);
+            LOG("CLIENT - Bad protocol ID", xy::Logger::Type::Error);
             continue;
         }
-        else
-        {
-            m_ackSystem.packetReceived(header.sequence, packet.getDataSize());
-            m_ackSystem.processAck(header.ack, header.ackBits);
-        }
+
+        AckSystem::Header header;
+        packet >> header;
+        m_ackSystem.packetReceived(header.sequence, packet.getDataSize());
+        m_ackSystem.processAck(header.ack, header.ackBits);
+
+        //TODO discard packets older than newest rx'd
 
         PacketID packetID;
         packet >> packetID;
 
-        PacketType packetType = static_cast<PacketType>(packetID);
-        if (packetType < PacketType::Disconnect || packetType >= PacketType::Bounds)
-        {
-            //ignore packets out of bounds
-            continue;
-        }
-
         //handle the packet
-        handlePacket(packetType, packet);
+        handlePacket(static_cast<PacketType>(packetID), packet);
     }
     LOG("CLIENT - Listen thread quit.", xy::Logger::Type::Info);
 }

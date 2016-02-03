@@ -48,7 +48,6 @@ namespace Network
 
         bool exists(SeqID);
         void insertSorted(const PacketData&, SeqID);
-        void verifySorted(SeqID);
 
     private:
 

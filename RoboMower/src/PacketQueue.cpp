@@ -50,8 +50,3 @@ void PacketQueue::insertSorted(const PacketData& pd, SeqID maxID)
     }
 
 }
-
-void PacketQueue::verifySorted(SeqID maxID)
-{
-
-}
