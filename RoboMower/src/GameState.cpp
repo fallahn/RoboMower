@@ -14,6 +14,7 @@
 #include <xygine/Entity.hpp>
 #include <xygine/Command.hpp>
 #include <xygine/PostChromeAb.hpp>
+#include <xygine/ui/Label.hpp>
 
 #include <xygine/App.hpp>
 #include <xygine/Log.hpp>
@@ -36,13 +37,16 @@ namespace
 
     const float joyDeadZone = 25.f;
     const float joyMaxAxis = 100.f;
+
+    xy::UI::Label::Ptr reportText;
 }
 
 GameState::GameState(xy::StateStack& stateStack, Context context)
     : State         (stateStack, context),
     m_messageBus    (context.appInstance.getMessageBus()),
     m_scene         (m_messageBus),
-    m_gameUI        (context, m_textureResource, m_fontResource, m_scene)
+    m_gameUI        (context, m_textureResource, m_fontResource, m_scene),
+    m_reportWindow  (context.renderWindow, m_fontResource.get(""), 500, 400)
 {
     launchLoadingScreen();
     
@@ -51,8 +55,10 @@ GameState::GameState(xy::StateStack& stateStack, Context context)
     auto pp = xy::PostProcess::create<xy::PostChromeAb>();
     m_scene.addPostProcess(pp);
 
-    m_reportText.setFont(m_fontResource.get("assets/fonts/Console.ttf"));
-    m_reportText.setPosition(1500.f, 30.f);
+    reportText = std::make_shared<xy::UI::Label>(m_fontResource.get("assets/fonts/Console.ttf"));
+    reportText->move(10.f, 0.f);
+    m_reportWindow.addControl(reportText);
+    m_reportWindow.setPosition(1500.f, 30.f);
 
     buildMap();
 
@@ -71,7 +77,8 @@ bool GameState::update(float dt)
     m_scene.update(dt);
     m_client.update(dt);
 
-    m_reportText.setString(xy::StatsReporter::reporter.getString());
+    reportText->setString(xy::StatsReporter::reporter.getString());
+    m_reportWindow.update(dt);
 
     return true;
 }
@@ -81,7 +88,7 @@ void GameState::draw()
     auto& rw = getContext().renderWindow;
     rw.draw(m_scene);
     rw.setView(getContext().defaultView);
-    rw.draw(m_reportText);
+    rw.draw(m_reportWindow);
 }
 
 bool GameState::handleEvent(const sf::Event& evt)
@@ -158,6 +165,7 @@ bool GameState::handleEvent(const sf::Event& evt)
     }
 
     m_gameUI.handleEvent(evt);
+    m_reportWindow.handleEvent(evt, xy::App::getMouseWorldPosition());
     return true;
 }
 

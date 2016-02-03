@@ -19,6 +19,7 @@
 #include <xygine/Entity.hpp>
 #include <xygine/Scene.hpp>
 #include <xygine/Resource.hpp>
+#include <xygine/ui/Window.hpp>
 
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
@@ -56,7 +57,7 @@ private:
     GameUI m_gameUI;
     Network::ClientConnection m_client;
 
-    sf::Text m_reportText;
+    xy::UI::Window m_reportWindow;
 
     void buildMap();
 };
