@@ -215,7 +215,11 @@ bool ServerConnection::stop()
     {
         disconnectAll();
         m_running = false;
-        //m_listenThread.wait();
+#ifdef __linux__
+        //horrible hack as trying to unbind a blocking socket
+        //on linux appears not to work
+        m_listenThread.terminate();
+#endif
         m_incomingSocket.unbind();
         return true;
     }

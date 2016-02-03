@@ -89,7 +89,7 @@ bool ClientConnection::connect()
             m_socket.setBlocking(true);
             m_lastHeartbeat = m_serverTime;
             m_listenThread.launch();
-            //m_updateThread.launch();
+
             return true;
         }
         LOG("CLIENT - Connect attempt timed out.", xy::Logger::Type::Error);
@@ -112,6 +112,11 @@ bool ClientConnection::disconnect()
     auto status = m_socket.send(packet, m_serverIp, m_serverPort);
     m_connected = false;
     //m_listenThread.wait();
+#ifdef __linux__
+    //horrible hack as trying to unbind a blocking socket
+    //on linux appears not to work
+    m_listenThread.terminate();
+#endif
     m_socket.unbind();
 
     return (status == sf::Socket::Done);
