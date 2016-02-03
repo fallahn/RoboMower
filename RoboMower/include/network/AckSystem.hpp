@@ -10,6 +10,8 @@
 
 #include <network/PacketQueue.hpp>
 
+#include <SFML/Network/Packet.hpp>
+
 #include <vector>
 
 namespace Network
@@ -17,10 +19,17 @@ namespace Network
     class AckSystem final
     {
     public:
-        explicit AckSystem(SeqID maxID = 0xFFFFFFFF);
+        struct Header final
+        {
+            SeqID sequence = 0;
+            SeqID ack = 0;
+            sf::Uint32 ackBits = 0;
+        };
+
+        explicit AckSystem(SeqID maxID = 0xFFFF);
         ~AckSystem() = default;
-        AckSystem(const AckSystem&) = delete;
-        AckSystem& operator = (AckSystem&) = delete;
+        //AckSystem(const AckSystem&) = delete;
+        //AckSystem& operator = (AckSystem&) = delete;
 
         void reset();
         void packetSent(sf::Int32);
@@ -28,7 +37,6 @@ namespace Network
         sf::Uint32 generateAckBits();
         void processAck(SeqID, sf::Uint32);
         void update(float);
-        //void validate();
 
         SeqID getLocalSequence() const;
         SeqID getRemoteSequence() const;
@@ -42,8 +50,8 @@ namespace Network
         float getSentBandwidth() const;
         float getAckedBandwidth() const;
         float getRoundTripTime() const;
-        sf::Int32 getHeaderSize() const;
 
+        Header createHeader();
     private:
 
         SeqID m_maxID;
@@ -70,5 +78,9 @@ namespace Network
         void updateStats();
     };
 }
+
+sf::Packet& operator <<(sf::Packet& packet, const Network::AckSystem::Header& header);
+
+sf::Packet& operator >>(sf::Packet& packet, Network::AckSystem::Header& header);
 
 #endif //RM_ACK_SYSTEM_HPP_

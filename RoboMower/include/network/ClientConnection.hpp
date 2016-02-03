@@ -9,6 +9,7 @@
 #define RM_NET_CLIENT_HPP_
 
 #include <network/NetworkConfig.hpp>
+#include <network/AckSystem.hpp>
 
 #include <SFML/System/Mutex.hpp>
 #include <SFML/System/Thread.hpp>
@@ -62,6 +63,8 @@ namespace Network
 
         sf::Thread m_listenThread;
         sf::Mutex m_mutex;
+
+        AckSystem m_ackSystem;
 
         void handlePacket(PacketType, sf::Packet&);
 

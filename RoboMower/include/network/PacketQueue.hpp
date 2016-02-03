@@ -18,11 +18,11 @@
 
 namespace Network
 {
-    using SeqID = sf::Uint32;
+    using SeqID = sf::Uint16;
 
     static inline bool moreRecent(SeqID a, SeqID b, SeqID max)
     {
-        auto halfMax = max / 2u;
+        sf::Uint16 halfMax = max / 2u;
         return
             (
                 ((a > b) && (a - b <= halfMax))
@@ -33,7 +33,7 @@ namespace Network
 
     struct PacketData final
     {
-        SeqID sequence = 0u; //TODO as long as wrap around works we can save some bw making this a short
+        SeqID sequence = 0u;
         float timeOffset = 0.f;
         sf::Int32 size = 0;
     };

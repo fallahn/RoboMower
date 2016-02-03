@@ -9,6 +9,7 @@
 #define RM_SERVER_HPP_
 
 #include <network/NetworkConfig.hpp>
+#include <network/AckSystem.hpp>
 
 #include <SFML/System/Time.hpp>
 #include <SFML/System/Mutex.hpp>
@@ -17,23 +18,30 @@
 #include <SFML/Network/UdpSocket.hpp>
 
 #include <atomic>
+#include <memory>
 
 //namespace Network
 //{
     struct ClientInfo final
     {
         sf::IpAddress ipAddress;
-        PortNumber portNumber;
+        PortNumber portNumber = 0u;
         sf::Time lastHeartbeat;
         sf::Time heartbeatSent;
         bool heartbeatWaiting = false;
         sf::Uint16 heartbeatRetry = 0u;
         sf::Uint32 ping = 0;
 
+        std::unique_ptr<Network::AckSystem> ackSystem;
+
+        ClientInfo() = default;
         ClientInfo(const sf::IpAddress& ip, PortNumber port, const sf::Time& heartBeat)
             : ipAddress(ip),
             portNumber(port),
-            lastHeartbeat(heartBeat) {}
+            lastHeartbeat(heartBeat)
+        {
+            ackSystem = std::make_unique<Network::AckSystem>();
+        }
     };
 
     using ClientList = std::unordered_map<ClientID, ClientInfo>;
@@ -61,7 +69,7 @@
         ClientID getClientID(const sf::IpAddress&, PortNumber);
         bool hasClient(ClientID) const;
         bool hasClient(const sf::IpAddress&, PortNumber);
-        bool getClientInfo(ClientID, ClientInfo&);
+        bool getClientInfo(ClientID, const ClientInfo*);
         bool removeClient(ClientID);
         bool removeClient(const sf::IpAddress&, PortNumber);
 

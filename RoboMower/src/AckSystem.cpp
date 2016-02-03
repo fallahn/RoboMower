@@ -163,7 +163,7 @@ void AckSystem::processAck(SeqID ack, sf::Uint32 ackBits)
 void AckSystem::update(float dt)
 {
     m_acks.clear();
-    advanceQueueTime(dt);
+    advanceQueueTime(dt / 1000.f); //needs ms
     updateQueues();
     updateStats();
 }
@@ -223,9 +223,13 @@ float AckSystem::getRoundTripTime() const
     return m_rtt;
 }
 
-sf::Int32 AckSystem::getHeaderSize() const
+AckSystem::Header AckSystem::createHeader()
 {
-    return 12; //TODO double check this
+    Header header;
+    header.sequence = getLocalSequence();
+    header.ack = getRemoteSequence();
+    header.ackBits = generateAckBits();
+    return header;
 }
 //private
 void AckSystem::advanceQueueTime(float dt)
@@ -291,4 +295,17 @@ void AckSystem::updateStats()
 
     m_sentBandwidth = static_cast<float>(sentBytesPerSec) * (8.f / 1000.f);
     m_ackedBandwidth = static_cast<float>(ackedBytesPerSec) * (8.f / 1000.f);
+}
+
+
+
+//----------packet operator-------//
+sf::Packet& operator <<(sf::Packet& packet, const Network::AckSystem::Header& header)
+{
+    return packet << header.sequence << header.ack << header.ackBits;
+}
+
+sf::Packet& operator >>(sf::Packet& packet, Network::AckSystem::Header& header)
+{
+    return packet >> header.sequence >> header.ack >> header.ackBits;
 }

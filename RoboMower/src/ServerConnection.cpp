@@ -8,6 +8,7 @@
 #include <network/ServerConnection.hpp>
 
 #include <xygine/Log.hpp>
+#include <xygine/Reports.hpp>
 
 #include <SFML/System/Lock.hpp>
 #include <SFML/System/Clock.hpp>
@@ -54,7 +55,11 @@ bool ServerConnection::send(ClientID id, sf::Packet& packet)
     auto result = m_clients.find(id);
     if (result == m_clients.end()) return false;
 
-    if (m_outgoingSocket.send(packet, result->second.ipAddress, result->second.portNumber) != sf::Socket::Done)
+    sf::Packet stampedPacket;
+    stampedPacket << result->second.ackSystem->createHeader();
+    stampedPacket.append(packet.getData(), packet.getDataSize());
+
+    if (m_outgoingSocket.send(stampedPacket, result->second.ipAddress, result->second.portNumber) != sf::Socket::Done)
     {
         LOG("SERVER - Failed sending packet to " + std::to_string(id), xy::Logger::Type::Warning);
         return false;
@@ -66,7 +71,20 @@ bool ServerConnection::send(ClientID id, sf::Packet& packet)
 
 bool ServerConnection::send(const sf::IpAddress& ip, PortNumber port, sf::Packet& packet)
 {
-    if (m_outgoingSocket.send(packet, ip, port) != sf::Socket::Done)
+    sf::Packet stampedPacket;
+
+    auto id = getClientID(ip, port);
+    if (id != NullID)
+    {
+        stampedPacket << m_clients[id].ackSystem->createHeader();
+    }
+    else
+    {
+        stampedPacket << AckSystem::Header();
+    }
+    stampedPacket.append(packet.getData(), packet.getDataSize());
+    
+    if (m_outgoingSocket.send(stampedPacket, ip, port) != sf::Socket::Done)
     {
         LOG("SERVER - Failed sending packet to " + ip.toString(), xy::Logger::Type::Warning);
         return false;
@@ -102,7 +120,7 @@ ClientID ServerConnection::addClient(const sf::IpAddress& ip, PortNumber port)
     //create new client
     ClientID id = m_lastClientID++;
     ClientInfo clientInfo(ip, port, m_serverTime);
-    m_clients.emplace(id, clientInfo);
+    m_clients.emplace(id, std::move(clientInfo));
     LOG("SERVER - Added client with ID: " + std::to_string(id) + " on port: " + std::to_string(port), xy::Logger::Type::Info);
     return id;
 }
@@ -131,17 +149,18 @@ bool ServerConnection::hasClient(const sf::IpAddress& ip, PortNumber port)
     return (getClientID(ip, port) >= 0);
 }
 
-bool ServerConnection::getClientInfo(ClientID id, ClientInfo& info)
+bool ServerConnection::getClientInfo(ClientID id, const ClientInfo* info)
 {
     sf::Lock lock(m_mutex);
     for (const auto& c : m_clients)
     {
         if (c.first == id)
         {
-            info = c.second;
+            info = &c.second;
             return true;
         }
     }
+    info = nullptr;
     return false;
 }
 
@@ -247,6 +266,7 @@ void ServerConnection::update(float dt)
     for (auto it = m_clients.begin(); it != m_clients.end();)
     {
         auto elapsedTime = m_serverTime.asMilliseconds() - it->second.lastHeartbeat.asMilliseconds();
+
         //update client heartbeat
         if (elapsedTime > HEARTBEAT_RATE)
         {
@@ -266,6 +286,7 @@ void ServerConnection::update(float dt)
             if (!it->second.heartbeatWaiting || (elapsedTime >= HEARTBEAT_RATE * (it->second.heartbeatRetry + 1)))
             {
                 sf::Packet heartbeat;
+                //don't need to add ack header here as send() takes care of it
                 heartbeat << PacketID(PacketType::HeartBeat);
                 heartbeat << m_serverTime.asMilliseconds();
                 send(it->first, heartbeat);
@@ -280,6 +301,9 @@ void ServerConnection::update(float dt)
 
                 m_totalBytesSent += heartbeat.getDataSize();
             }
+
+            it->second.ackSystem->update(dt);
+            //REPORT("SERVER rcd", std::to_string(it->second.ackSystem->getReceivedPackets()));
         }
         ++it;
     }
@@ -328,14 +352,25 @@ void ServerConnection::listen()
         }
         m_totalBytesReceived += packet.getDataSize();
 
-        PacketID packetID = 0;
-        if (!(packet >> packetID))
+        AckSystem::Header header;
+        if (!(packet >> header))
         {
             //invalid packet
-            LOG("SERVER - Invalid packet ID received: " + std::to_string(packetID), xy::Logger::Type::Warning);
+            LOG("SERVER - Bad packet header received", xy::Logger::Type::Warning);
             continue;
         }
+        else
+        {
+            auto clientID = getClientID(ip, port);
+            if (clientID != NullID)
+            {
+                m_clients[clientID].ackSystem->packetReceived(header.sequence, packet.getDataSize());
+                m_clients[clientID].ackSystem->processAck(header.ack, header.ackBits);
+            }
+        }
 
+        PacketID packetID = 0;
+        packet >> packetID;
         PacketType packetType = static_cast<PacketType>(packetID);
         if (packetType < PacketType::Disconnect || packetType >= PacketType::Bounds)
         {
@@ -409,9 +444,9 @@ void ServerConnection::handlePacket(const sf::IpAddress& ip, PortNumber port, Pa
         if (id == PacketType::Connect)
         {
             ClientID nid = addClient(ip, port);
-            sf::Packet packet;
-            packet << PacketID(PacketType::Connect);
-            send(nid, packet);
+            sf::Packet p;
+            p << PacketID(PacketType::Connect);
+            send(nid, p);
             return;
         }
     }

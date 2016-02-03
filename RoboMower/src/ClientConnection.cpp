@@ -8,6 +8,7 @@
 #include <network/ClientConnection.hpp>
 
 #include <xygine/Log.hpp>
+#include <xygine/Reports.hpp>
 
 #include <SFML/System/Clock.hpp>
 
@@ -41,6 +42,7 @@ bool ClientConnection::connect()
         LOG("CLIENT - Bound connection to port: " + std::to_string(m_socket.getLocalPort()), xy::Logger::Type::Info);
 
         sf::Packet packet;
+        packet << m_ackSystem.createHeader();
         packet << PacketID(PacketType::Connect);
         //TODO attach other client info such as player name
 
@@ -137,13 +139,28 @@ void ClientConnection::update(float dt)
         LOG("CLIENT - Server connection timed out", xy::Logger::Type::Info);
         disconnect();
     }
+
+    m_ackSystem.update(dt);
+    REPORT("Client Recieved", std::to_string(m_ackSystem.getReceivedPackets()));
+    REPORT("Client Sent", std::to_string(m_ackSystem.getSentPackets()));
+    REPORT("Client Acked", std::to_string(m_ackSystem.getAckedPackets()));
+    REPORT("Client Lost", std::to_string(m_ackSystem.getLostPackets()));
 }
 
 bool ClientConnection::send(sf::Packet& packet)
 {
     if (!m_connected) return false;
 
-    return (m_socket.send(packet, m_serverIp, m_serverPort) == sf::Socket::Done);
+    sf::Packet stampedPacket;
+    stampedPacket << m_ackSystem.createHeader();
+    stampedPacket.append(packet.getData(), packet.getDataSize());
+
+    if (m_socket.send(stampedPacket, m_serverIp, m_serverPort) == sf::Socket::Done)
+    {
+        m_ackSystem.packetSent(stampedPacket.getDataSize());
+        return true;
+    }
+    return false;
 }
 
 const sf::Time& ClientConnection::getTime() const
@@ -194,11 +211,16 @@ void ClientConnection::handlePacket(PacketType type, sf::Packet& packet)
     {
     case PacketType::HeartBeat:
         {
-            sf::Packet packet;
-            packet << PacketID(PacketType::HeartBeat);
-            if (m_socket.send(packet, m_serverIp, m_serverPort) != sf::Socket::Done)
+            sf::Packet p;
+            p << m_ackSystem.createHeader();
+            p << PacketID(PacketType::HeartBeat);
+            if (m_socket.send(p, m_serverIp, m_serverPort) != sf::Socket::Done)
             {
                 LOG("CLIENT - Failed sending heartbeat", xy::Logger::Type::Warning);
+            }
+            else
+            {
+                m_ackSystem.packetSent(p.getDataSize());
             }
 
             sf::Int32 timestamp;
@@ -250,12 +272,21 @@ void ClientConnection::listen()
             continue;
         }
 
-        PacketID packetID;
-        if (!(packet >> packetID))
+        AckSystem::Header header;
+        if (!(packet >> header))
         {
-            //ignore unknown IDs
+            //ignore bad headers
+            LOG("CLIENT - Bad packet header received", xy::Logger::Type::Warning);
             continue;
         }
+        else
+        {
+            m_ackSystem.packetReceived(header.sequence, packet.getDataSize());
+            m_ackSystem.processAck(header.ack, header.ackBits);
+        }
+
+        PacketID packetID;
+        packet >> packetID;
 
         PacketType packetType = static_cast<PacketType>(packetID);
         if (packetType < PacketType::Disconnect || packetType >= PacketType::Bounds)
