@@ -77,6 +77,7 @@
     <ClCompile Include="src\ClientConnection.cpp" />
     <ClCompile Include="src\FlowControl.cpp" />
     <ClCompile Include="src\Game.cpp" />
+    <ClCompile Include="src\GameServer.cpp" />
     <ClCompile Include="src\GameState.cpp" />
     <ClCompile Include="src\GameUI.cpp" />
     <ClCompile Include="src\InputWindow.cpp" />
@@ -111,6 +112,7 @@
     <ClInclude Include="include\components\StackLogicComponent.hpp" />
     <ClInclude Include="include\components\Tilemap.hpp" />
     <ClInclude Include="include\Game.hpp" />
+    <ClInclude Include="include\GameServer.hpp" />
     <ClInclude Include="include\GameState.hpp" />
     <ClInclude Include="include\GameUI.hpp" />
     <ClInclude Include="include\InstructionSet.hpp" />

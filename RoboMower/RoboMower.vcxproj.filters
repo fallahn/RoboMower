@@ -114,6 +114,9 @@
     <ClCompile Include="src\FlowControl.cpp">
       <Filter>Source Files\network</Filter>
     </ClCompile>
+    <ClCompile Include="src\GameServer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Game.hpp">
@@ -211,6 +214,9 @@
     </ClInclude>
     <ClInclude Include="include\network\FlowControl.hpp">
       <Filter>Header Files\network</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GameServer.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

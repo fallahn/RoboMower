@@ -32,7 +32,7 @@ namespace Network
     enum
     {
         HighestTimestamp = 2147483647,
-        ServerPort = 5600,
+        ServerPort = 20715,
         NullID = -1
     };
 

@@ -10,6 +10,7 @@
 
 #include <network/NetworkConfig.hpp>
 #include <network/AckSystem.hpp>
+#include <network/FlowControl.hpp>
 
 #include <SFML/System/Mutex.hpp>
 #include <SFML/System/Thread.hpp>
@@ -65,6 +66,7 @@ namespace Network
         sf::Mutex m_mutex;
 
         AckSystem m_ackSystem;
+        FlowControl m_flowControl;
 
         void handlePacket(PacketType, sf::Packet&);
 

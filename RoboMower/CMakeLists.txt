@@ -79,6 +79,7 @@ set(SOURCE
   src/ClientConnection.cpp
   src/FlowControl.cpp
   src/Game.cpp
+  src/GameServer.cpp
   src/GameState.cpp
   src/GameUI.cpp
   src/InputWindow.cpp

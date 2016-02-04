@@ -158,7 +158,7 @@ void AckSystem::processAck(SeqID ack, sf::Uint32 ackBits)
 void AckSystem::update(float dt)
 {
     m_acks.clear();
-    advanceQueueTime(dt / 1000.f); //needs ms
+    advanceQueueTime(dt);
     updateQueues();
     updateStats();
 }

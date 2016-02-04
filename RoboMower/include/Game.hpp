@@ -10,7 +10,7 @@
 
 #include <xygine/App.hpp>
 
-#include <network/ServerConnection.hpp>
+#include <GameServer.hpp>
 
 class Game final : public xy::App
 {
@@ -24,7 +24,7 @@ private:
 
     xy::StateStack m_stateStack;
 
-    Network::ServerConnection m_server;
+    GameServer m_server;
 
     void handleEvent(const sf::Event&) override;
     void handleMessage(const xy::Message&) override;

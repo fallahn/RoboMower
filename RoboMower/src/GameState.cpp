@@ -62,7 +62,7 @@ GameState::GameState(xy::StateStack& stateStack, Context context)
 
     buildMap();
 
-    m_client.setServerInfo({ "127.0.0.1" }, 5600);
+    m_client.setServerInfo({ "127.0.0.1" }, Network::ServerPort);
     m_client.connect();
 
     quitLoadingScreen();
@@ -192,9 +192,6 @@ void GameState::buildMap()
     playerEnt->addComponent(playerDrawable);
     playerEnt->setPosition(224.f, 160.f);
 
-    auto playerLogic = xy::Component::create<PlayerLogic>(m_messageBus);
-    playerEnt->addComponent(playerLogic);
-
     xy::ParticleSystem::Definition pd;
     pd.loadFromFile("assets/particles/mow_up.xyp", m_textureResource);
     auto ps = pd.createSystem(m_messageBus);
@@ -208,6 +205,8 @@ void GameState::buildMap()
     pd.loadFromFile("assets/particles/mow_right.xyp", m_textureResource);
     ps = pd.createSystem(m_messageBus);
     playerEnt->addComponent(ps)->setName("particle_right");
+
+    //TODO add net controller
 
     ent->addChild(playerEnt);
     
