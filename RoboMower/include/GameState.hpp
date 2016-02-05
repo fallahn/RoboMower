@@ -27,6 +27,8 @@
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Network/TcpSocket.hpp>
 
+#include <map>
+
 namespace sf
 {
     class Color;
@@ -55,9 +57,14 @@ private:
     xy::FontResource m_fontResource;
 
     GameUI m_gameUI;
-    Network::ClientConnection m_client;
+    Network::ClientConnection m_connection;
 
     xy::UI::Window m_reportWindow;
+
+    std::map<ClientID, xy::Entity*> m_playerEntities;
+
+    Network::ClientConnection::PacketHandler m_packetHandler;
+    void handlePacket(Network::PacketType type, sf::Packet& packet, Network::ClientConnection* connection);
 
     void buildMap();
 };

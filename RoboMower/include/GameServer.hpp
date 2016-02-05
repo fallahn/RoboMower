@@ -13,6 +13,11 @@
 #include <xygine/Scene.hpp>
 #include <xygine/MessageBus.hpp>
 
+namespace xy
+{
+    class Entity;
+}
+
 class GameServer final
 {
 public:
@@ -27,7 +32,15 @@ public:
     void update(float);
 
 private:
-    xy::MessageBus m_messageBus; //TODO server should be encapsulated and have its own messges, right?
+    struct Player final
+    {
+        std::string name;
+        ClientID id = -1;
+        xy::Entity* entity = nullptr;
+    };
+    std::vector<Player> m_players;
+
+    xy::MessageBus m_messageBus; //TODO server should be encapsulated and have its own messages, right?
     xy::Scene m_scene;
 
     Network::ServerConnection m_connection;
@@ -35,8 +48,11 @@ private:
     sf::Clock m_snapshotClock;
     float m_snapshotAccumulator;
 
+    void handleMessage(const xy::Message&);
+
     void setup();
-    void addPlayer();
+    void addPlayer(Player&);
+    void removePlayer(ClientID);
     void sendSnapshot();
 
     void handlePacket(const sf::IpAddress&, PortNumber, Network::PacketType, sf::Packet&, Network::ServerConnection*);

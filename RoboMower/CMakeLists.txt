@@ -92,6 +92,7 @@ set(SOURCE
   src/MenuMainState.cpp
   src/MenuOptionState.cpp
   src/MenuPauseState.cpp
+  src/NetworkController.cpp
   src/PacketQueue.cpp
   src/PlayerDrawable.cpp
   src/PlayerLogic.cpp

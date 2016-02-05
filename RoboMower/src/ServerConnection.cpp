@@ -454,6 +454,7 @@ void ServerConnection::handlePacket(const sf::IpAddress& ip, PortNumber port, Pa
                 ClientID nid = addClient(ip, port);
                 sf::Packet p;
                 p << PacketID(PacketType::Connect);
+                p << nid;
                 send(nid, p);
                 LOG("SERVER - Sent connection acceptance", xy::Logger::Type::Info);
             }

@@ -9,6 +9,7 @@
 #define RM_PLAYER_DRAWABLE_HPP_
 
 #include <xygine/components/Component.hpp>
+#include <NetProtocol.hpp>
 
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/Transformable.hpp>
@@ -18,11 +19,6 @@
 class PlayerDrawable final : public xy::Component, public sf::Drawable, public sf::Transformable
 {
 public:
-    enum Direction
-    {
-        Up, Down, Left, Right, Count
-    };
-
     PlayerDrawable(xy::MessageBus&, sf::Texture&, bool local);
     PlayerDrawable() = default;
 

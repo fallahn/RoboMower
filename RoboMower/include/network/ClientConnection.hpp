@@ -47,6 +47,7 @@ namespace Network
         void removePacketHandler();
 
         bool connected() const;
+        ClientID getClientID() const;
 
         sf::Mutex& getMutex();
 
@@ -55,6 +56,7 @@ namespace Network
         sf::UdpSocket m_socket;
         sf::IpAddress m_serverIp;
         PortNumber m_serverPort;
+        ClientID m_clientID;
 
         PacketHandler m_packetHandler;
         std::atomic_bool m_connected;
@@ -69,7 +71,6 @@ namespace Network
         FlowControl m_flowControl;
 
         void handlePacket(PacketType, sf::Packet&);
-
         void listen();
     };
 }

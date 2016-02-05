@@ -41,22 +41,22 @@ namespace
 
 PlayerDrawable::PlayerDrawable(xy::MessageBus& mb, sf::Texture& texture, bool local)
     : xy::Component (mb, this),
-    m_direction     (Right),
-    m_origins       (Count),
+    m_direction     (Direction::Right),
+    m_origins       (4),
     m_currentSprite (nullptr),
     m_vertexCount   (0),
     m_texture       (texture),
     m_jiggleIndex   (0u)
 {
     createSprites(local);
-    setDirection(Right);
+    setDirection(Direction::Right);
 }
 
 //public
 void PlayerDrawable::entityUpdate(xy::Entity& ent, float dt)
 {
     //animate origin for jiggle when motor is on
-    auto origin = m_origins[m_direction];
+    auto origin = m_origins[static_cast<int>(m_direction)];
     origin.x += jiggles[m_jiggleIndex];
     m_jiggleIndex = (m_jiggleIndex + 1) % jiggles.size();
     origin.y += jiggles[m_jiggleIndex];
@@ -70,25 +70,25 @@ void PlayerDrawable::setDirection(Direction dir)
 {
     switch (dir)
     {
-    case Up:
+    case Direction::Up:
         m_currentSprite = m_upSprite.data();
         m_vertexCount = m_upSprite.size();
         break;
-    case Down:
+    case Direction::Down:
         m_currentSprite = m_downSprite.data();
         m_vertexCount = m_downSprite.size();
         break;
-    case Left:
+    case Direction::Left:
         m_currentSprite = m_leftSprite.data();
         m_vertexCount = m_leftSprite.size();
         break;
-    case Right:
+    case Direction::Right:
         m_currentSprite = m_rightSprite.data();
         m_vertexCount = m_rightSprite.size();
         break;
     default: break;
     }
-    setOrigin(m_origins[dir]);
+    setOrigin(m_origins[static_cast<int>(dir)]);
     m_direction = dir;
 }
 
@@ -130,20 +130,20 @@ void PlayerDrawable::createSprites(bool local)
                 //up sprite
                 auto handle = getValue("handle_u", rootValue);
                 auto body = (local) ? getValue("player1_u", rootValue) : getValue("player2_u", rootValue);
-                buildSprite(handle, body, Up);
+                buildSprite(handle, body, Direction::Up);
 
                 //down sprite
                 handle = getValue("handle_d", rootValue);
                 body = (local) ? getValue("player1_d", rootValue) : getValue("player2_d", rootValue);
-                buildSprite(handle, body, Down);
+                buildSprite(handle, body, Direction::Down);
 
                 //right sprite
                 handle = getValue("handle_h", rootValue);
                 body = (local) ? getValue("player1_h", rootValue) : getValue("player2_h", rootValue);
-                buildSprite(handle, body, Right);
+                buildSprite(handle, body, Direction::Right);
 
                 //left sprite - we can get this by flipping tex coords of right sprite :)
-                buildSprite(handle, body, Left);
+                buildSprite(handle, body, Direction::Left);
             }
             else
             {
@@ -167,7 +167,7 @@ void PlayerDrawable::buildSprite(const sf::Vector2f& handle, const sf::Vector2f&
 {
     switch (dir)
     {
-    case Up:
+    case Direction::Up:
         //handle
         m_upSprite.emplace_back(sf::Vertex({ 0.f, tileHeight }, handle));
         m_upSprite.emplace_back(sf::Vertex({ tileWidth, tileHeight }, { handle.x + tileSize.x, handle.y }));
@@ -178,9 +178,9 @@ void PlayerDrawable::buildSprite(const sf::Vector2f& handle, const sf::Vector2f&
         m_upSprite.emplace_back(sf::Vertex({ tileWidth, 0.f }, { body.x + tileSize.x, body.y }));
         m_upSprite.emplace_back(sf::Vertex({ tileWidth, tileHeight }, body + tileSize));
         m_upSprite.emplace_back(sf::Vertex({ 0.f, tileHeight }, { body.x, body.y + tileSize.y }));
-        m_origins[Up] = { tileWidth * 0.5f, tileHeight * 0.5f };
+        m_origins[static_cast<int>(Direction::Up)] = { tileWidth * 0.5f, tileHeight * 0.5f };
         break;
-    case Down:
+    case Direction::Down:
         m_downSprite.emplace_back(sf::Vertex({}, handle));
         m_downSprite.emplace_back(sf::Vertex({ tileWidth, 0.f }, { handle.x + tileSize.x, handle.y }));
         m_downSprite.emplace_back(sf::Vertex({ tileWidth, tileHeight }, handle + tileSize));
@@ -190,9 +190,9 @@ void PlayerDrawable::buildSprite(const sf::Vector2f& handle, const sf::Vector2f&
         m_downSprite.emplace_back(sf::Vertex({ tileWidth, tileHeight }, { body.x + tileSize.x, body.y }));
         m_downSprite.emplace_back(sf::Vertex({ tileWidth, tileHeight * 2.f }, body + tileSize));
         m_downSprite.emplace_back(sf::Vertex({ 0.f, tileHeight * 2.f }, { body.x, body.y + tileSize.y }));
-        m_origins[Down] = { tileWidth * 0.5f, tileHeight * 1.5f };
+        m_origins[static_cast<int>(Direction::Down)] = { tileWidth * 0.5f, tileHeight * 1.5f };
         break;
-    case Right:
+    case Direction::Right:
         m_rightSprite.emplace_back(sf::Vertex({}, handle));
         m_rightSprite.emplace_back(sf::Vertex({ tileWidth, 0.f }, { handle.x + tileSize.x, handle.y }));
         m_rightSprite.emplace_back(sf::Vertex({ tileWidth, tileHeight }, handle + tileSize));
@@ -202,9 +202,9 @@ void PlayerDrawable::buildSprite(const sf::Vector2f& handle, const sf::Vector2f&
         m_rightSprite.emplace_back(sf::Vertex({ tileWidth * 2.f, 0.f }, { body.x + tileSize.x, body.y }));
         m_rightSprite.emplace_back(sf::Vertex({ tileWidth * 2.f, tileHeight }, body + tileSize));
         m_rightSprite.emplace_back(sf::Vertex({ tileWidth, tileHeight }, { body.x, body.y + tileSize.y }));
-        m_origins[Right] = { tileWidth * 1.5f, tileHeight * 0.5f };
+        m_origins[static_cast<int>(Direction::Right)] = { tileWidth * 1.5f, tileHeight * 0.5f };
         break;
-    case Left:
+    case Direction::Left:
         m_leftSprite.emplace_back(sf::Vertex({ tileWidth, 0.f }, { handle.x + tileSize.x, handle.y }));
         m_leftSprite.emplace_back(sf::Vertex({ tileWidth * 2.f, 0.f }, handle));
         m_leftSprite.emplace_back(sf::Vertex({ tileWidth * 2.f, tileHeight }, {handle.x, handle.y + tileSize.y }));
@@ -214,7 +214,7 @@ void PlayerDrawable::buildSprite(const sf::Vector2f& handle, const sf::Vector2f&
         m_leftSprite.emplace_back(sf::Vertex({ tileWidth, 0.f }, body));
         m_leftSprite.emplace_back(sf::Vertex({ tileWidth, tileHeight }, { body.x, body.y + tileSize.y }));
         m_leftSprite.emplace_back(sf::Vertex({ 0.f, tileHeight }, body + tileSize));
-        m_origins[Left] = { tileWidth * 0.5f, tileHeight * 0.5f };
+        m_origins[static_cast<int>(Direction::Left)] = { tileWidth * 0.5f, tileHeight * 0.5f };
         break;
     default: break;
     }

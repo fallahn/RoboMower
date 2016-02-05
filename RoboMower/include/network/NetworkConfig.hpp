@@ -19,8 +19,8 @@ namespace Network
 {
     //make this a class to enforce 1 byte encoding when
     //putting into a packet
-    enum class PacketType: sf::Int8
-    //enum PacketType
+    //enum class PacketType: sf::Int8
+    enum PacketType
     {
         Disconnect = -1,
         Connect,

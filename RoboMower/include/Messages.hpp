@@ -13,6 +13,7 @@
 #include <xygine/MessageBus.hpp>
 
 #include <InstructionSet.hpp>
+#include <NetProtocol.hpp>
 
 class InstructionBlockLogic;
 
@@ -23,7 +24,8 @@ enum MessageId
     ScrollbarMessage,
     InputBoxMessage,
     PlayerMessage,
-    TransportMessage
+    TransportMessage,
+    DirectionMessage
 };
 
 struct TrayIconEvent
@@ -82,6 +84,12 @@ struct TransportEvent
         Pause,
         Rewind
     }button;
+};
+
+struct DirectionEvent
+{
+    Direction direction;
+    ClientID id;
 };
 
 #endif //MESSAGE_HPP_

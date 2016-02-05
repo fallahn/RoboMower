@@ -22,6 +22,7 @@ using namespace Network;
 
 ClientConnection::ClientConnection()
     : m_serverPort  (0u),
+    m_clientID      (-1),
     m_connected     (false),
     m_listenThread  (&ClientConnection::listen, this)
 {
@@ -102,8 +103,8 @@ bool ClientConnection::connect()
                 }
                 continue;
             }
-
-            handlePacket(packetType, packet);
+            packet >> m_clientID;
+            LOG("CLIENT - Assigned ID of: " + std::to_string(m_clientID), xy::Logger::Type::Info);
 
             m_connected = true;
             m_socket.setBlocking(true);
@@ -112,6 +113,7 @@ bool ClientConnection::connect()
 
             m_flowControl.reset();
 
+            handlePacket(packetType, packet);
             return true;
         }
         LOG("CLIENT - Connect attempt timed out.", xy::Logger::Type::Error);
@@ -223,6 +225,11 @@ void ClientConnection::removePacketHandler()
 bool ClientConnection::connected() const
 {
     return m_connected;
+}
+
+ClientID ClientConnection::getClientID() const
+{
+    return m_clientID;
 }
 
 sf::Mutex& ClientConnection::getMutex()

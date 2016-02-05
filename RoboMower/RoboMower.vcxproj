@@ -90,6 +90,7 @@
     <ClCompile Include="src\MenuMainState.cpp" />
     <ClCompile Include="src\MenuOptionState.cpp" />
     <ClCompile Include="src\MenuPauseState.cpp" />
+    <ClCompile Include="src\NetworkController.cpp" />
     <ClCompile Include="src\PacketQueue.cpp" />
     <ClCompile Include="src\PlayerDrawable.cpp" />
     <ClCompile Include="src\PlayerLogic.cpp" />
@@ -106,6 +107,7 @@
     <ClInclude Include="include\components\InputWindow.hpp" />
     <ClInclude Include="include\components\InstructionBlockLogic.hpp" />
     <ClInclude Include="include\components\LoopHandle.hpp" />
+    <ClInclude Include="include\components\NetworkController.hpp" />
     <ClInclude Include="include\components\PlayerDrawable.hpp" />
     <ClInclude Include="include\components\PlayerLogic.hpp" />
     <ClInclude Include="include\components\ScrollHandleLogic.hpp" />
@@ -123,6 +125,7 @@
     <ClInclude Include="include\MenuOptionState.hpp" />
     <ClInclude Include="include\MenuPauseState.hpp" />
     <ClInclude Include="include\Messages.hpp" />
+    <ClInclude Include="include\NetProtocol.hpp" />
     <ClInclude Include="include\network\AckSystem.hpp" />
     <ClInclude Include="include\network\ClientConnection.hpp" />
     <ClInclude Include="include\network\FlowControl.hpp" />
