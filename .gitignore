@@ -1,2 +1,6 @@
 Debug
 Release
+DebugShared
+DebugStatic
+ReleaseShared
+ReleaseStatic
