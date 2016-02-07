@@ -33,7 +33,7 @@ StatsOverlayState::StatsOverlayState(xy::StateStack& ss, Context c)
 
     m_statsText = std::make_shared<xy::UI::Label>(font);
     m_statsText->setPosition(20.f, 20.f);
-    m_statsText->setString(xy::StatsReporter::reporter.getString());
+    m_statsText->setString(xy::Stats::getString());
     m_statsText->setCharacterSize(26u);
     window->addControl(m_statsText);
 
@@ -57,7 +57,7 @@ StatsOverlayState::~StatsOverlayState()
 //public
 bool StatsOverlayState::update(float dt)
 {
-    m_statsText->setString(xy::StatsReporter::reporter.getString());
+    m_statsText->setString(xy::Stats::getString());
     m_consoleText->setString(xy::Logger::bufferString());
     for (auto& w : m_windows)
     {

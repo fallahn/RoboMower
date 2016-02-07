@@ -31,7 +31,6 @@ private:
 
     void registerStates() override;
     void updateApp(float dt) override;
-    void pauseApp(float dt) override;
     void draw() override;
 
     void finalise() override;

@@ -109,12 +109,6 @@ void Game::updateApp(float dt)
     m_server.update(dt);
 }
 
-void Game::pauseApp(float dt)
-{
-    //m_server.update(dt);
-    updateApp(dt);
-}
-
 void Game::draw()
 {
     getRenderWindow().clear(/*clearColour*/);

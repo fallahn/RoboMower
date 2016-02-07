@@ -83,7 +83,7 @@ bool GameState::update(float dt)
     m_scene.update(dt);
     m_connection.update(dt);
 
-    reportText->setString(xy::StatsReporter::reporter.getString());
+    reportText->setString(xy::Stats::getString());
     m_reportWindow.update(dt);
 
     return true;
