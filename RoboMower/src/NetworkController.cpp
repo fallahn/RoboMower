@@ -8,6 +8,7 @@
 #include <components/NetworkController.hpp>
 
 #include <xygine/Entity.hpp>
+#include <xygine/util/Vector.hpp>
 
 NetworkController::NetworkController(xy::MessageBus& mb)
     : xy::Component(mb, this)
@@ -19,7 +20,14 @@ NetworkController::NetworkController(xy::MessageBus& mb)
 void NetworkController::entityUpdate(xy::Entity& entity, float dt)
 {
     auto movement = m_destination - entity.getPosition();
-    entity.move(movement * 0.1f);
+    if (xy::Util::Vector::lengthSquared(movement) > 1500.f)
+    {
+        entity.setPosition(m_destination);
+    }
+    else
+    {
+        entity.move(movement * 0.1f);
+    }
 }
 
 void NetworkController::setDestination(const sf::Vector2f& destination)

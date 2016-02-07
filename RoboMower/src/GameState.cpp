@@ -67,7 +67,7 @@ GameState::GameState(xy::StateStack& stateStack, Context context)
     reportText = std::make_shared<xy::UI::Label>(m_fontResource.get("assets/fonts/Console.ttf"));
     reportText->move(10.f, 0.f);
     m_reportWindow.addControl(reportText);
-    m_reportWindow.setPosition(1500.f, 30.f);
+    m_reportWindow.setPosition(800.f, 330.f);
 
     buildMap();
 

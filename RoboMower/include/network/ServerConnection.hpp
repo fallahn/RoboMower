@@ -30,7 +30,6 @@ namespace Network
         sf::Time heartbeatSent;
         bool heartbeatWaiting = false;
         sf::Uint16 heartbeatRetry = 0u;
-        sf::Uint32 ping = 0;
 
         std::unique_ptr<Network::AckSystem> ackSystem;
 

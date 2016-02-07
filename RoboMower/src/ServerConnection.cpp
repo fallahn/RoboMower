@@ -311,6 +311,7 @@ void ServerConnection::update(float dt)
             }
 
             it->second.ackSystem->update(dt);
+            //REPORT("SERVER ping", std::to_string(it->second.ackSystem->getRoundTripTime() * 1000.f));
             //REPORT("SERVER rcd", std::to_string(it->second.ackSystem->getReceivedPackets()));
         }
         ++it;
@@ -436,7 +437,6 @@ void ServerConnection::handlePacket(const sf::IpAddress& ip, PortNumber port, Pa
                     return;
                 }
 
-                c->second.ping = m_serverTime.asMilliseconds() - c->second.heartbeatSent.asMilliseconds();
                 c->second.lastHeartbeat = m_serverTime;
                 c->second.heartbeatWaiting = false;
                 c->second.heartbeatRetry = 0u;

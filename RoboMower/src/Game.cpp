@@ -111,7 +111,8 @@ void Game::updateApp(float dt)
 
 void Game::pauseApp(float dt)
 {
-    m_server.update(dt);
+    //m_server.update(dt);
+    updateApp(dt);
 }
 
 void Game::draw()

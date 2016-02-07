@@ -164,14 +164,14 @@ void ClientConnection::update(float dt)
         disconnect();
     }
 
-    m_ackSystem.update(dt / 1000.f);
+    m_ackSystem.update(dt);
     m_flowControl.update(dt, m_ackSystem.getRoundTripTime() * 1000.f);
 
     REPORT("Client Recieved", std::to_string(m_ackSystem.getReceivedPacketCount()));
     REPORT("Client Sent", std::to_string(m_ackSystem.getSentPacketCount()));
     REPORT("Client Acked", std::to_string(m_ackSystem.getAckedPacketCount()));
     REPORT("Client Lost", std::to_string(m_ackSystem.getLostPacketCount()));
-    //REPORT("Client Round Trip Time", std::to_string(m_ackSystem.getRoundTripTime() * 1000.f));
+    REPORT("Client Ping", std::to_string(static_cast<int>(m_ackSystem.getRoundTripTime() * 1000.f)) + "ms");
 }
 
 bool ClientConnection::send(sf::Packet& packet)
