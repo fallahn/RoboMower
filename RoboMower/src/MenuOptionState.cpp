@@ -237,7 +237,8 @@ void MenuOptionState::buildMenu(const sf::Font& font)
     backButton->addCallback([this]()
     {
         close();
-        requestStackPush((getContext().appInstance.connected()) ? States::ID::MenuPaused : States::ID::MenuMain);
+        //TODO test if we're in game or at main menu
+        //requestStackPush((getContext().appInstance.connected()) ? States::ID::MenuPaused : States::ID::MenuMain);
     });
     m_uiContainer.addControl(backButton);
 }

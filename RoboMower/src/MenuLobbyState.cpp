@@ -9,12 +9,9 @@
 
 #include <xygine/App.hpp>
 #include <xygine/Log.hpp>
-#include <xygine/Protocol.hpp>
-
 #include <xygine//ui/Button.hpp>
 
 #include <SFML/Window/Mouse.hpp>
-#include <SFML/Network/Packet.hpp>
 
 namespace
 {
@@ -25,9 +22,7 @@ namespace
 MenuLobbyState::MenuLobbyState(xy::StateStack& stack, Context context)
     : State                 (stack, context),
     m_messageBus            (context.appInstance.getMessageBus()),
-    m_font                  (m_fontResource.get("dfg")),
-    m_socket                (&context.appInstance.getSocket()),
-    m_timeSinceLastPacket   (0.f)
+    m_font                  (m_fontResource.get("dfg"))
 {
     m_cursorSprite.setTexture(m_textureResource.get("assets/images/ui/cursor.png"));
     m_cursorSprite.setPosition(context.renderWindow.mapPixelToCoords(sf::Mouse::getPosition(context.renderWindow)));
@@ -42,41 +37,6 @@ MenuLobbyState::MenuLobbyState(xy::StateStack& stack, Context context)
 //public
 bool MenuLobbyState::update(float dt)
 {
-    //if (getContext().appInstance.connected())
-    {
-        sf::Packet packet;
-        if (m_socket->receive(packet) == sf::Socket::Done)
-        {
-            m_timeSinceLastPacket = 0.f;
-            handlePacket(packet);
-        }
-        else
-        {
-            if (m_timeSinceLastPacket > clientTimeout)
-            {
-                auto msg = m_messageBus.post<xy::Message::NetworkEvent>(xy::Message::NetworkMessage);
-                msg->action = xy::Message::NetworkEvent::RequestDisconnect;
-
-                requestStackPop();
-                requestStackPush(States::ID::MenuMain);
-
-                m_socket->disconnect();
-                LOG("CLIENT lost connection to server", xy::Logger::Type::Info);
-            }
-        }
-        m_timeSinceLastPacket += dt;
-    }
-
-    //send client status
-    if (m_tickClock.getElapsedTime().asSeconds() > tickRate)
-    {
-        sf::Packet packet;
-        packet << static_cast<sf::Int32>(xy::Client::LobbyData);
-        //TODO send name(?) and ready status
-        m_socket->send(packet);
-        m_tickClock.restart();
-    }
-
     m_uiContainer.update(dt);
     return true;
 }
@@ -112,51 +72,6 @@ void MenuLobbyState::handleMessage(const xy::Message&)
 }
 
 //private
-void MenuLobbyState::handlePacket(sf::Packet& packet)
-{
-    sf::Int32 type;
-    packet >> type;
-    switch (type)
-    {
-    case xy::Server::LobbyData:
-    {
-        sf::Uint32 count;
-        packet >> count;
-
-        sf::Int16 uid;
-        for (auto i = 0u; i < count; ++i)
-        {
-            packet >> uid;
-            m_texts[uid] = sf::Text(std::to_string(uid), m_font);
-            m_texts[uid].setPosition(200.f, 300.f + (40.f * i));
-        }
-    }
-        break;
-        //erase disconnections from texts
-    case xy::Server::PlayerDisconnect:
-    {
-        sf::Int16 uid;
-        packet >> uid;
-        if (m_texts.find(uid) != m_texts.end())
-            m_texts.erase(uid);
-
-        LOG("CLIENT disconnected player " + std::to_string(uid), xy::Logger::Type::Info);
-    }
-        break;
-    case xy::Server::GameStart:
-    {
-        auto msg = m_messageBus.post<xy::Message::UIEvent>(xy::Message::UIMessage);
-        msg->type = xy::Message::UIEvent::MenuClosed;
-        msg->stateId = States::ID::MenuLobby;
-
-        requestStackClear();
-        requestStackPush(States::ID::Game);
-        break;
-    }
-    default: break;
-    }
-}
-
 void MenuLobbyState::buildMenu()
 {
     const auto& font = m_fontResource.get("flaps");
@@ -167,17 +82,7 @@ void MenuLobbyState::buildMenu()
     startButton->setPosition(840.f, 770.f);
     startButton->addCallback([this]()
     {
-        //check we're host and are allowed to do this
-        if (getContext().appInstance.hosting())
-        {
-            //TODO check all clients are ready
-            auto msg = m_messageBus.post<xy::Message::UIEvent>(xy::Message::UIMessage);
-            msg->type = xy::Message::UIEvent::MenuClosed;
-            msg->stateId = States::ID::MenuLobby;
 
-            requestStackClear();
-            requestStackPush(States::ID::Game);
-        }
     });
     m_uiContainer.addControl(startButton);
 

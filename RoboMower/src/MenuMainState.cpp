@@ -60,22 +60,7 @@ bool MenuMainState::handleEvent(const sf::Event& evt)
 
 void MenuMainState::handleMessage(const xy::Message& msg)
 {
-    //if (msg.type == Message::Type::Network)
-    //{
-    //    switch (msg.network.action)
-    //    {
-    //    case Message::NetworkEvent::ConnectSuccess:
-    //        close();
-    //        if (msg.network.stateID == States::ID::Game)
-    //        {
-    //            requestStackClear();
-    //        }
-    //        requestStackPush(msg.network.stateID);
-    //        break;
-    //        //TODO message on connect fail
-    //    default: break;
-    //    }
-    //}
+
 }
 
 //private
@@ -104,11 +89,7 @@ void MenuMainState::buildMenu()
     button->setPosition(960.f, 575.f);
     button->addCallback([this]()
     {
-        close();
 
-        auto msg = m_messageBus.post<xy::Message::NetworkEvent>(xy::Message::NetworkMessage);
-        msg->action = xy::Message::NetworkEvent::RequestStartServer;
-        msg->stateID = States::ID::MenuLobby;
     });
     m_uiContainer.addControl(button);
 
@@ -118,8 +99,7 @@ void MenuMainState::buildMenu()
     button->setPosition(960.f, 675.f);
     button->addCallback([this]()
     {
-        close();
-        requestStackPush(States::ID::MenuJoin);
+
     });
     m_uiContainer.addControl(button);
 

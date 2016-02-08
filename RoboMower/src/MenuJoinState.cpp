@@ -42,7 +42,6 @@ void MenuJoinState::draw()
     rw.setView(getContext().defaultView);
 
     rw.draw(m_uiContainer);
-
     rw.draw(m_cursorSprite);
 }
 
@@ -99,11 +98,6 @@ void MenuJoinState::buildMenu()
     joinButton->setPosition(840.f, 770.f);
     joinButton->addCallback([textbox, this]()
     {
-        getContext().appInstance.setDestinationIP(textbox->getText());
-        m_statusLabel->setString("Connecting...");
-
-        auto msg = m_messageBus.post<xy::Message::NetworkEvent>(xy::Message::NetworkMessage);
-        msg->action = xy::Message::NetworkEvent::RequestJoinServer;
 
     });
     m_uiContainer.addControl(joinButton);

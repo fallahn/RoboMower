@@ -22,12 +22,6 @@
 
 #include <map>
 
-namespace sf
-{
-    class TcpSocket;
-    class Packet;
-}
-
 namespace xy
 {
     class MessageBus;
@@ -58,11 +52,6 @@ private:
 
     xy::TextureResource m_textureResource;
     xy::FontResource m_fontResource;
-
-    sf::TcpSocket* m_socket;
-    float m_timeSinceLastPacket;
-    sf::Clock m_tickClock;
-    void handlePacket(sf::Packet&);
 
     void buildMenu();
 };
