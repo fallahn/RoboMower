@@ -49,7 +49,7 @@ void ServerConnection::setTimeoutHandler(const TimeoutHandler& th)
     m_timoutHandler = th;
 }
 
-bool ServerConnection::send(ClientID id, sf::Packet& packet)
+bool ServerConnection::send(ClientID id, sf::Packet& packet, bool retry, sf::Uint8 retryCount)
 {
     sf::Lock lock(m_mutex);
 
@@ -73,7 +73,7 @@ bool ServerConnection::send(ClientID id, sf::Packet& packet)
     return true;
 }
 
-bool ServerConnection::send(const sf::IpAddress& ip, PortNumber port, sf::Packet& packet)
+bool ServerConnection::send(const sf::IpAddress& ip, PortNumber port, sf::Packet& packet, bool retry, sf::Uint8 retryCount)
 {
     sf::Packet stampedPacket;
     stampedPacket << Network::PROTOCOL_ID;
@@ -100,14 +100,14 @@ bool ServerConnection::send(const sf::IpAddress& ip, PortNumber port, sf::Packet
     return true;
 }
 
-void ServerConnection::broadcast(sf::Packet& packet, ClientID ignore)
+void ServerConnection::broadcast(sf::Packet& packet, bool retry, sf::Uint8 retryCount, ClientID ignore)
 {
     sf::Lock lock(m_mutex);
     for (auto& c : m_clients)
     {
         if (c.first != ignore)
         {
-            send(c.first, packet);
+            send(c.first, packet, retry, retryCount);
         }
     }
 }
@@ -336,11 +336,6 @@ void ServerConnection::setMaxClients(std::size_t count)
 std::size_t ServerConnection::getMaxClients() const
 {
     return m_maxClients;
-}
-
-sf::Mutex& ServerConnection::getMutex()
-{
-    return m_mutex;
 }
 
 //private

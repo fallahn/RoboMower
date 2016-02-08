@@ -35,21 +35,14 @@ namespace Network
         bool connect();
         bool disconnect();
         void update(float);
+        bool send(sf::Packet&, bool retry = false, sf::Uint8 retryCount = 3u); 
 
-        bool send(sf::Packet&);
-
-        const sf::Time& getTime() const;
-        const sf::Time& getLastHeartbeat() const;
-        void setTime(const sf::Time&);
         void setServerInfo(const sf::IpAddress&, PortNumber);
-
         void setPacketHandler(const PacketHandler&);
         void removePacketHandler();
 
         bool connected() const;
         ClientID getClientID() const;
-
-        sf::Mutex& getMutex();
 
     private:
 
@@ -69,6 +62,10 @@ namespace Network
 
         AckSystem m_ackSystem;
         FlowControl m_flowControl;
+
+        const sf::Time& getTime() const;
+        const sf::Time& getLastHeartbeat() const;
+        void setTime(const sf::Time&);
 
         void handlePacket(PacketType, sf::Packet&);
         void listen();

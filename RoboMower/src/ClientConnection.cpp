@@ -174,7 +174,7 @@ void ClientConnection::update(float dt)
     REPORT("Client Ping", std::to_string(static_cast<int>(m_ackSystem.getRoundTripTime() * 1000.f)) + "ms");
 }
 
-bool ClientConnection::send(sf::Packet& packet)
+bool ClientConnection::send(sf::Packet& packet, bool retry, sf::Uint8 retryCount)
 {
     if (!m_connected) return false;
 
@@ -189,21 +189,6 @@ bool ClientConnection::send(sf::Packet& packet)
         return true;
     }
     return false;
-}
-
-const sf::Time& ClientConnection::getTime() const
-{
-    return m_serverTime;
-}
-
-const sf::Time& ClientConnection::getLastHeartbeat() const
-{
-    return m_lastHeartbeat;
-}
-
-void ClientConnection::setTime(const sf::Time& time)
-{
-    m_serverTime = time;
 }
 
 void ClientConnection::setServerInfo(const sf::IpAddress& ip, PortNumber port)
@@ -232,12 +217,22 @@ ClientID ClientConnection::getClientID() const
     return m_clientID;
 }
 
-sf::Mutex& ClientConnection::getMutex()
+//private
+const sf::Time& ClientConnection::getTime() const
 {
-    return m_mutex;
+    return m_serverTime;
 }
 
-//private
+const sf::Time& ClientConnection::getLastHeartbeat() const
+{
+    return m_lastHeartbeat;
+}
+
+void ClientConnection::setTime(const sf::Time& time)
+{
+    m_serverTime = time;
+}
+
 void ClientConnection::handlePacket(PacketType type, sf::Packet& packet)
 {
     switch (type)

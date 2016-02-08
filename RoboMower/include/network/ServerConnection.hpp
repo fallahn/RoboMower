@@ -22,31 +22,9 @@
 
 namespace Network
 {
-    struct ClientInfo final
-    {
-        sf::IpAddress ipAddress;
-        PortNumber portNumber = 0u;
-        sf::Time lastHeartbeat;
-        sf::Time heartbeatSent;
-        bool heartbeatWaiting = false;
-        sf::Uint16 heartbeatRetry = 0u;
-
-        std::unique_ptr<Network::AckSystem> ackSystem;
-
-        ClientInfo() = default;
-        ClientInfo(const sf::IpAddress& ip, PortNumber port, const sf::Time& heartBeat)
-            : ipAddress(ip),
-            portNumber(port),
-            lastHeartbeat(heartBeat)
-        {
-            ackSystem = std::make_unique<Network::AckSystem>();
-        }
-    };
-
-    using ClientList = std::unordered_map<ClientID, ClientInfo>;
-
     class ServerConnection final
     {
+        struct ClientInfo;
     public:
         using PacketHandler = std::function<void(const sf::IpAddress&, PortNumber, Network::PacketType, sf::Packet&, ServerConnection*)>;
         using TimeoutHandler = std::function<void(ClientID)>;
@@ -60,9 +38,9 @@ namespace Network
         void setPacketHandler(const PacketHandler&);
         void setTimeoutHandler(const TimeoutHandler&);
 
-        bool send(ClientID, sf::Packet&);
-        bool send(const sf::IpAddress&, PortNumber, sf::Packet&);
-        void broadcast(sf::Packet&, ClientID ignore = Network::NullID);
+        bool send(ClientID, sf::Packet&, bool retry = false, sf::Uint8 retryCount = 3u);
+        bool send(const sf::IpAddress&, PortNumber, sf::Packet&, bool retry = false, sf::Uint8 retryCount = 3u);
+        void broadcast(sf::Packet&, bool retry = false, sf::Uint8 retryCount = 3u, ClientID ignore = Network::NullID);
 
         ClientID addClient(const sf::IpAddress&, PortNumber);
         ClientID getClientID(const sf::IpAddress&, PortNumber);
@@ -77,16 +55,36 @@ namespace Network
         bool stop();
 
         void update(float);
-
         bool running() const;
 
         std::size_t getClientCount() const;
         void setMaxClients(std::size_t);
         std::size_t getMaxClients() const;
 
-        sf::Mutex& getMutex();
-
     private:
+
+        struct ClientInfo final
+        {
+            sf::IpAddress ipAddress;
+            PortNumber portNumber = 0u;
+            sf::Time lastHeartbeat;
+            sf::Time heartbeatSent;
+            bool heartbeatWaiting = false;
+            sf::Uint16 heartbeatRetry = 0u;
+
+            std::unique_ptr<Network::AckSystem> ackSystem;
+
+            ClientInfo() = default;
+            ClientInfo(const sf::IpAddress& ip, PortNumber port, const sf::Time& heartBeat)
+                : ipAddress(ip),
+                portNumber(port),
+                lastHeartbeat(heartBeat)
+            {
+                ackSystem = std::make_unique<Network::AckSystem>();
+            }
+        };
+
+        using ClientList = std::unordered_map<ClientID, ClientInfo>;
 
         ClientID m_lastClientID;
         std::size_t m_maxClients;
