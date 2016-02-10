@@ -9,6 +9,7 @@
 
 #include <xygine/Log.hpp>
 #include <xygine/Reports.hpp>
+#include <xygine/Assert.hpp>
 
 #include <SFML/System/Clock.hpp>
 
@@ -16,6 +17,7 @@ namespace
 {
     const sf::Int32 CLIENT_TIMEOUT = 10000;
     const sf::Int32 CONNECTION_TIMEOUT = 5000;
+    const sf::Uint8 MAX_RETRIES = 10u;
 }
 
 using namespace Network;
@@ -86,8 +88,7 @@ bool ClientConnection::connect()
 
             AckSystem::Header header;
             packet >> header;
-            m_ackSystem.packetReceived(header.sequence, packet.getDataSize());
-            m_ackSystem.processAck(header.ack, header.ackBits);
+            m_ackSystem.packetReceived(header, packet.getDataSize());
 
             PacketID id;
             packet >> id;
@@ -164,6 +165,8 @@ void ClientConnection::update(float dt)
         disconnect();
     }
 
+    attemptResends();
+
     m_ackSystem.update(dt);
     m_flowControl.update(dt, m_ackSystem.getRoundTripTime() * 1000.f);
 
@@ -182,6 +185,16 @@ bool ClientConnection::send(sf::Packet& packet, bool retry, sf::Uint8 retryCount
     stampedPacket << Network::PROTOCOL_ID;
     stampedPacket << m_ackSystem.createHeader();
     stampedPacket.append(packet.getData(), packet.getDataSize());
+
+    if (retry)
+    {
+        XY_ASSERT(retryCount <= MAX_RETRIES, "Maximum number of retries is 10");
+        m_resendAttempts.emplace_back();
+        auto& rty = m_resendAttempts.back();
+        rty.count = retryCount;
+        rty.id = m_ackSystem.getLocalSequence();
+        rty.packet = packet; //make sure resends don't include a header
+    }
 
     if (m_socket.send(stampedPacket, m_serverIp, m_serverPort) == sf::Socket::Done)
     {
@@ -217,7 +230,48 @@ ClientID ClientConnection::getClientID() const
     return m_clientID;
 }
 
+float ClientConnection::getSendRate() const
+{
+    return m_flowControl.getSendRate();
+}
+
 //private
+void ClientConnection::attemptResends()
+{
+    const auto& acks = m_ackSystem.getAcks();
+    for (auto it = m_resendAttempts.begin(); it != m_resendAttempts.end();)
+    {
+        if (std::find(acks.begin(), acks.end(), it->id) != acks.end())
+        {
+            std::cout << "found ack!" << std::endl;
+            //remove pending packet
+            it = m_resendAttempts.erase(it);
+            continue;
+        }
+        else
+        {
+            //check pending acks. if current seq - pending > 32 resend and dec count
+            if (m_ackSystem.getLocalSequence() - it->id > 32)
+            {
+                if (it->count > 0)
+                {
+                    it->id = m_ackSystem.getLocalSequence();
+                    it->count--;
+                    send(it->packet);
+                    LOG("CLIENT - Resending Packet, " + std::to_string(it->count) + " tries remaining.", xy::Logger::Type::Info);
+                }
+                else
+                {
+                    it = m_resendAttempts.erase(it);
+                    LOG("CLIENT - Failed sending packet after multiple attempts", xy::Logger::Type::Info);
+                    continue;
+                }
+            }
+        }
+        ++it;
+    }
+}
+
 const sf::Time& ClientConnection::getTime() const
 {
     return m_serverTime;
@@ -310,10 +364,9 @@ void ClientConnection::listen()
 
         AckSystem::Header header;
         packet >> header;
-        m_ackSystem.packetReceived(header.sequence, packet.getDataSize());
-        m_ackSystem.processAck(header.ack, header.ackBits);
+        m_ackSystem.packetReceived(header, packet.getDataSize());
 
-        //TODO discard packets older than newest rx'd
+        //TODO discard packets older than newest rx'd?
 
         PacketID packetID;
         packet >> packetID;

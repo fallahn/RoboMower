@@ -378,9 +378,8 @@ void ServerConnection::listen()
         auto clientID = getClientID(ip, port);
         if (clientID != NullID)
         {
-            m_clients[clientID].ackSystem->packetReceived(header.sequence, packet.getDataSize());
-            m_clients[clientID].ackSystem->processAck(header.ack, header.ackBits);
-            //TODO discard this packet if it's older than the newest rx'd
+            m_clients[clientID].ackSystem->packetReceived(header, packet.getDataSize());
+            //TODO discard this packet if it's older than the newest rx'd?
         }
 
         PacketID packetID = 0;

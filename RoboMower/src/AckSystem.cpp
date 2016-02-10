@@ -85,16 +85,16 @@ namespace
 }
 
 AckSystem::AckSystem(SeqID maxID)
-    : m_maxID           (maxID),
-    m_localSequence     (0u),
-    m_remoteSequence    (0u),
-    m_sentPackets       (0u),
-    m_receivedPackets   (0u),
-    m_lostPackets       (0u),
-    m_ackedPackets      (0u),
-    m_sentBandwidth     (0.f),
-    m_ackedBandwidth    (0.f),
-    m_rtt               (0.f)
+    : m_maxID               (maxID),
+    m_localSequence         (0u),
+    m_remoteSequence        (0u),
+    m_sentPacketCount       (0u),
+    m_receivedPacketCount   (0u),
+    m_lostPacketCount       (0u),
+    m_ackedPacketCount      (0u),
+    m_sentBandwidth         (0.f),
+    m_ackedBandwidth        (0.f),
+    m_rtt                   (0.f)
 {
 
 }
@@ -104,10 +104,10 @@ void AckSystem::reset()
 {
     m_localSequence = 0u;
     m_remoteSequence = 0u;
-    m_sentPackets = 0u;
-    m_receivedPackets = 0u;
-    m_lostPackets = 0u;
-    m_ackedPackets = 0u;
+    m_sentPacketCount = 0u;
+    m_receivedPacketCount = 0u;
+    m_lostPacketCount = 0u;
+    m_ackedPacketCount = 0u;
     m_sentBandwidth = 0.f;
     m_ackedBandwidth = 0.f;
     m_rtt = 0.f;
@@ -128,31 +128,28 @@ void AckSystem::packetSent(sf::Int32 size)
     pd.size = size;
     m_sentQueue.push_back(pd);
     m_pendingAckQueue.push_back(pd);
-    m_sentPackets++;
+    m_sentPacketCount++;
     m_localSequence++;
 
     if (m_localSequence > m_maxID) m_localSequence = 0u;
 }
 
-void AckSystem::packetReceived(SeqID seqID, sf::Int32 size)
+void AckSystem::packetReceived(const Header& header, sf::Int32 size)
 {
-    m_receivedPackets++;
-    if (m_receivedQueue.exists(seqID)) return;
+    m_receivedPacketCount++;
+    if (m_receivedQueue.exists(header.sequence)) return;
 
     PacketData pd;
-    pd.sequence = seqID;
+    pd.sequence = header.sequence;
     pd.size = size;
     m_receivedQueue.push_back(pd);
 
-    if (moreRecent(seqID, m_remoteSequence, m_maxID))
+    if (moreRecent(header.sequence, m_remoteSequence, m_maxID))
     {
-        m_remoteSequence = seqID;
+        m_remoteSequence = header.sequence;
     }
-}
 
-void AckSystem::processAck(SeqID ack, sf::Uint32 ackBits)
-{
-    return procAck(ack, ackBits, m_pendingAckQueue, m_ackedQueue, m_acks, m_ackedPackets, m_rtt, m_maxID);
+    processAck(header.ack, header.ackBits);
 }
 
 void AckSystem::update(float dt)
@@ -185,22 +182,22 @@ const std::vector<SeqID>& AckSystem::getAcks() const
 
 sf::Uint32 AckSystem::getSentPacketCount() const
 {
-    return m_sentPackets;
+    return m_sentPacketCount;
 }
 
 sf::Uint32 AckSystem::getReceivedPacketCount() const
 {
-    return m_receivedPackets;
+    return m_receivedPacketCount;
 }
 
 sf::Uint32 AckSystem::getLostPacketCount() const
 {
-    return m_lostPackets;
+    return m_lostPacketCount;
 }
 
 sf::Uint32 AckSystem::getAckedPacketCount() const
 {
-    return m_ackedPackets;
+    return m_ackedPacketCount;
 }
 
 float AckSystem::getSentBandwidth() const
@@ -226,7 +223,13 @@ AckSystem::Header AckSystem::createHeader()
     header.ackBits = genAckBits(getRemoteSequence(), m_receivedQueue, m_maxID);
     return header;
 }
+
 //private
+void AckSystem::processAck(SeqID ack, sf::Uint32 ackBits)
+{
+    return procAck(ack, ackBits, m_pendingAckQueue, m_ackedQueue, m_acks, m_ackedPacketCount, m_rtt, m_maxID);
+}
+
 void AckSystem::advanceQueueTime(float dt)
 {
     for (auto& pd : m_sentQueue) pd.timeOffset += dt;
@@ -265,7 +268,7 @@ void AckSystem::updateQueues()
     while (!m_pendingAckQueue.empty() && m_pendingAckQueue.front().timeOffset > maxRtt + epsilon)
     {
         m_pendingAckQueue.pop_front();
-        m_lostPackets++;
+        m_lostPacketCount++;
     }
 }
 
@@ -291,8 +294,6 @@ void AckSystem::updateStats()
     m_sentBandwidth = static_cast<float>(sentBytesPerSec) * (8.f / 1000.f);
     m_ackedBandwidth = static_cast<float>(ackedBytesPerSec) * (8.f / 1000.f);
 }
-
-
 
 //----------packet operator-------//
 sf::Packet& operator <<(sf::Packet& packet, const Network::AckSystem::Header& header)

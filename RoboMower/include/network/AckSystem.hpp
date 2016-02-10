@@ -33,9 +33,8 @@ namespace Network
 
         void reset();
         void packetSent(sf::Int32);
-        void packetReceived(SeqID, sf::Int32);
-
-        void processAck(SeqID, sf::Uint32);
+        void packetReceived(const Header&, sf::Int32);
+       
         void update(float);
 
         SeqID getLocalSequence() const;
@@ -58,10 +57,10 @@ namespace Network
         SeqID m_localSequence;
         SeqID m_remoteSequence;
 
-        sf::Uint32 m_sentPackets;
-        sf::Uint32 m_receivedPackets;
-        sf::Uint32 m_lostPackets;
-        sf::Uint32 m_ackedPackets;
+        sf::Uint32 m_sentPacketCount;
+        sf::Uint32 m_receivedPacketCount;
+        sf::Uint32 m_lostPacketCount;
+        sf::Uint32 m_ackedPacketCount;
 
         float m_sentBandwidth;
         float m_ackedBandwidth;
@@ -73,6 +72,7 @@ namespace Network
         PacketQueue m_receivedQueue;
         PacketQueue m_ackedQueue;
 
+        void processAck(SeqID, sf::Uint32);
         void advanceQueueTime(float);
         void updateQueues();
         void updateStats();

@@ -49,6 +49,18 @@ namespace Network
         bool exists(SeqID);
         void insertSorted(const PacketData&, SeqID);
 
+        /*std::list<PacketData>::iterator begin();
+        std::list<PacketData>::iterator end();        
+        void push_front(const PacketData&);
+        void push_back(const PacketData&);
+        void pop_front();
+        PacketData& front();
+        PacketData& back();
+        void insert(std::size_t, std::list<PacketData>::iterator);
+        std::list<PacketData>::iterator erase(std::list<PacketData>::iterator);
+        void clear();
+        bool empty();*/
+
     private:
 
     };

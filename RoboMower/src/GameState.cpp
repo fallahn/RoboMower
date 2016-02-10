@@ -232,7 +232,7 @@ void GameState::handlePacket(Network::PacketType type, sf::Packet& packet, Netwo
         newPacket << PacketID(PacketIdent::PlayerDetails);
         newPacket << m_connection.getClientID();
         newPacket << "Player One";
-        connection->send(newPacket); //TODO make sure this gets through
+        connection->send(newPacket, true);
     }
         break;
     case PacketIdent::PositionUpdate:
