@@ -26,8 +26,8 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   endif()
 endif()
 
-SET(CMAKE_CXX_FLAGS_DEBUG "-g -D_DEBUG_")
-SET(CMAKE_CXX_FLAGS_RELEASE "-O4 -DNDEBUG")
+SET(CMAKE_CXX_FLAGS_DEBUG "-g -D_DEBUG_ -DXY_STATIC")
+SET(CMAKE_CXX_FLAGS_RELEASE "-O4 -DNDEBUG -DXY_STATIC")
 
 if(robomow_STATIC_SFML)
   SET(SFML_STATIC_LIBRARIES TRUE)
@@ -70,8 +70,8 @@ endif()
 #  "<CMAKE_RC_COMPILER> <FLAGS> -O coff <DEFINES> -i <SOURCE> -o <OBJECT>")
 #endif()
 
-SET(xygine_DIR ../xygine/src)
-include(${xygine_DIR}/CMakeLists.txt)
+SET(XY_DIR ../xygine/src)
+include(${XY_DIR}/CMakeLists.txt)
 
 set(SOURCE
   src/ButtonLogic.cpp
@@ -100,9 +100,9 @@ set(SOURCE
 #  ${RES_FILES})
   
 if(WIN32)
-  add_executable(robomow WIN32 ${SOURCE} ${xygine_SRC})
+  add_executable(robomow WIN32 ${SOURCE} ${XY_SRC})
 else()
-  add_executable(robomow ${SOURCE} ${xygine_SRC})
+  add_executable(robomow ${SOURCE} ${XY_SRC})
 endif()
 
 target_link_libraries(robomow
