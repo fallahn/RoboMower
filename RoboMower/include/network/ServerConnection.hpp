@@ -31,8 +31,45 @@ namespace Network
     */
     class ServerConnection final
     {
-        struct ClientInfo;
     public:
+        /*!
+        \brief Contains information on connected client
+        */
+        struct ClientInfo final
+        {
+            friend class ServerConnection;
+        public:
+            ClientInfo() = default;
+            ClientInfo(const sf::IpAddress& ip, PortNumber port, const sf::Time& heartBeat)
+                : ipAddress(ip),
+                portNumber(port),
+                lastHeartbeat(heartBeat)
+            {
+                ackSystem = std::make_unique<Network::AckSystem>();
+            }
+
+            sf::IpAddress ipAddress;
+            PortNumber portNumber = 0u;
+            float ping() const { return ackSystem->getRoundTripTime(); }
+        private:
+            sf::Time lastHeartbeat;
+            sf::Time heartbeatSent;
+            bool heartbeatWaiting = false;
+            sf::Uint16 heartbeatRetry = 0u;
+
+            std::unique_ptr<Network::AckSystem> ackSystem;
+
+            struct ResendAttempt final
+            {
+                sf::Packet packet;
+                SeqID id = -1;
+                sf::Uint8 count = 3;
+            };
+            std::list<ResendAttempt> resendAttempts;
+            void attemptResends(ClientID, ServerConnection&);
+        };
+
+
         /*!
         \brief Custom packet handler for received packets
         */
@@ -157,27 +194,6 @@ namespace Network
         std::size_t getMaxClients() const;
 
     private:
-
-        struct ClientInfo final
-        {
-            sf::IpAddress ipAddress;
-            PortNumber portNumber = 0u;
-            sf::Time lastHeartbeat;
-            sf::Time heartbeatSent;
-            bool heartbeatWaiting = false;
-            sf::Uint16 heartbeatRetry = 0u;
-
-            std::unique_ptr<Network::AckSystem> ackSystem;
-
-            ClientInfo() = default;
-            ClientInfo(const sf::IpAddress& ip, PortNumber port, const sf::Time& heartBeat)
-                : ipAddress(ip),
-                portNumber(port),
-                lastHeartbeat(heartBeat)
-            {
-                ackSystem = std::make_unique<Network::AckSystem>();
-            }
-        };
 
         using ClientList = std::unordered_map<ClientID, ClientInfo>;
 

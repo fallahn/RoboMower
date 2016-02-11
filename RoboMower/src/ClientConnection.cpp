@@ -243,7 +243,6 @@ void ClientConnection::attemptResends()
     {
         if (std::find(acks.begin(), acks.end(), it->id) != acks.end())
         {
-            std::cout << "found ack!" << std::endl;
             //remove pending packet
             it = m_resendAttempts.erase(it);
             continue;

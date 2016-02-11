@@ -9,6 +9,7 @@
 
 #include <xygine/Log.hpp>
 #include <xygine/Reports.hpp>
+#include <xygine/Assert.hpp>
 
 #include <SFML/System/Lock.hpp>
 #include <SFML/System/Clock.hpp>
@@ -18,6 +19,7 @@ namespace
     const sf::Int32 HEARTBEAT_RATE = 1000;
     const sf::Int32 HEARTBEAT_RETRIES = 5;
     const sf::Int32 CLIENT_TIMEOUT = 10000;
+    const sf::Uint8 MAX_RETRIES = 10u;
 }
 
 using namespace Network;
@@ -61,6 +63,16 @@ bool ServerConnection::send(ClientID id, sf::Packet& packet, bool retry, sf::Uin
     stampedPacket << result->second.ackSystem->createHeader();
     stampedPacket.append(packet.getData(), packet.getDataSize());
 
+    if (retry)
+    {
+        XY_ASSERT(retryCount <= MAX_RETRIES, "Maximum number of retries is 10");
+        result->second.resendAttempts.emplace_back();
+        auto& rty = result->second.resendAttempts.back();
+        rty.count = retryCount;
+        rty.id = result->second.ackSystem->getLocalSequence();
+        rty.packet = packet; //make sure resends don't include a header
+    }
+
     if (m_outgoingSocket.send(stampedPacket, result->second.ipAddress, result->second.portNumber) != sf::Socket::Done)
     {
         LOG("SERVER - Failed sending packet to " + std::to_string(id), xy::Logger::Type::Warning);
@@ -90,6 +102,16 @@ bool ServerConnection::send(const sf::IpAddress& ip, PortNumber port, sf::Packet
     }
     stampedPacket.append(packet.getData(), packet.getDataSize());
     
+    if (retry)
+    {
+        XY_ASSERT(retryCount <= MAX_RETRIES, "Maximum number of retries is 10");
+        m_clients[id].resendAttempts.emplace_back();
+        auto& rty = m_clients[id].resendAttempts.back();
+        rty.count = retryCount;
+        rty.id = m_clients[id].ackSystem->getLocalSequence();
+        rty.packet = packet; //make sure resends don't include a header
+    }
+
     if (m_outgoingSocket.send(stampedPacket, ip, port) != sf::Socket::Done)
     {
         LOG("SERVER - Failed sending packet to " + ip.toString(), xy::Logger::Type::Warning);
@@ -123,6 +145,8 @@ ClientID ServerConnection::addClient(const sf::IpAddress& ip, PortNumber port)
             return ClientID(Network::NullID);
         }
     }
+
+    //TODO broadcast a client has joined
 
     //create new client
     ClientID id = m_lastClientID++;
@@ -311,8 +335,7 @@ void ServerConnection::update(float dt)
             }
 
             it->second.ackSystem->update(dt);
-            //REPORT("SERVER ping", std::to_string(it->second.ackSystem->getRoundTripTime() * 1000.f));
-            //REPORT("SERVER rcd", std::to_string(it->second.ackSystem->getReceivedPackets()));
+            it->second.attemptResends(it->first, *this);
         }
         ++it;
     }
@@ -465,4 +488,43 @@ void ServerConnection::handlePacket(const sf::IpAddress& ip, PortNumber port, Pa
     }
 
     if (m_packetHandler) m_packetHandler(ip, port, id, packet, this);
+}
+
+
+//----------//
+
+
+void ServerConnection::ClientInfo::attemptResends(ClientID clid, ServerConnection& connection)
+{
+    const auto& acks = ackSystem->getAcks();
+    for (auto it = resendAttempts.begin(); it != resendAttempts.end();)
+    {
+        if (std::find(acks.begin(), acks.end(), it->id) != acks.end())
+        {
+            //remove pending packet
+            it = resendAttempts.erase(it);
+            continue;
+        }
+        else
+        {
+            //check pending acks. if current seq - pending > 32 resend and dec count
+            if (ackSystem->getLocalSequence() - it->id > 32)
+            {
+                if (it->count > 0)
+                {
+                    it->id = ackSystem->getLocalSequence();
+                    it->count--;
+                    connection.send(clid, it->packet);
+                    LOG("CLIENT - Resending Packet, " + std::to_string(it->count) + " tries remaining.", xy::Logger::Type::Info);
+                }
+                else
+                {
+                    it = resendAttempts.erase(it);
+                    LOG("CLIENT - Failed sending packet after multiple attempts", xy::Logger::Type::Info);
+                    continue;
+                }
+            }
+        }
+        ++it;
+    }
 }
