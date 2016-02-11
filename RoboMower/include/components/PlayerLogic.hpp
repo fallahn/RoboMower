@@ -9,7 +9,7 @@
 #define RM_PLAYER_LOGIC_HPP_
 
 #include <xygine/components/Component.hpp>
-#include <network/NetworkConfig.hpp>
+#include <xygine/network/NetworkConfig.hpp>
 
 class PlayerLogic final : public xy::Component
 {
@@ -20,12 +20,12 @@ public:
     xy::Component::Type type() const override { return xy::Component::Type::Script; }
     void entityUpdate(xy::Entity&, float) override;
 
-    void setClientID(ClientID);
+    void setClientID(xy::ClientID);
 
 private:
 
     std::size_t m_targetIdx;
-    ClientID m_clientID;
+    xy::ClientID m_clientID;
 };
 
 #endif //RM_PLAYER_LOGIC_HPP_

@@ -67,7 +67,7 @@ void GameServer::handleMessage(const xy::Message& msg)
     {
         auto& msgData = msg.getData<DirectionEvent>();
         sf::Packet packet;
-        packet << PacketID(DirectionUpdate);
+        packet << xy::PacketID(DirectionUpdate);
         packet << msgData.id << sf::Uint8(msgData.direction);
         m_connection.broadcast(packet);
     }
@@ -99,7 +99,7 @@ void GameServer::addPlayer(Player& player)
     //TODO broadcast to all clients
 }
 
-void GameServer::removePlayer(ClientID id)
+void GameServer::removePlayer(xy::ClientID id)
 {
 
 }
@@ -107,7 +107,7 @@ void GameServer::removePlayer(ClientID id)
 void GameServer::sendSnapshot()
 {
     sf::Packet packet;
-    packet << PacketID(PacketIdent::PositionUpdate);
+    packet << xy::PacketID(PacketIdent::PositionUpdate);
     packet << sf::Uint8(m_players.size());
     for (const auto& p : m_players)
     {
@@ -117,7 +117,7 @@ void GameServer::sendSnapshot()
     m_connection.broadcast(packet);
 }
 
-void GameServer::handlePacket(const sf::IpAddress& ip, PortNumber port, Network::PacketType type, sf::Packet& packet, Network::ServerConnection* connection)
+void GameServer::handlePacket(const sf::IpAddress& ip, xy::PortNumber port, xy::Network::PacketType type, sf::Packet& packet, xy::Network::ServerConnection* connection)
 {
     switch (type)
     {

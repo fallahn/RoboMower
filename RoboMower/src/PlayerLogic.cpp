@@ -90,7 +90,7 @@ void PlayerLogic::entityUpdate(xy::Entity& entity, float dt)
     }
 }
 
-void PlayerLogic::setClientID(ClientID id)
+void PlayerLogic::setClientID(xy::ClientID id)
 {
     m_clientID = id;
 }

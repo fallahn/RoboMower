@@ -89,7 +89,7 @@ struct TransportEvent
 struct DirectionEvent
 {
     Direction direction;
-    ClientID id;
+    xy::ClientID id;
 };
 
 #endif //MESSAGE_HPP_

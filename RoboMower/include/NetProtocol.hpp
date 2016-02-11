@@ -8,12 +8,12 @@
 #ifndef RM_NET_PROTOCOL_HPP_
 #define RM_NET_PROTOCOL_HPP_
 
-#include <network/NetworkConfig.hpp>
+#include <xygine/network/NetworkConfig.hpp>
 
 enum PacketIdent
 {
     //client id, name
-    PlayerDetails = PacketID(Network::PacketType::Count),
+    PlayerDetails = xy::PacketID(xy::Network::PacketType::Count),
     //count, client id, position
     PositionUpdate,
     //clientId, direction

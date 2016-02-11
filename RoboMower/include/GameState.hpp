@@ -13,13 +13,13 @@
 #include <StateIds.hpp>
 #include <InstructionSet.hpp>
 #include <GameUI.hpp>
-#include <network/ClientConnection.hpp>
 
 #include <xygine/State.hpp>
 #include <xygine/Entity.hpp>
 #include <xygine/Scene.hpp>
 #include <xygine/Resource.hpp>
 #include <xygine/ui/Window.hpp>
+#include <xygine/network/ClientConnection.hpp>
 
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
@@ -57,14 +57,14 @@ private:
     xy::FontResource m_fontResource;
 
     GameUI m_gameUI;
-    Network::ClientConnection m_connection;
+    xy::Network::ClientConnection m_connection;
 
     xy::UI::Window m_reportWindow;
 
-    std::map<ClientID, xy::Entity*> m_playerEntities;
+    std::map<xy::ClientID, xy::Entity*> m_playerEntities;
 
-    Network::ClientConnection::PacketHandler m_packetHandler;
-    void handlePacket(Network::PacketType type, sf::Packet& packet, Network::ClientConnection* connection);
+    xy::Network::ClientConnection::PacketHandler m_packetHandler;
+    void handlePacket(xy::Network::PacketType type, sf::Packet& packet, xy::Network::ClientConnection* connection);
 
     void buildMap();
 };

@@ -8,7 +8,7 @@
 #ifndef RM_GAME_SERVER_HPP_
 #define RM_GAME_SERVER_HPP_
 
-#include <network/ServerConnection.hpp>
+#include <xygine/network/ServerConnection.hpp>
 
 #include <xygine/Scene.hpp>
 #include <xygine/MessageBus.hpp>
@@ -35,7 +35,7 @@ private:
     struct Player final
     {
         std::string name;
-        ClientID id = -1;
+        xy::ClientID id = -1;
         xy::Entity* entity = nullptr;
     };
     std::vector<Player> m_players;
@@ -43,8 +43,8 @@ private:
     xy::MessageBus m_messageBus; //TODO server should be encapsulated and have its own messages, right?
     xy::Scene m_scene;
 
-    Network::ServerConnection m_connection;
-    Network::ServerConnection::PacketHandler m_packetHandler;
+    xy::Network::ServerConnection m_connection;
+    xy::Network::ServerConnection::PacketHandler m_packetHandler;
     sf::Clock m_snapshotClock;
     float m_snapshotAccumulator;
 
@@ -52,10 +52,10 @@ private:
 
     void setup();
     void addPlayer(Player&);
-    void removePlayer(ClientID);
+    void removePlayer(xy::ClientID);
     void sendSnapshot();
 
-    void handlePacket(const sf::IpAddress&, PortNumber, Network::PacketType, sf::Packet&, Network::ServerConnection*);
+    void handlePacket(const sf::IpAddress&, xy::PortNumber, xy::Network::PacketType, sf::Packet&, xy::Network::ServerConnection*);
 };
 
 #endif //RM_GAME_SERVER_HPP_

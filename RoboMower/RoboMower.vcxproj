@@ -72,10 +72,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\AckSystem.cpp" />
     <ClCompile Include="src\ButtonLogic.cpp" />
-    <ClCompile Include="src\ClientConnection.cpp" />
-    <ClCompile Include="src\FlowControl.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\GameServer.cpp" />
     <ClCompile Include="src\GameState.cpp" />
@@ -91,12 +88,10 @@
     <ClCompile Include="src\MenuOptionState.cpp" />
     <ClCompile Include="src\MenuPauseState.cpp" />
     <ClCompile Include="src\NetworkController.cpp" />
-    <ClCompile Include="src\PacketQueue.cpp" />
     <ClCompile Include="src\PlayerDrawable.cpp" />
     <ClCompile Include="src\PlayerLogic.cpp" />
     <ClCompile Include="src\RoundedRectangle.cpp" />
     <ClCompile Include="src\ScrollHandleLogic.cpp" />
-    <ClCompile Include="src\ServerConnection.cpp" />
     <ClCompile Include="src\StackLogicComponent.cpp" />
     <ClCompile Include="src\StatsOverlayState.cpp" />
     <ClCompile Include="src\Tilemap.cpp" />
@@ -126,12 +121,6 @@
     <ClInclude Include="include\MenuPauseState.hpp" />
     <ClInclude Include="include\Messages.hpp" />
     <ClInclude Include="include\NetProtocol.hpp" />
-    <ClInclude Include="include\network\AckSystem.hpp" />
-    <ClInclude Include="include\network\ClientConnection.hpp" />
-    <ClInclude Include="include\network\FlowControl.hpp" />
-    <ClInclude Include="include\network\NetworkConfig.hpp" />
-    <ClInclude Include="include\network\PacketQueue.hpp" />
-    <ClInclude Include="include\network\ServerConnection.hpp" />
     <ClInclude Include="include\RoundedRectangle.hpp" />
     <ClInclude Include="include\shaders\ShaderIds.hpp" />
     <ClInclude Include="include\shaders\CropShader.hpp" />

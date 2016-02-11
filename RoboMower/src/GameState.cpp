@@ -56,7 +56,7 @@ GameState::GameState(xy::StateStack& stateStack, Context context)
     //TODO handle failure to connect
     m_packetHandler = std::bind(&GameState::handlePacket, this, _1, _2, _3);
     m_connection.setPacketHandler(m_packetHandler);
-    m_connection.setServerInfo({ "127.0.0.1" }, Network::ServerPort);
+    m_connection.setServerInfo({ "127.0.0.1" }, xy::Network::ServerPort);
     m_connection.connect();
 
     m_scene.setView(context.defaultView);
@@ -222,14 +222,14 @@ void GameState::buildMap()
     m_scene.addEntity(ent, xy::Scene::Layer::BackRear);
 }
 
-void GameState::handlePacket(Network::PacketType type, sf::Packet& packet, Network::ClientConnection* connection)
+void GameState::handlePacket(xy::Network::PacketType type, sf::Packet& packet, xy::Network::ClientConnection* connection)
 {
     switch (type)
     {
-    case Network::Connect:
+    case xy::Network::Connect:
     {
         sf::Packet newPacket;
-        newPacket << PacketID(PacketIdent::PlayerDetails);
+        newPacket << xy::PacketID(PacketIdent::PlayerDetails);
         newPacket << m_connection.getClientID();
         newPacket << "Player One";
         connection->send(newPacket, true);
@@ -240,7 +240,7 @@ void GameState::handlePacket(Network::PacketType type, sf::Packet& packet, Netwo
         packet >> count;
         for (auto i = 0u; i < count; ++i)
         {
-            ClientID id;
+            xy::ClientID id;
             packet >> id;
             sf::Vector2f position;
             packet >> position.x >> position.y;
@@ -251,7 +251,7 @@ void GameState::handlePacket(Network::PacketType type, sf::Packet& packet, Netwo
         break;
     case PacketIdent::DirectionUpdate:
     {
-        ClientID id;
+        xy::ClientID id;
         sf::Uint8 dir;
         packet >> id >> dir;
 
