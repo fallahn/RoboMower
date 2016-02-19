@@ -25,9 +25,9 @@ MenuMainState::MenuMainState(xy::StateStack& stack, Context context)
     msg->type = xy::Message::UIEvent::MenuOpened;
     msg->stateId = States::ID::MenuMain;
 
-    auto msg2 = m_messageBus.post<xy::Message::NetworkEvent>(xy::Message::NetworkMessage);
+    /*auto msg2 = m_messageBus.post<xy::Message::NetworkEvent>(xy::Message::NetworkMessage);
     msg2->action = xy::Message::NetworkEvent::RequestDisconnect;
-    msg2->stateID = States::ID::MenuMain;
+    msg2->stateID = States::ID::MenuMain;*/
 }
 
 //public
@@ -74,9 +74,9 @@ void MenuMainState::buildMenu()
     button->setPosition(960.f, 475.f);
     button->addCallback([this]()
     {
-        auto msg = m_messageBus.post<xy::Message::NetworkEvent>(xy::Message::NetworkMessage);
-        msg->action = xy::Message::NetworkEvent::RequestStartServer;
-        msg->stateID = States::ID::Game;
+        //auto msg = m_messageBus.post<xy::Message::NetworkEvent>(xy::Message::NetworkMessage);
+        //msg->action = xy::Message::NetworkEvent::RequestStartServer;
+        //msg->stateID = States::ID::Game;
 
         close();
         requestStackClear();

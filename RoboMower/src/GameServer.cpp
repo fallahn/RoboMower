@@ -20,7 +20,8 @@ namespace
 using namespace std::placeholders;
 
 GameServer::GameServer()
-    : m_scene(m_messageBus)
+    : m_scene(m_messageBus),
+    m_connection(m_messageBus)
 {
     m_packetHandler = std::bind(&GameServer::handlePacket, this, _1, _2, _3, _4, _5);
     m_connection.setPacketHandler(m_packetHandler);

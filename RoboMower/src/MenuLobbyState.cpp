@@ -98,8 +98,8 @@ void MenuLobbyState::buildMenu()
         msg0->type = xy::Message::UIEvent::MenuClosed;
         msg0->stateId = States::ID::MenuLobby;
 
-        auto msg1 = m_messageBus.post<xy::Message::NetworkEvent>(xy::Message::NetworkMessage);
-        msg1->action = xy::Message::NetworkEvent::RequestDisconnect;
+        //auto msg1 = m_messageBus.post<xy::Message::NetworkEvent>(xy::Message::NetworkMessage);
+        //msg1->action = xy::Message::NetworkEvent::RequestDisconnect;
 
         requestStackPush(States::ID::MenuMain);
     });

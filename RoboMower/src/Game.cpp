@@ -65,22 +65,23 @@ void Game::handleMessage(const xy::Message& msg)
         auto& msgData = msg.getData<xy::Message::NetworkEvent>();
         switch (msgData.action)
         {
-        case xy::Message::NetworkEvent::RequestStartServer:
-            if (m_server.start())
-            {
-                m_stateStack.pushState(msgData.stateID);
-            }
-            else
-            {
-                //return to main menu
-                m_stateStack.pushState(States::ID::MenuBackground);
-                m_stateStack.pushState(States::ID::MenuMain);
+        //case xy::Message::NetworkEvent::RequestStartServer:
+        //    if (m_server.start())
+        //    {
+        //        m_stateStack.pushState(msgData.stateID);
+        //    }
+        //    else
+        //    {
+        //        //return to main menu
+        //        m_stateStack.pushState(States::ID::MenuBackground);
+        //        m_stateStack.pushState(States::ID::MenuMain);
 
-                //TODO message failure so error message can be displayed
-            }
-            break;
-        case xy::Message::NetworkEvent::RequestDisconnect:
-            m_server.stop();
+        //        //TODO message failure so error message can be displayed
+        //    }
+        //    break;
+        //case xy::Message::NetworkEvent::RequestDisconnect:
+        //    m_server.stop();
+        //    break;
         default: break;
         }
         break;

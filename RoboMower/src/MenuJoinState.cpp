@@ -62,14 +62,14 @@ void MenuJoinState::handleMessage(const xy::Message& msg)
         auto& msgData = msg.getData<xy::Message::NetworkEvent>();
         switch (msgData.action)
         {
-        case xy::Message::NetworkEvent::ConnectSuccess:
+        /*case xy::Message::NetworkEvent::ConnectSuccess:
             requestStackPop();
             requestStackPush(States::ID::MenuLobby);
             sendCloseMessage();
             break;
         case xy::Message::NetworkEvent::ConnectFail:
             m_statusLabel->setString("Connection Failed.");
-            break;
+            break;*/
         default: break;
         }
     }

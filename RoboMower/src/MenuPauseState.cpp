@@ -105,8 +105,8 @@ void MenuPauseState::buildMenu(const sf::Font& font)
 
         sendCloseMessage();
 
-        auto msg = m_messageBus.post<xy::Message::NetworkEvent>(xy::Message::NetworkMessage);
-        msg->action = xy::Message::NetworkEvent::RequestDisconnect;
+        //auto msg = m_messageBus.post<xy::Message::NetworkEvent>(xy::Message::NetworkMessage);
+        //msg->action = xy::Message::NetworkEvent::RequestDisconnect;
     });
     m_uiContainer.addControl(button);
 }
