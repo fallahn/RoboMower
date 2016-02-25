@@ -60,32 +60,6 @@ void Game::handleMessage(const xy::Message& msg)
 {
     switch (msg.id)
     {
-    case xy::Message::Type::NetworkMessage:
-    {
-        auto& msgData = msg.getData<xy::Message::NetworkEvent>();
-        switch (msgData.action)
-        {
-        //case xy::Message::NetworkEvent::RequestStartServer:
-        //    if (m_server.start())
-        //    {
-        //        m_stateStack.pushState(msgData.stateID);
-        //    }
-        //    else
-        //    {
-        //        //return to main menu
-        //        m_stateStack.pushState(States::ID::MenuBackground);
-        //        m_stateStack.pushState(States::ID::MenuMain);
-
-        //        //TODO message failure so error message can be displayed
-        //    }
-        //    break;
-        //case xy::Message::NetworkEvent::RequestDisconnect:
-        //    m_server.stop();
-        //    break;
-        default: break;
-        }
-        break;
-    }
     case xy::Message::Type::UIMessage:
     {
         auto& msgData = msg.getData<xy::Message::UIEvent>();
@@ -93,6 +67,22 @@ void Game::handleMessage(const xy::Message& msg)
         {
         case xy::Message::UIEvent::ResizedWindow:
             m_stateStack.updateView();
+            break;
+        case xy::Message::UIEvent::ButtonPressed:
+
+            if (m_server.start())
+            {
+                m_stateStack.pushState(msgData.stateId);
+            }
+            else
+            {
+                //return to main menu
+                m_stateStack.pushState(States::ID::MenuBackground);
+                m_stateStack.pushState(States::ID::MenuMain);
+
+                //TODO message failure so error message can be displayed
+            }
+
             break;
         default: break;
         }

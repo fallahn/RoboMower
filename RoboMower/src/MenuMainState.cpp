@@ -6,6 +6,7 @@
 //==============================================================================
 
 #include <MenuMainState.hpp>
+#include <UIControlIDs.hpp>
 
 #include <xygine/App.hpp>
 #include <xygine/ui/Button.hpp>
@@ -24,10 +25,6 @@ MenuMainState::MenuMainState(xy::StateStack& stack, Context context)
     auto msg = m_messageBus.post<xy::Message::UIEvent>(xy::Message::UIMessage);
     msg->type = xy::Message::UIEvent::MenuOpened;
     msg->stateId = States::ID::MenuMain;
-
-    /*auto msg2 = m_messageBus.post<xy::Message::NetworkEvent>(xy::Message::NetworkMessage);
-    msg2->action = xy::Message::NetworkEvent::RequestDisconnect;
-    msg2->stateID = States::ID::MenuMain;*/
 }
 
 //public
@@ -74,9 +71,11 @@ void MenuMainState::buildMenu()
     button->setPosition(960.f, 475.f);
     button->addCallback([this]()
     {
-        //auto msg = m_messageBus.post<xy::Message::NetworkEvent>(xy::Message::NetworkMessage);
-        //msg->action = xy::Message::NetworkEvent::RequestStartServer;
-        //msg->stateID = States::ID::Game;
+        //raise message with button ID that called close event
+        auto msg = m_messageBus.post<xy::Message::UIEvent>(xy::Message::UIMessage);
+        msg->controlID = ControlId::SinglePlayerButton;
+        msg->type = xy::Message::UIEvent::ButtonPressed;
+        msg->stateId = States::Game;
 
         close();
         requestStackClear();

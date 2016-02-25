@@ -104,9 +104,7 @@ void MenuPauseState::buildMenu(const sf::Font& font)
         requestStackPush(States::ID::MenuMain);
 
         sendCloseMessage();
-
-        //auto msg = m_messageBus.post<xy::Message::NetworkEvent>(xy::Message::NetworkMessage);
-        //msg->action = xy::Message::NetworkEvent::RequestDisconnect;
+        LOG("Didn't quit server yet!", xy::Logger::Type::Warning);
     });
     m_uiContainer.addControl(button);
 }

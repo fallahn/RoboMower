@@ -126,6 +126,7 @@
     <ClInclude Include="include\shaders\CropShader.hpp" />
     <ClInclude Include="include\StateIds.hpp" />
     <ClInclude Include="include\StatsOverlayState.hpp" />
+    <ClInclude Include="include\UIControlIDs.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

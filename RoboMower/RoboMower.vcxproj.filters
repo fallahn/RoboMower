@@ -188,5 +188,8 @@
     <ClInclude Include="include\components\NetworkController.hpp">
       <Filter>Header Files\components</Filter>
     </ClInclude>
+    <ClInclude Include="include\UIControlIDs.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
