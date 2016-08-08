@@ -9,7 +9,7 @@ set(PROJECT_SRC
   ${PROJECT_DIR}/LoopHandle.cpp
   ${PROJECT_DIR}/main.cpp
   ${PROJECT_DIR}/MenuBackgroundState.cpp
-  ${PROJECT_DIR}/MeunJoinState.cpp
+  ${PROJECT_DIR}/MenuJoinState.cpp
   ${PROJECT_DIR}/MenuLobbyState.cpp
   ${PROJECT_DIR}/MenuMainState.cpp
   ${PROJECT_DIR}/MenuOptionState.cpp
