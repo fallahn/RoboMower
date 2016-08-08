@@ -1,9 +1,31 @@
-//==============================================================================
-// RoboMower - Copyright (C) Matt Marchant; All Rights Reserved
-// Unauthorized copying of this file via any medium is strictly prohibited
-// Proprietary and confidential
-// Written by Matt Marchant (matty_styles@hotmail.com) 2015 - 2016
-//==============================================================================
+/*-----------------------------------------------------------------------
+
+Matt Marchant 2015 - 2016
+http://trederia.blogspot.com
+
+Robomower - Zlib license.
+
+This software is provided 'as-is', without any express or
+implied warranty.In no event will the authors be held
+liable for any damages arising from the use of this software.
+
+Permission is granted to anyone to use this software for any purpose,
+including commercial applications, and to alter it and redistribute
+it freely, subject to the following restrictions :
+
+1. The origin of this software must not be misrepresented;
+you must not claim that you wrote the original software.
+If you use this software in a product, an acknowledgment
+in the product documentation would be appreciated but
+is not required.
+
+2. Altered source versions must be plainly marked as such,
+and must not be misrepresented as being the original software.
+
+3. This notice may not be removed or altered from any
+source distribution.
+
+-----------------------------------------------------------------------*/
 
 #include <StatsOverlayState.hpp>
 
@@ -26,7 +48,7 @@ StatsOverlayState::StatsOverlayState(xy::StateStack& ss, Context c)
     palette.borderActive = { 0u, 20u, 190u };
     palette.borderNormal = { 0u, 15u, 120u };
 
-    m_windows.emplace_back(std::make_unique<xy::UI::Window>(c.renderWindow, font, 640, 480, palette));
+    m_windows.emplace_back(std::make_unique<xy::UI::Window>(c.renderWindow, c.appInstance.getMessageBus(), font, 640, 480, palette));
     auto& window = m_windows.back();
     window->setPosition(20.f, 60.f);
     window->setTitle("Stats");
@@ -37,7 +59,7 @@ StatsOverlayState::StatsOverlayState(xy::StateStack& ss, Context c)
     m_statsText->setCharacterSize(26u);
     window->addControl(m_statsText);
 
-    m_windows.emplace_back(std::make_unique<xy::UI::Window>(c.renderWindow, font, 840, 880, palette));
+    m_windows.emplace_back(std::make_unique<xy::UI::Window>(c.renderWindow, c.appInstance.getMessageBus(), font, 840, 880, palette));
     auto& otherwindow = m_windows.back();
     otherwindow->setPosition(700.f, 60.f);
     otherwindow->setTitle("Console");

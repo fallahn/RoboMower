@@ -1,9 +1,31 @@
-//==============================================================================
-// RoboMower - Copyright (C) Matt Marchant; All Rights Reserved
-// Unauthorized copying of this file via any medium is strictly prohibited
-// Proprietary and confidential
-// Written by Matt Marchant (matty_styles@hotmail.com) 2015 - 2016
-//==============================================================================
+/*-----------------------------------------------------------------------
+
+Matt Marchant 2015 - 2016
+http://trederia.blogspot.com
+
+Robomower - Zlib license.
+
+This software is provided 'as-is', without any express or
+implied warranty.In no event will the authors be held
+liable for any damages arising from the use of this software.
+
+Permission is granted to anyone to use this software for any purpose,
+including commercial applications, and to alter it and redistribute
+it freely, subject to the following restrictions :
+
+1. The origin of this software must not be misrepresented;
+you must not claim that you wrote the original software.
+If you use this software in a product, an acknowledgment
+in the product documentation would be appreciated but
+is not required.
+
+2. Altered source versions must be plainly marked as such,
+and must not be misrepresented as being the original software.
+
+3. This notice may not be removed or altered from any
+source distribution.
+
+-----------------------------------------------------------------------*/
 
 #include <GameUI.hpp>
 
@@ -172,7 +194,7 @@ GameUI::GameUI(xy::State::Context sc, xy::TextureResource& tr, xy::FontResource&
         auto& td = text->getDrawable();
         td.setFont(fr.get("assets/fonts/Console.ttf"));
         td.setString(it->second);
-        td.setColor(sf::Color::Black);
+        td.setFillColor(sf::Color::Black);
         xy::Util::Position::centreOrigin(td);
         text->setPosition(labelSize / 2.f);
         text->move(0.f, textOffset);
@@ -233,13 +255,13 @@ GameUI::GameUI(xy::State::Context sc, xy::TextureResource& tr, xy::FontResource&
     auto pos = sc.renderWindow.mapCoordsToPixel(stackPosition, sc.renderWindow.getDefaultView());
     auto size = sc.renderWindow.mapCoordsToPixel(stackSize, sc.renderWindow.getDefaultView());
     //pos.y = sc.renderWindow.getSize().y - pos.y; //because glsl y inversion
-    shader.setParameter("u_position", sf::Vector2f(pos));
-    shader.setParameter("u_size", sf::Vector2f(size));
+    shader.setUniform("u_position", sf::Vector2f(pos));
+    shader.setUniform("u_size", sf::Vector2f(size));
 
     m_shaderResource.preload(Shader::Id::CropText, Shader::version + Shader::Cropping::vertex, Shader::version + Shader::useTexture + Shader::Cropping::fragment);
     auto& textShader = m_shaderResource.get(Shader::Id::CropText);
-    textShader.setParameter("u_position", sf::Vector2f(pos));
-    textShader.setParameter("u_size", sf::Vector2f(size));
+    textShader.setUniform("u_position", sf::Vector2f(pos));
+    textShader.setUniform("u_size", sf::Vector2f(size));
 
 
     //transport controls
@@ -538,7 +560,7 @@ void GameUI::addInstructionBlock(const sf::Vector2f& position, const sf::Vector2
     auto& td = text->getDrawable();
     td.setFont(m_fontResource.get("assets/fonts/Console.ttf"));
     td.setString(instructionLabels[instruction]);
-    td.setColor(sf::Color::Black);
+    td.setFillColor(sf::Color::Black);
     xy::Util::Position::centreOrigin(td);
     text->setPosition(labelSize / 2.f);
     text->move(0.f, textOffset);
