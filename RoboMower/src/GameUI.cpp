@@ -74,7 +74,6 @@ namespace
     const float labelSpacing = 240.f;
     const float labelPadding = 445.f;
     const float labelTop = 980.f;
-    const float textOffset = -6.f;
 
     const sf::Vector2f labelSize(220.f, 30.f);
     const sf::Vector2f inputSize(50.f, 30.f);
@@ -136,6 +135,7 @@ namespace
 GameUI::GameUI(xy::State::Context sc, xy::TextureResource& tr, xy::FontResource& fr, xy::Scene& scene)
     : m_fontResource    (fr),
     m_textureResource   (tr),
+    m_transportStatus   (TransportStatus::Stopped),
     m_stateContext      (sc),
     m_scene             (scene),
     m_messageBus        (sc.appInstance.getMessageBus()),
@@ -197,7 +197,7 @@ GameUI::GameUI(xy::State::Context sc, xy::TextureResource& tr, xy::FontResource&
         td.setFillColor(sf::Color::Black);
         xy::Util::Position::centreOrigin(td);
         text->setPosition(labelSize / 2.f);
-        text->move(0.f, textOffset);
+        //text->move(0.f, textOffset);
 
         entity->addComponent(text);
         m_scene.addEntity(entity, xy::Scene::Layer::FrontFront);
@@ -374,8 +374,9 @@ void GameUI::handleEvent(const sf::Event& evt)
             cmd.category = CommandCategory::TrayIcon | CommandCategory::InstructionBlock | CommandCategory::InputBox;
             cmd.action = [this, mousePos](xy::Entity& ent, float)
             {
-                if (ent.getComponent<xy::SfDrawableComponent<RoundedRectangle>>()->globalBounds().contains(mousePos))
-                {                    
+                auto bounds = ent.getWorldTransform().transformRect(ent.getComponent<xy::SfDrawableComponent<RoundedRectangle>>()->globalBounds());
+                if (bounds.contains(mousePos))
+                {     
                     if (ent.hasCommandCategories(CommandCategory::TrayIcon))
                     {
                         ent.getComponent<ButtonLogicScript>()->doClick(mousePos, mousePos - ent.getPosition());
@@ -514,14 +515,14 @@ void GameUI::handleMessage(const xy::Message& msg)
     {
     case MessageId::TrayIconMessage:
     {
-        auto msgData = msg.getData<TrayIconEvent>();
+        const auto& msgData = msg.getData<TrayIconEvent>();
         if (msgData.action == TrayIconEvent::Clicked)
             addInstructionBlock({ msgData.absX, msgData.absY }, { msgData.relX, msgData.relY }, msgData.instruction);
     }
     break;
     case MessageId::InputBoxMessage:
     {
-        auto msgData = msg.getData<InputBoxEvent>();
+        const auto& msgData = msg.getData<InputBoxEvent>();
         if (msgData.action == InputBoxEvent::Clicked)
         {
             showInputWindow(msgData.entityId);
@@ -541,8 +542,23 @@ void GameUI::handleMessage(const xy::Message& msg)
         }
     }
     break;
+
     default: break;
     }
+}
+
+std::vector<sf::Uint8> GameUI::getProgram() const
+{
+    std::vector<sf::Uint8> retVal;
+    const auto& entities = m_instructionStack->getChildren();
+    for (const auto& i : entities)
+    {
+        auto* logic = i->getComponent<InstructionBlockLogic>();
+        retVal.push_back(sf::Uint8(logic->getInstruction()));
+        retVal.push_back(logic->getValue());
+    }
+
+    return std::move(retVal);
 }
 
 //private
@@ -563,7 +579,7 @@ void GameUI::addInstructionBlock(const sf::Vector2f& position, const sf::Vector2
     td.setFillColor(sf::Color::Black);
     xy::Util::Position::centreOrigin(td);
     text->setPosition(labelSize / 2.f);
-    text->move(0.f, textOffset);
+    //text->move(0.f, textOffset);
     text->setShader(&m_shaderResource.get(Shader::Id::CropText));
     text->setShaderActive(false);
     entity->addComponent<xy::SfDrawableComponent<sf::Text>>(text);
@@ -589,7 +605,7 @@ void GameUI::addInstructionBlock(const sf::Vector2f& position, const sf::Vector2
         td.setString("0");
         xy::Util::Position::centreOrigin(td);
         text->setPosition(inputSize / 2.f);
-        text->move(0.f, textOffset);
+        //text->move(0.f, textOffset);
         text->setShader(&m_shaderResource.get(Shader::Id::CropText));
         text->setShaderActive(false);
         subEnt->addComponent<xy::SfDrawableComponent<sf::Text>>(text);

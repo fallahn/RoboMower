@@ -43,11 +43,18 @@ public:
     void entityUpdate(xy::Entity&, float) override;
 
     void setClientID(xy::ClientID);
+    void setProgram(const std::vector<sf::Uint8>& program) { m_program = program; }
+
+    void start();
+    void pause();
+    void rewind();
 
 private:
 
     std::size_t m_targetIdx;
     xy::ClientID m_clientID;
+
+    std::vector<sf::Uint8> m_program;
 };
 
 #endif //RM_PLAYER_LOGIC_HPP_

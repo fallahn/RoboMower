@@ -116,3 +116,21 @@ void PlayerLogic::setClientID(xy::ClientID id)
 {
     m_clientID = id;
 }
+
+void PlayerLogic::start()
+{
+    //for (auto d : m_program)
+    //{
+    //    LOG(std::to_string(d), xy::Logger::Type::Info);
+    //}
+}
+
+void PlayerLogic::pause()
+{
+
+}
+
+void PlayerLogic::rewind()
+{
+
+}

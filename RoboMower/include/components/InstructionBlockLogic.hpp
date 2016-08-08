@@ -47,8 +47,10 @@ public:
 
     Component::Type type() const override { return Component::Type::Script; }
     void entityUpdate(xy::Entity&, float) override;
+    void onDelayedStart(xy::Entity&) override;
 
     Instruction getInstruction() const { return m_instruction; }
+    sf::Uint8 getValue() const { return m_value; }
     void setCarried(bool);
     bool carried() const;
 
@@ -72,6 +74,7 @@ private:
     }m_state;
 
     Instruction m_instruction;
+    sf::Uint8 m_value;
     sf::Vector2f m_target;
     sf::Int32 m_targetIndex;
 
@@ -81,6 +84,7 @@ private:
     sf::Int32 m_stackIndex;
     sf::Int32 m_previousStackindex;
 
+    xy::Entity* m_entity;
 };
 
 

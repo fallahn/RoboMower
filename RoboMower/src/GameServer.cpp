@@ -30,6 +30,7 @@ source distribution.
 #include <GameServer.hpp>
 #include <NetProtocol.hpp>
 #include <Messages.hpp>
+#include <TransportStatus.hpp>
 
 #include <xygine/Entity.hpp>
 #include <components/PlayerLogic.hpp>
@@ -37,6 +38,7 @@ source distribution.
 namespace
 {
     const float snapshotInterval = 1 / 20.f;
+    const sf::Uint8 MAX_PROGRAM_SIZE = 255;
 }
 
 using namespace std::placeholders;
@@ -157,7 +159,49 @@ void GameServer::handlePacket(const sf::IpAddress& ip, xy::PortNumber port, xy::
     }
         break;
 
-        //*robustly* receive program, need to include instruction count?
+        //receive program
+    case PacketIdent::TransmitProgram:
+        //TODO assert byte stream is correct size
+        //and send request for program again if not
+    {
+        xy::ClientID clid;
+        sf::Uint32 size;
+        packet >> clid >> size;
+        if (size > 0 && size < MAX_PROGRAM_SIZE)
+        {
+            sf::Uint8 byte;
+            std::vector<sf::Uint8> program;
+            while (packet >> byte)
+            {
+                program.push_back(byte);
+            }
+
+            if (program.size() != size)
+            {
+                //failed transmission, send request for program again
+            }
+            else
+            {
+                //find player, set program if they exist
+                auto player = std::find_if(m_players.begin(), m_players.end(),
+                    [clid](const Player& p) 
+                {
+                    return p.id == clid;
+                });
+                if (player != m_players.end())
+                {
+                    player->entity->getComponent<PlayerLogic>()->setProgram(program);
+                    player->entity->getComponent<PlayerLogic>()->start();
+                    LOG("SERVER: set program for player " + std::to_string(clid), xy::Logger::Type::Info);
+
+                    sf::Packet response; //TODO operator overload
+                    //response << xy::Network::PacketType(TransportStateChanged) << clid << TransportStatus::Playing;
+                    //m_connection.send(response, true);
+                }
+            }
+        }
+    }
+        break;
 
         //delete player on disconnect
     }

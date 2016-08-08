@@ -61,9 +61,6 @@ private:
     float m_cornerRadius;
     sf::Vector2f m_minimumSize;
 
-    bool m_transformDirty;
-    sf::FloatRect m_globalBounds;
-
     void clampSize();
 };
 

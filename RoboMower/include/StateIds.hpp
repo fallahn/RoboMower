@@ -43,7 +43,6 @@ namespace States
         MenuOptions,
         MenuPaused,
         Score,
-        Stats,
         Title
     };
 }

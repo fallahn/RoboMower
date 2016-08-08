@@ -35,6 +35,7 @@ source distribution.
 #include <SFML/System/Vector2.hpp>
 
 #include <InstructionSet.hpp>
+#include <TransportStatus.hpp>
 
 #include <xygine/State.hpp>
 #include <xygine/ShaderResource.hpp>
@@ -67,10 +68,17 @@ public:
     void handleEvent(const sf::Event&);
     void handleMessage(const xy::Message&);
 
+    std::vector<sf::Uint8> getProgram() const;
+
+    TransportStatus getTransportStatus() const { return m_transportStatus; }
+    void setTransportStatus(TransportStatus ts) { m_transportStatus = ts; }
+
 private:
     xy::ShaderResource m_shaderResource;
     xy::FontResource& m_fontResource;
     xy::TextureResource& m_textureResource;
+
+    TransportStatus m_transportStatus;
 
     xy::State::Context m_stateContext;
     xy::Scene& m_scene;

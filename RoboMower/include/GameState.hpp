@@ -81,8 +81,6 @@ private:
     GameUI m_gameUI;
     xy::Network::ClientConnection m_connection;
 
-    xy::UI::Window m_reportWindow;
-
     std::map<xy::ClientID, xy::Entity*> m_playerEntities;
 
     xy::Network::ClientConnection::PacketHandler m_packetHandler;

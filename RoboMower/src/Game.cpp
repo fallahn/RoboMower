@@ -36,14 +36,9 @@ source distribution.
 #include <MenuMainState.hpp>
 #include <MenuOptionState.hpp>
 #include <MenuPauseState.hpp>
-#include <StatsOverlayState.hpp>
 
 #include <SFML/Window/Event.hpp>
 
-namespace
-{
-    sf::Color clearColour(40u, 40u, 40u);
-}
 
 Game::Game()
     : m_stateStack  ({ getRenderWindow(), *this })
@@ -66,11 +61,6 @@ void Game::handleEvent(const sf::Event& evt)
     {
         switch (evt.key.code)
         {
-#ifdef _DEBUG_
-        case sf::Keyboard::PageUp:
-            m_stateStack.pushState(States::ID::Stats);
-            break;
-#endif //_DEBUG_
         default: break;
         }
     }    
@@ -142,5 +132,4 @@ void Game::registerStates()
     m_stateStack.registerState<MenuOptionState>(States::ID::MenuOptions);
     m_stateStack.registerState<MenuPauseState>(States::ID::MenuPaused);
     m_stateStack.registerState<GameState>(States::ID::Game);
-    m_stateStack.registerState<StatsOverlayState>(States::ID::Stats);
 }

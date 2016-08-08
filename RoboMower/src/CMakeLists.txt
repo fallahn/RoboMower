@@ -20,5 +20,4 @@ set(PROJECT_SRC
   ${PROJECT_DIR}/RoundedRectangle.cpp
   ${PROJECT_DIR}/ScrollHandleLogic.cpp
   ${PROJECT_DIR}/StackLogicComponent.cpp
-  ${PROJECT_DIR}/StatsOverlayState.cpp
   ${PROJECT_DIR}/Tilemap.cpp)

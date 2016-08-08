@@ -36,9 +36,6 @@
     <ClCompile Include="src\Game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\StatsOverlayState.cpp">
-      <Filter>Source Files\states</Filter>
-    </ClCompile>
     <ClCompile Include="src\MenuBackgroundState.cpp">
       <Filter>Source Files\states</Filter>
     </ClCompile>
@@ -103,9 +100,6 @@
   <ItemGroup>
     <ClInclude Include="include\Game.hpp">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\StatsOverlayState.hpp">
-      <Filter>Header Files\states</Filter>
     </ClInclude>
     <ClInclude Include="include\GameState.hpp">
       <Filter>Header Files\states</Filter>
@@ -189,6 +183,9 @@
       <Filter>Header Files\components</Filter>
     </ClInclude>
     <ClInclude Include="include\UIControlIDs.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\TransportStatus.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -43,12 +43,37 @@ InstructionBlockLogic::InstructionBlockLogic(xy::MessageBus& mb, Instruction ins
     : Component         (mb, this),
     m_state             (State::Carried),
     m_instruction       (inst),
+    m_value             (0),
     m_targetIndex       (-1),
     m_destroyWhenDone   (true),
     m_stackIndex        (-1),
-    m_previousStackindex(-1)
+    m_previousStackindex(-1),
+    m_entity            (nullptr)
 {
+    xy::Component::MessageHandler mh;
+    mh.id = InputBoxMessage;
+    mh.action = [this](xy::Component* c, const xy::Message& msg)
+    {
+        const auto& msgData = msg.getData<InputBoxEvent>();
+        if (msgData.action == InputBoxEvent::WindowClosed)
+        {
+            //see if our child was targetted and store a copy of the value
+            auto targetEnt = msgData.entityId;
+            const auto& children = m_entity->getChildren();
+            const auto& child = std::find_if(children.begin(), children.end(), 
+                [targetEnt](const xy::Entity::Ptr& e)
+            {
+                return e->getUID() == targetEnt;
+            });
 
+            if (child != children.end())
+            {
+                m_value = sf::Uint8(msgData.value);
+                LOG("Set instruction block value to " + std::to_string(m_value), xy::Logger::Type::Info);
+            }
+        }
+    };
+    addMessageHandler(mh);
 }
 
 //public
@@ -89,6 +114,12 @@ void InstructionBlockLogic::entityUpdate(xy::Entity& entity, float dt)
         }
         break;
     }
+}
+
+void InstructionBlockLogic::onDelayedStart(xy::Entity& entity)
+{
+    m_entity = &entity;
+    XY_ASSERT(m_entity, "failed to get parent entity");
 }
 
 void InstructionBlockLogic::setCarried(bool c)

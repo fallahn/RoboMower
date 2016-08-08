@@ -29,6 +29,7 @@ source distribution.
 
 #include <GameState.hpp>
 #include <NetProtocol.hpp>
+#include <Messages.hpp>
 #include <components/Tilemap.hpp>
 #include <components/PlayerDrawable.hpp>
 #include <components/NetworkController.hpp>
@@ -60,8 +61,6 @@ namespace
 
     const float joyDeadZone = 25.f;
     const float joyMaxAxis = 100.f;
-
-    xy::UI::Label::Ptr reportText;
 }
 
 using namespace std::placeholders;
@@ -70,8 +69,7 @@ GameState::GameState(xy::StateStack& stateStack, Context context)
     : State         (stateStack, context),
     m_messageBus    (context.appInstance.getMessageBus()),
     m_scene         (m_messageBus),
-    m_gameUI        (context, m_textureResource, m_fontResource, m_scene),
-    m_reportWindow  (context.renderWindow, m_messageBus, m_fontResource.get(""), 500, 400)
+    m_gameUI        (context, m_textureResource, m_fontResource, m_scene)
 {
     launchLoadingScreen();
 
@@ -82,17 +80,12 @@ GameState::GameState(xy::StateStack& stateStack, Context context)
     m_connection.connect();
 
     m_scene.setView(context.defaultView);
-    //m_scene.drawDebug(true);
     auto pp = xy::PostProcess::create<xy::PostChromeAb>();
     m_scene.addPostProcess(pp);
 
-    reportText = std::make_shared<xy::UI::Label>(m_fontResource.get("assets/fonts/Console.ttf"));
-    reportText->move(10.f, 0.f);
-    m_reportWindow.addControl(reportText);
-    m_reportWindow.setPosition(800.f, 330.f);
-
     buildMap();
 
+    context.appInstance.setMouseCursorVisible(false);
     quitLoadingScreen();
 }
 
@@ -105,9 +98,6 @@ bool GameState::update(float dt)
     m_scene.update(dt);
     m_connection.update(dt);
 
-    reportText->setString(xy::Stats::getString());
-    m_reportWindow.update(dt);
-
     return true;
 }
 
@@ -116,7 +106,6 @@ void GameState::draw()
     auto& rw = getContext().renderWindow;
     rw.draw(m_scene);
     rw.setView(getContext().defaultView);
-    rw.draw(m_reportWindow);
 }
 
 bool GameState::handleEvent(const sf::Event& evt)
@@ -127,19 +116,19 @@ bool GameState::handleEvent(const sf::Event& evt)
         switch (evt.key.code)
         {
         case upKey:
-            
+
             break;
         case downKey:
-            
+
             break;
         case leftKey:
-            
+
             break;
         case rightKey:
-            
+
             break;
         case fireKey:
-            
+
             break;
         default: break;
         }
@@ -152,19 +141,19 @@ bool GameState::handleEvent(const sf::Event& evt)
             requestStackPush(States::ID::MenuPaused);
             break;
         case upKey:
-            
+
             break;
         case downKey:
-            
+
             break;
         case leftKey:
-            
+
             break;
         case rightKey:
-            
+
             break;
         case fireKey:
-            
+
             break;
         default: break;
         }
@@ -173,7 +162,7 @@ bool GameState::handleEvent(const sf::Event& evt)
         switch (evt.joystickButton.button)
         {
         case 0:
-            
+
             break;
         }
         break;
@@ -182,7 +171,7 @@ bool GameState::handleEvent(const sf::Event& evt)
         switch (evt.joystickButton.button)
         {
         case 0:
-            
+
             break;
         case 7:
 
@@ -193,14 +182,54 @@ bool GameState::handleEvent(const sf::Event& evt)
     }
 
     m_gameUI.handleEvent(evt);
-    m_reportWindow.handleEvent(evt, xy::App::getMouseWorldPosition());
     return true;
 }
 
 void GameState::handleMessage(const xy::Message& msg)
-{ 
+{
     m_gameUI.handleMessage(msg);
     m_scene.handleMessage(msg);
+    switch (msg.id)
+    {
+    case MessageId::TransportMessage:
+    {
+        const auto& msgData = msg.getData<TransportEvent>();
+        switch (msgData.button)
+        {
+        case TransportEvent::Pause:
+
+            break;
+        case TransportEvent::Play:
+            if (m_gameUI.getTransportStatus() == TransportStatus::Stopped)
+            {
+                //get the program and send if valid
+                auto program = m_gameUI.getProgram();
+                if (!program.empty())
+                {
+                    sf::Packet packet;
+                    packet << xy::PacketID(PacketIdent::TransmitProgram);
+                    packet << m_connection.getClientID();
+                    packet << sf::Uint32(program.size());
+                    for (auto data : program)
+                    {
+                        LOG(std::to_string(data), xy::Logger::Type::Info);
+                        packet << data;
+                    }
+                    m_connection.send(packet, true);
+                }
+            }
+            else if(m_gameUI.getTransportStatus() == TransportStatus::Paused)
+            {
+                //send a play request
+            }
+                break;
+        case TransportEvent::Rewind:
+
+            break;
+        }
+    }
+    break;
+    }
 }
 
 //private
@@ -298,6 +327,18 @@ void GameState::handlePacket(xy::Network::PacketType type, sf::Packet& packet, x
         case Direction::Right:
             m_playerEntities[id]->getComponent<xy::ParticleSystem>("particle_right")->start();
             break;
+        }
+    }
+        break;
+    case PacketIdent::TransportStateChanged:
+    {
+        xy::ClientID clid;
+        packet >> clid;
+        if (m_connection.getClientID() == clid)
+        {
+            TransportStatus ts;
+            //packet >> ts; //TODO operator overload
+            //m_gameUI.setTransportStatus(ts);
         }
     }
         break;

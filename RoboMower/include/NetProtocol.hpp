@@ -39,7 +39,11 @@ enum PacketIdent
     //count, client id, position
     PositionUpdate,
     //clientId, direction
-    DirectionUpdate
+    DirectionUpdate,
+    //clientID, size, bytestream
+    TransmitProgram,
+    //clientID, transport state
+    TransportStateChanged
 };
 
 enum class Direction : sf::Uint8
