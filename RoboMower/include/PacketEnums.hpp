@@ -48,10 +48,11 @@ enum class TransportChange : sf::Uint8
 
 enum class Direction : sf::Uint8
 {
-    Left,
-    Right,
+    Left = 0,
     Up,
-    Down
+    Right,
+    Down,
+    Count
 };
 
 sf::Packet& operator << (sf::Packet& p, TransportStatus ts);

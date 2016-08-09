@@ -35,6 +35,8 @@ source distribution.
 #include <xygine/components/Component.hpp>
 #include <xygine/network/Config.hpp>
 
+#include <SFML/System/Clock.hpp>
+
 class PlayerLogic final : public xy::Component
 {
 public:
@@ -53,11 +55,20 @@ public:
 
 private:
 
-    std::size_t m_targetIdx;
+    //std::size_t m_targetIdx;
     xy::ClientID m_clientID;
+    Direction m_currentDirection;
+    sf::Vector2f m_target;
+    sf::Clock m_rotationTimer;
 
     TransportStatus m_transportStatus;
     std::vector<sf::Uint8> m_program;
+    std::size_t m_programCounter;
+
+    sf::Uint8 m_currentParameter;
+    std::function<bool(xy::Entity&, float)> m_currentAction;
+
+    void stop();
 };
 
 #endif //RM_PLAYER_LOGIC_HPP_

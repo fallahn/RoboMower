@@ -69,7 +69,7 @@ InstructionBlockLogic::InstructionBlockLogic(xy::MessageBus& mb, Instruction ins
             if (child != children.end())
             {
                 m_value = sf::Uint8(msgData.value);
-                LOG("Set instruction block value to " + std::to_string(m_value), xy::Logger::Type::Info);
+                //LOG("Set instruction block value to " + std::to_string(m_value), xy::Logger::Type::Info);
             }
         }
     };

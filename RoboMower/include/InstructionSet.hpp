@@ -40,8 +40,7 @@ enum Instruction
     Forward,
     Right,
     Left,
-    Loop,
-    Value
+    Loop
 };
 
 #endif //INSTRUCTION_SET_HPP_
