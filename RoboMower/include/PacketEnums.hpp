@@ -27,14 +27,40 @@ source distribution.
 
 -----------------------------------------------------------------------*/
 
-#ifndef RM_TRANSPORT_STATUS_HPP_
-#define RM_TRANSPORT_STATUS_HPP_
+#ifndef RM_PACKET_ENUMS_HPP_
+#define RM_PACKET_ENUMS_HPP_
 
-enum class TransportStatus
+#include <SFML/Network/Packet.hpp>
+
+enum class TransportStatus : sf::Uint8
 {
     Stopped,
     Playing,
     Paused
 };
 
-#endif //RM_TRANSPORT_STATUS_HPP_
+enum class TransportChange : sf::Uint8
+{
+    Play,
+    Pause,
+    Rewind
+};
+
+enum class Direction : sf::Uint8
+{
+    Left,
+    Right,
+    Up,
+    Down
+};
+
+sf::Packet& operator << (sf::Packet& p, TransportStatus ts);
+sf::Packet& operator >> (sf::Packet& p, TransportStatus& ts);
+
+sf::Packet& operator << (sf::Packet& p, TransportChange tc);
+sf::Packet& operator >> (sf::Packet& p, TransportChange& ts);
+
+sf::Packet& operator << (sf::Packet&, Direction);
+sf::Packet& operator >> (sf::Packet&, Direction&);
+
+#endif //RM_PACKET_ENUMS_HPP_

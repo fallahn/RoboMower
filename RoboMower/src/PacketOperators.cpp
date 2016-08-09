@@ -27,28 +27,57 @@ source distribution.
 
 -----------------------------------------------------------------------*/
 
-#ifndef RM_NET_PROTOCOL_HPP_
-#define RM_NET_PROTOCOL_HPP_
+#include <PacketEnums.hpp>
+#include <NetProtocol.hpp>
 
-#include <xygine/network/Config.hpp>
-
-enum PacketIdent
+sf::Packet& operator << (sf::Packet& p, TransportStatus ts)
 {
-    //client id, name
-    PlayerDetails = xy::PacketID(xy::Network::PacketType::Count),
-    //count, client id, position
-    PositionUpdate,
-    //clientId, direction
-    DirectionUpdate,
-    //clientID, size, bytestream
-    TransmitProgram,
-    //transport state
-    TransportStateChanged,
-    //clientID, transport state
-    TransportRequestChange
-};
+    return p << static_cast<sf::Uint8>(ts);
+}
 
-sf::Packet& operator << (sf::Packet&, PacketIdent);
-sf::Packet& operator >> (sf::Packet&, PacketIdent&);
+sf::Packet& operator >> (sf::Packet& p, TransportStatus& ts)
+{
+    sf::Uint8 its;
+    p >> its;
+    ts = static_cast<TransportStatus>(its);
+    return p;
+}
 
-#endif //RM_NET_PROTOCOL_HPP_
+sf::Packet& operator << (sf::Packet& p, TransportChange tc)
+{
+    return p << sf::Uint8(tc);
+}
+
+sf::Packet& operator >> (sf::Packet& p, TransportChange& tc)
+{
+    sf::Uint8 a;
+    p >> a;
+    tc = static_cast<TransportChange>(a);
+    return p;
+}
+
+sf::Packet& operator << (sf::Packet& p, Direction d)
+{
+    return p << sf::Uint8(d);
+}
+
+sf::Packet& operator >> (sf::Packet& p, Direction& d)
+{
+    sf::Uint8 pid;
+    p >> pid;
+    d = static_cast<Direction>(pid);
+    return p;
+}
+
+sf::Packet& operator << (sf::Packet& p, PacketIdent id)
+{
+    return p << xy::PacketID(id);
+}
+
+sf::Packet& operator >> (sf::Packet& p, PacketIdent& id)
+{
+    xy::PacketID a;
+    p >> a;
+    id = static_cast<PacketIdent>(a);
+    return p;
+}

@@ -303,6 +303,7 @@ GameUI::GameUI(xy::State::Context sc, xy::TextureResource& tr, xy::FontResource&
     entity->addComponent(rewindButton);
 
     scene.addEntity(entity, xy::Scene::Layer::FrontFront);
+    REPORT("Transport Status", "Stopped");
 }
 
 //public

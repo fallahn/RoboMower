@@ -30,8 +30,9 @@ source distribution.
 #ifndef RM_PLAYER_DRAWABLE_HPP_
 #define RM_PLAYER_DRAWABLE_HPP_
 
+#include <PacketEnums.hpp>
+
 #include <xygine/components/Component.hpp>
-#include <NetProtocol.hpp>
 
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/Transformable.hpp>

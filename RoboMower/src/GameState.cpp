@@ -197,7 +197,12 @@ void GameState::handleMessage(const xy::Message& msg)
         switch (msgData.button)
         {
         case TransportEvent::Pause:
-
+            if (m_gameUI.getTransportStatus() == TransportStatus::Playing)
+            {
+                sf::Packet packet;
+                packet << PacketIdent::TransportRequestChange << m_connection.getClientID() << TransportChange::Pause;
+                m_connection.send(packet, true);
+            }
             break;
         case TransportEvent::Play:
             if (m_gameUI.getTransportStatus() == TransportStatus::Stopped)
@@ -207,12 +212,12 @@ void GameState::handleMessage(const xy::Message& msg)
                 if (!program.empty())
                 {
                     sf::Packet packet;
-                    packet << xy::PacketID(PacketIdent::TransmitProgram);
+                    packet << PacketIdent::TransmitProgram;
                     packet << m_connection.getClientID();
                     packet << sf::Uint32(program.size());
                     for (auto data : program)
                     {
-                        LOG(std::to_string(data), xy::Logger::Type::Info);
+                        //LOG(std::to_string(data), xy::Logger::Type::Info);
                         packet << data;
                     }
                     m_connection.send(packet, true);
@@ -221,10 +226,18 @@ void GameState::handleMessage(const xy::Message& msg)
             else if(m_gameUI.getTransportStatus() == TransportStatus::Paused)
             {
                 //send a play request
+                sf::Packet packet;
+                packet << PacketIdent::TransportRequestChange << m_connection.getClientID() << TransportChange::Play;
+                m_connection.send(packet, true);
             }
                 break;
         case TransportEvent::Rewind:
-
+            if (m_gameUI.getTransportStatus() == TransportStatus::Paused)
+            {
+                sf::Packet packet;
+                packet << PacketIdent::TransportRequestChange << m_connection.getClientID() << TransportChange::Rewind;
+                m_connection.send(packet, true);
+            }
             break;
         }
     }
@@ -280,7 +293,7 @@ void GameState::handlePacket(xy::Network::PacketType type, sf::Packet& packet, x
     case xy::Network::Connect:
     {
         sf::Packet newPacket;
-        newPacket << xy::PacketID(PacketIdent::PlayerDetails);
+        newPacket << PacketIdent::PlayerDetails;
         newPacket << m_connection.getClientID();
         newPacket << "Player One";
         connection->send(newPacket, true);
@@ -303,11 +316,10 @@ void GameState::handlePacket(xy::Network::PacketType type, sf::Packet& packet, x
     case PacketIdent::DirectionUpdate:
     {
         xy::ClientID id;
-        sf::Uint8 dir;
-        packet >> id >> dir;
+        Direction direction;
+        packet >> id >> direction;
 
         XY_ASSERT(m_playerEntities.find(id) != m_playerEntities.end(), "Player ID does not exist");
-        Direction direction = static_cast<Direction>(dir);
         m_playerEntities[id]->getComponent<PlayerDrawable>()->setDirection(direction);
 
         auto particles = m_playerEntities[id]->getComponents<xy::ParticleSystem>();
@@ -332,14 +344,9 @@ void GameState::handlePacket(xy::Network::PacketType type, sf::Packet& packet, x
         break;
     case PacketIdent::TransportStateChanged:
     {
-        xy::ClientID clid;
-        packet >> clid;
-        if (m_connection.getClientID() == clid)
-        {
-            TransportStatus ts;
-            //packet >> ts; //TODO operator overload
-            //m_gameUI.setTransportStatus(ts);
-        }
+        TransportStatus ts;
+        packet >> ts;
+        m_gameUI.setTransportStatus(ts);
     }
         break;
     default: break;

@@ -30,7 +30,7 @@ source distribution.
 #include <GameServer.hpp>
 #include <NetProtocol.hpp>
 #include <Messages.hpp>
-#include <TransportStatus.hpp>
+#include <PacketEnums.hpp>
 
 #include <xygine/Entity.hpp>
 #include <components/PlayerLogic.hpp>
@@ -92,8 +92,8 @@ void GameServer::handleMessage(const xy::Message& msg)
     {
         auto& msgData = msg.getData<DirectionEvent>();
         sf::Packet packet;
-        packet << xy::PacketID(DirectionUpdate);
-        packet << msgData.id << sf::Uint8(msgData.direction);
+        packet << DirectionUpdate;
+        packet << msgData.id << msgData.direction;
         m_connection.broadcast(packet);
     }
         break;
@@ -132,7 +132,7 @@ void GameServer::removePlayer(xy::ClientID id)
 void GameServer::sendSnapshot()
 {
     sf::Packet packet;
-    packet << xy::PacketID(PacketIdent::PositionUpdate);
+    packet << PacketIdent::PositionUpdate;
     packet << sf::Uint8(m_players.size());
     for (const auto& p : m_players)
     {
@@ -194,15 +194,53 @@ void GameServer::handlePacket(const sf::IpAddress& ip, xy::PortNumber port, xy::
                     player->entity->getComponent<PlayerLogic>()->start();
                     LOG("SERVER: set program for player " + std::to_string(clid), xy::Logger::Type::Info);
 
-                    sf::Packet response; //TODO operator overload
-                    //response << xy::Network::PacketType(TransportStateChanged) << clid << TransportStatus::Playing;
-                    //m_connection.send(response, true);
+                    sf::Packet response;
+                    response << TransportStateChanged << TransportStatus::Playing;
+                    m_connection.send(clid, response, true);
                 }
             }
         }
     }
         break;
+    case PacketIdent::TransportRequestChange:
+    {
+        xy::ClientID clid;
+        packet >> clid;
+        auto player = std::find_if(m_players.begin(), m_players.end(),
+            [clid](const Player& p)
+        {
+            return p.id == clid;
+        });
+        if (player != m_players.end())
+        {
+            TransportChange tc;
+            packet >> tc;
+            
+            TransportStatus ts;
 
+            switch (tc)
+            {
+            default: ts = TransportStatus::Stopped; break;
+            case TransportChange::Pause:
+                ts = TransportStatus::Paused;
+                player->entity->getComponent<PlayerLogic>()->pause();
+                break;
+            case TransportChange::Play:
+                ts = TransportStatus::Playing;
+                player->entity->getComponent<PlayerLogic>()->start();
+                break;
+            case TransportChange::Rewind:
+                ts = TransportStatus::Stopped;
+                player->entity->getComponent<PlayerLogic>()->rewind();
+                break;
+            }
+
+            sf::Packet response;
+            response << TransportStateChanged << ts;
+            m_connection.send(clid, response, true);
+        }
+    }
+        break;
         //delete player on disconnect
     }
 }

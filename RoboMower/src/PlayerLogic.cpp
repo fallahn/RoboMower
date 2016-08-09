@@ -51,9 +51,10 @@ namespace
 }
 
 PlayerLogic::PlayerLogic(xy::MessageBus& mb)
-    : xy::Component (mb, this),
-    m_targetIdx     (0u),
-    m_clientID      (-1)
+    : xy::Component     (mb, this),
+    m_targetIdx         (0u),
+    m_clientID          (-1),
+    m_transportStatus   (TransportStatus::Stopped)
 {
 
 }
@@ -61,52 +62,55 @@ PlayerLogic::PlayerLogic(xy::MessageBus& mb)
 //public
 void PlayerLogic::entityUpdate(xy::Entity& entity, float dt)
 {
-    auto path = targets[m_targetIdx] - entity.getPosition();
-    if (xy::Util::Vector::lengthSquared(path) > 2)
+    if (m_transportStatus == TransportStatus::Playing)
     {
-        entity.move(xy::Util::Vector::normalise(path) * movespeed * dt);
-    }
-    else
-    {        
-        //find new direction and update our entity
-        const auto& oldTarget = targets[m_targetIdx];        
-        m_targetIdx = (m_targetIdx + 1) % targets.size();
-        
-        auto msg = sendMessage<DirectionEvent>(DirectionMessage);
-        msg->id = m_clientID;
-
-        auto direction = targets[m_targetIdx] - oldTarget;
-        bool directionFound = false;
-        if (direction.x > 0)
+        auto path = targets[m_targetIdx] - entity.getPosition();
+        if (xy::Util::Vector::lengthSquared(path) > 2)
         {
-            if (std::abs(direction.y) < direction.x)
-            {
-                //direction is right
-                msg->direction = Direction::Right;
-                directionFound = true;
-            }
+            entity.move(xy::Util::Vector::normalise(path) * movespeed * dt);
         }
-        else if (direction.x < 0)
+        else
         {
-            if (-std::abs(direction.y) > direction.x)
-            {
-                //direction is left
-                msg->direction = Direction::Left;
-                directionFound = true;
-            }
-        }
+            //find new direction and update our entity
+            const auto& oldTarget = targets[m_targetIdx];
+            m_targetIdx = (m_targetIdx + 1) % targets.size();
 
-        if (!directionFound)
-        {
-            if (direction.y > 0)
+            auto msg = sendMessage<DirectionEvent>(DirectionMessage);
+            msg->id = m_clientID;
+
+            auto direction = targets[m_targetIdx] - oldTarget;
+            bool directionFound = false;
+            if (direction.x > 0)
             {
-                //direction is down
-                msg->direction = Direction::Down;
+                if (std::abs(direction.y) < direction.x)
+                {
+                    //direction is right
+                    msg->direction = Direction::Right;
+                    directionFound = true;
+                }
             }
-            else
+            else if (direction.x < 0)
             {
-                //direction is up
-                msg->direction = Direction::Up;
+                if (-std::abs(direction.y) > direction.x)
+                {
+                    //direction is left
+                    msg->direction = Direction::Left;
+                    directionFound = true;
+                }
+            }
+
+            if (!directionFound)
+            {
+                if (direction.y > 0)
+                {
+                    //direction is down
+                    msg->direction = Direction::Down;
+                }
+                else
+                {
+                    //direction is up
+                    msg->direction = Direction::Up;
+                }
             }
         }
     }
@@ -119,18 +123,19 @@ void PlayerLogic::setClientID(xy::ClientID id)
 
 void PlayerLogic::start()
 {
-    //for (auto d : m_program)
-    //{
-    //    LOG(std::to_string(d), xy::Logger::Type::Info);
-    //}
+    m_transportStatus = TransportStatus::Playing;
 }
 
 void PlayerLogic::pause()
 {
-
+    m_transportStatus = TransportStatus::Paused;
 }
 
 void PlayerLogic::rewind()
 {
-
+    if (m_transportStatus != TransportStatus::Playing)
+    {
+        m_transportStatus = TransportStatus::Stopped;
+        //TODO reset current instruction
+    }
 }

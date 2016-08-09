@@ -36,6 +36,7 @@ source distribution.
 
 #include <InstructionSet.hpp>
 #include <NetProtocol.hpp>
+#include <PacketEnums.hpp>
 
 class InstructionBlockLogic;
 

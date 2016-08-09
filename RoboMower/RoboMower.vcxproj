@@ -103,6 +103,7 @@ xcopy /y /d "$(SolutionDir)extlib\lib\xygine\xygine.dll" "$(SolutionDir)Release\
     <ClCompile Include="src\MenuOptionState.cpp" />
     <ClCompile Include="src\MenuPauseState.cpp" />
     <ClCompile Include="src\NetworkController.cpp" />
+    <ClCompile Include="src\PacketOperators.cpp" />
     <ClCompile Include="src\PlayerDrawable.cpp" />
     <ClCompile Include="src\PlayerLogic.cpp" />
     <ClCompile Include="src\RoundedRectangle.cpp" />
@@ -139,7 +140,7 @@ xcopy /y /d "$(SolutionDir)extlib\lib\xygine\xygine.dll" "$(SolutionDir)Release\
     <ClInclude Include="include\shaders\ShaderIds.hpp" />
     <ClInclude Include="include\shaders\CropShader.hpp" />
     <ClInclude Include="include\StateIds.hpp" />
-    <ClInclude Include="include\TransportStatus.hpp" />
+    <ClInclude Include="include\PacketEnums.hpp" />
     <ClInclude Include="include\UIControlIDs.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

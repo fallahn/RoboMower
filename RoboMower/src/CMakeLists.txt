@@ -15,6 +15,7 @@ set(PROJECT_SRC
   ${PROJECT_DIR}/MenuOptionState.cpp
   ${PROJECT_DIR}/MenuPauseState.cpp
   ${PROJECT_DIR}/NetworkController.cpp
+  ${PROJECT_DIR}/PacketOperators.cpp
   ${PROJECT_DIR}/PlayerDrawable.cpp
   ${PROJECT_DIR}/PlayerLogic.cpp
   ${PROJECT_DIR}/RoundedRectangle.cpp

@@ -30,6 +30,8 @@ source distribution.
 #ifndef RM_PLAYER_LOGIC_HPP_
 #define RM_PLAYER_LOGIC_HPP_
 
+#include <PacketEnums.hpp>
+
 #include <xygine/components/Component.hpp>
 #include <xygine/network/Config.hpp>
 
@@ -54,6 +56,7 @@ private:
     std::size_t m_targetIdx;
     xy::ClientID m_clientID;
 
+    TransportStatus m_transportStatus;
     std::vector<sf::Uint8> m_program;
 };
 

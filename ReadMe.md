@@ -3,7 +3,7 @@ RoboMower!
 
 Programmable lawn mowing fun!
 
-Using a simple Locoscript style programming language, program your lawn
+Using a simple LOGO style programming language, program your lawn
 mower to cut the grass in the most effecient was possible.
 
 Built using [xygine](https://github.com/fallahn/xygine)!

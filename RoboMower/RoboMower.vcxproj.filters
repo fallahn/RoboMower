@@ -96,6 +96,9 @@
     <ClCompile Include="src\NetworkController.cpp">
       <Filter>Source Files\components</Filter>
     </ClCompile>
+    <ClCompile Include="src\PacketOperators.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Game.hpp">
@@ -185,7 +188,7 @@
     <ClInclude Include="include\UIControlIDs.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\TransportStatus.hpp">
+    <ClInclude Include="include\PacketEnums.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
