@@ -562,6 +562,53 @@ std::vector<sf::Uint8> GameUI::getProgram() const
     return std::move(retVal);
 }
 
+void GameUI::setTransportStatus(TransportStatus ts)
+{
+    m_transportStatus = ts;
+
+    static std::string target;
+    switch (ts)
+    {
+    default: break;
+    case TransportStatus::Playing:
+        target = "play_button";
+        REPORT("Transport Status", "Playing");
+        break;
+    case TransportStatus::Paused:
+        target = "pause_button";
+        REPORT("Transport Status", "Paused");
+        break;
+    case TransportStatus::Stopped:
+        target = "";
+        REPORT("Transport Status", "Rewind");
+        break;
+    }
+    
+
+    //highlight corresponding transport button
+    xy::Command cmd;
+    cmd.action = [](xy::Entity& entity, float)
+    {
+        auto buttons = entity.getComponents<xy::SfDrawableComponent<sf::CircleShape>>();
+        for(auto button : buttons)
+        {
+            auto subRect = button->getDrawable().getTextureRect();
+            if (button->getName() == target)
+            {
+                subRect.left = 80;
+            }
+            else
+            {
+                subRect.left = 0;
+            }
+            button->getDrawable().setTextureRect(subRect);
+        }
+    };
+
+    cmd.category = CommandCategory::TransportControl;
+    m_scene.sendCommand(cmd);
+}
+
 //private
 void GameUI::addInstructionBlock(const sf::Vector2f& position, const sf::Vector2f& offset, Instruction instruction)
 {

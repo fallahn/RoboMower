@@ -39,7 +39,6 @@ source distribution.
 
 #include <xygine/State.hpp>
 #include <xygine/ShaderResource.hpp>
-#include <xygine/Reports.hpp>
 
 namespace sf
 {
@@ -72,27 +71,8 @@ public:
     std::vector<sf::Uint8> getProgram() const;
 
     TransportStatus getTransportStatus() const { return m_transportStatus; }
-    void setTransportStatus(TransportStatus ts)
-    { 
-        m_transportStatus = ts;
-#ifdef _DEBUG_
-        std::string str;
-        switch (ts)
-        {
-        default: break;
-        case TransportStatus::Playing:
-            str = "Playing";
-            break;
-        case TransportStatus::Paused:
-            str = "Paused";
-            break;
-        case TransportStatus::Stopped:
-            str = "Stopped";
-            break;
-        }
-        REPORT("Transport Status", str);
-#endif //_DEBUG_
-    }
+    void setTransportStatus(TransportStatus);
+
 
 private:
     xy::ShaderResource m_shaderResource;
