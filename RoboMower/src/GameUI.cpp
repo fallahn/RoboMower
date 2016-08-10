@@ -69,7 +69,7 @@ namespace
         { Instruction::Right, "Right" },
         { Instruction::Loop, "Loop" }
     };
-    const sf::Uint8 buttonCount = 5u;// 6u; //temp disable looping until we fix UI
+    const sf::Uint8 buttonCount = 6u;// 6u; //temp disable looping until we fix UI
 
     const float labelSpacing = 240.f;
     const float labelPadding = 445.f;

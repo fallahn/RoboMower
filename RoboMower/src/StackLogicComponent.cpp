@@ -302,7 +302,7 @@ void StackLogicComponent::instructionBlockHandler(xy::Component* c, const xy::Me
             auto i = msgData.component->getStackIndex();
             if (i >= 0)
             {
-                bool child = (m_slots[i].instruction != Instruction::EngineOff && m_slots[i].instruction != Instruction::EngineOn);
+                bool child = (m_slots[i].instruction == Instruction::Forward || m_slots[i].instruction == Instruction::Loop);
                 auto instruction = m_slots[i].instruction;
 
                 m_slots[i].occupierID = 0;
