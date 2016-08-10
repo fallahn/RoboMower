@@ -43,7 +43,7 @@ InstructionBlockLogic::InstructionBlockLogic(xy::MessageBus& mb, Instruction ins
     : Component         (mb, this),
     m_state             (State::Carried),
     m_instruction       (inst),
-    m_value             (0),
+    m_value             (1),
     m_targetIndex       (-1),
     m_destroyWhenDone   (true),
     m_stackIndex        (-1),

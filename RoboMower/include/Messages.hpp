@@ -95,8 +95,10 @@ struct PlayerEvent
 {
     enum
     {
-        FinishedCurrentCommand
+        FinishedCurrentCommand,
+        FinishedProgram
     }action;
+    xy::ClientID id = -1;
 };
 
 struct TransportEvent

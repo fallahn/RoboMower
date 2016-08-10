@@ -66,10 +66,11 @@ namespace
 using namespace std::placeholders;
 
 GameState::GameState(xy::StateStack& stateStack, Context context)
-    : State         (stateStack, context),
-    m_messageBus    (context.appInstance.getMessageBus()),
-    m_scene         (m_messageBus),
-    m_gameUI        (context, m_textureResource, m_fontResource, m_scene)
+    : State             (stateStack, context),
+    m_messageBus        (context.appInstance.getMessageBus()),
+    m_scene             (m_messageBus),
+    m_gameUI            (context, m_textureResource, m_fontResource, m_scene),
+    m_programFinished   (true)
 {
     launchLoadingScreen();
 
@@ -205,7 +206,7 @@ void GameState::handleMessage(const xy::Message& msg)
             }
             break;
         case TransportEvent::Play:
-            if (m_gameUI.getTransportStatus() == TransportStatus::Stopped)
+            if (m_gameUI.getTransportStatus() == TransportStatus::Stopped && m_programFinished)
             {
                 //get the program and send if valid
                 auto program = m_gameUI.getProgram();
@@ -232,7 +233,7 @@ void GameState::handleMessage(const xy::Message& msg)
             }
                 break;
         case TransportEvent::Rewind:
-            if (m_gameUI.getTransportStatus() == TransportStatus::Paused)
+            if (m_gameUI.getTransportStatus() != TransportStatus::Playing)
             {
                 sf::Packet packet;
                 packet << PacketIdent::TransportRequestChange << m_connection.getClientID() << TransportChange::Rewind;
@@ -347,6 +348,31 @@ void GameState::handlePacket(xy::Network::PacketType type, sf::Packet& packet, x
         TransportStatus ts;
         packet >> ts;
         m_gameUI.setTransportStatus(ts);
+
+        switch (ts)
+        {
+        default: break;
+        case TransportStatus::Playing:
+            m_programFinished = false;
+            break;
+        }
+    }
+        break;
+    case PacketIdent::ProgramStatus:
+    {
+        ProgramState ps;
+        packet >> ps;
+        switch (ps)
+        {
+        default: break;
+        case ProgramState::Finished:
+            m_gameUI.setTransportStatus(TransportStatus::Stopped);
+            LOG("Program Finished!", xy::Logger::Type::Info);
+            break;
+        case ProgramState::Rewound:
+            m_programFinished = true;
+            break;
+        }
     }
         break;
     default: break;

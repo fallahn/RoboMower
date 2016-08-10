@@ -55,6 +55,12 @@ enum class Direction : sf::Uint8
     Count
 };
 
+enum class ProgramState : sf::Uint8
+{
+    Finished = 0,
+    Rewound
+};
+
 sf::Packet& operator << (sf::Packet& p, TransportStatus ts);
 sf::Packet& operator >> (sf::Packet& p, TransportStatus& ts);
 
@@ -63,5 +69,8 @@ sf::Packet& operator >> (sf::Packet& p, TransportChange& ts);
 
 sf::Packet& operator << (sf::Packet&, Direction);
 sf::Packet& operator >> (sf::Packet&, Direction&);
+
+sf::Packet& operator << (sf::Packet&, ProgramState);
+sf::Packet& operator >> (sf::Packet&, ProgramState&);
 
 #endif //RM_PACKET_ENUMS_HPP_

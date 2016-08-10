@@ -4,7 +4,7 @@ RoboMower
 Programmable lawn mowing fun!
 
 Using a simple [LOGO](https://en.wikipedia.org/wiki/Logo_(programming_language)) style programming language, program your lawn
-mower to cut the grass in the most effecient was possible.
+mower to cut the grass in the most effecient way possible.
 
 Built using [xygine](https://github.com/fallahn/xygine)
 

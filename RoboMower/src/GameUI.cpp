@@ -366,7 +366,7 @@ void GameUI::handleEvent(const sf::Event& evt)
         
         break;
     case sf::Event::MouseButtonPressed:
-        if (evt.mouseButton.button == sf::Mouse::Left)
+        if (evt.mouseButton.button == sf::Mouse::Left && m_transportStatus == TransportStatus::Stopped)
         {
             auto mousePos = m_mouseCursor->getPosition();
 
@@ -637,7 +637,7 @@ void GameUI::addInstructionBlock(const sf::Vector2f& position, const sf::Vector2
     lc->setCursorOffset(offset);
     entity->addComponent<InstructionBlockLogic>(lc);
 
-    if (instruction != Instruction::EngineOff && instruction != Instruction::EngineOn)
+    if (instruction == Instruction::Forward || instruction == Instruction::Loop /*!= Instruction::EngineOff && instruction != Instruction::EngineOn*/)
     {
         auto subEnt = xy::Entity::create(m_messageBus);
         subEnt->setPosition({ labelSize.x + inputBoxSpacing, 0.f });

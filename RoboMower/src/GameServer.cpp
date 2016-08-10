@@ -97,6 +97,14 @@ void GameServer::handleMessage(const xy::Message& msg)
         m_connection.broadcast(packet);
     }
         break;
+    case PlayerMessage:
+    {
+        const auto& msgData = msg.getData<PlayerEvent>();
+        sf::Packet packet;
+        packet << ProgramStatus << msgData.action;
+        m_connection.send(msgData.id, packet, true);
+    }
+        break;
     default: break;
     }
 }
@@ -109,13 +117,12 @@ void GameServer::setup()
 
 void GameServer::addPlayer(Player& player)
 {
-    //create entity for scene
-    auto pl = xy::Component::create<PlayerLogic>(m_messageBus);
+    //create entity for scene - TODO load spawn position from map
+    auto pl = xy::Component::create<PlayerLogic>(m_messageBus, sf::Vector2f(224.f, 160.f));
     pl->setClientID(player.id);
 
     auto entity = xy::Entity::create(m_messageBus);
     entity->addComponent(pl);
-    entity->setPosition(224.f, 160.f); //TODO broadcast this to client from map properties
     player.entity = m_scene.addEntity(entity, xy::Scene::Layer::BackFront);
 
     m_players.push_back(player);
@@ -232,6 +239,13 @@ void GameServer::handlePacket(const sf::IpAddress& ip, xy::PortNumber port, xy::
             case TransportChange::Rewind:
                 ts = TransportStatus::Stopped;
                 player->entity->getComponent<PlayerLogic>()->rewind();
+
+                {
+                    sf::Packet programPacket;
+                    programPacket << ProgramStatus << ProgramState::Rewound;
+                    m_connection.send(clid, programPacket, true);
+                }
+
                 break;
             }
 

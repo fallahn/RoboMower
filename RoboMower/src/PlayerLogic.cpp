@@ -35,6 +35,7 @@ source distribution.
 #include <xygine/Entity.hpp>
 #include <xygine/components/ParticleSystem.hpp>
 #include <xygine/util/Vector.hpp>
+#include <xygine/Reports.hpp>
 
 #include <array>
 #include <map>
@@ -58,13 +59,16 @@ namespace
     std::map<Instruction, std::function<bool(xy::Entity&, float)>> instructions;
 }
 
-PlayerLogic::PlayerLogic(xy::MessageBus& mb)
+PlayerLogic::PlayerLogic(xy::MessageBus& mb, const sf::Vector2f& spawnPosition)
     : xy::Component     (mb, this),
-    //m_targetIdx         (0u),
+    m_entity            (nullptr),
+    m_spawnPosition     (spawnPosition),
     m_clientID          (-1),
     m_currentDirection  (Direction::Right),
     m_transportStatus   (TransportStatus::Stopped),
     m_programCounter    (0),
+    m_loopDestination   (0),
+    m_loopCounter       (0),
     m_currentParameter  (0)
 {
     instructions.insert(std::make_pair(Instruction::NOP, 
@@ -102,22 +106,29 @@ PlayerLogic::PlayerLogic(xy::MessageBus& mb)
         {
             m_rotationTimer.restart();
             m_currentDirection = static_cast<Direction>((static_cast<sf::Uint8>(m_currentDirection) + 1) % static_cast<sf::Uint8>(Direction::Count));
-            m_currentParameter--;
-            return (m_currentParameter == 0);
+            m_currentParameter--;           
         }
-        return false;
+        return (m_currentParameter == 0);
     }));
 
     instructions.insert(std::make_pair(Instruction::Left,
         [this](xy::Entity& entity, float dt)
     {
-        return true;
+        if (m_rotationTimer.getElapsedTime().asSeconds() > rotationTime)
+        {
+            m_rotationTimer.restart();
+            m_currentDirection = static_cast<Direction>((static_cast<sf::Uint8>(m_currentDirection) + static_cast<sf::Uint8>(Direction::Count) - 1) % static_cast<sf::Uint8>(Direction::Count));
+            m_currentParameter--;
+        }
+        return (m_currentParameter == 0);
     }));
 
     instructions.insert(std::make_pair(Instruction::Loop,
         [this](xy::Entity& entity, float dt)
     {
-        return true;
+        //m_programCounter = m_loopDestination;
+        //m_loopCounter--;
+        return (m_loopCounter == 0);
     }));
 
     m_currentAction = instructions[Instruction::NOP];
@@ -128,12 +139,23 @@ void PlayerLogic::entityUpdate(xy::Entity& entity, float dt)
 {
     if (m_transportStatus == TransportStatus::Playing)
     {       
+        REPORT("Current Parameter", std::to_string(m_currentParameter));
         Direction direction = m_currentDirection;
         if(m_currentAction(entity, dt))
         {
+            //quit if we finished
+            if (m_programCounter == m_program.size())
+            {
+                stop();
+                //LOG("Finished running program", xy::Logger::Type::Info);
+                return;
+            }            
+            
             //action completed get next instruction and its parameter
             Instruction instruction = static_cast<Instruction>(m_program[m_programCounter++]);
             m_currentParameter = m_program[m_programCounter++];
+            
+            REPORT("Current Instruction", std::to_string(sf::Uint8(instruction)));
             
             //set up inital action values
             switch (instruction)
@@ -167,14 +189,16 @@ void PlayerLogic::entityUpdate(xy::Entity& entity, float dt)
             case Instruction::Left:
                 m_rotationTimer.restart();
                 break;
+            case Instruction::Loop:
+                m_loopDestination = m_program[m_programCounter++];
+                if (m_loopCounter == 0) //this is wrong because we'll get stuck in this loop forever
+                {
+                    m_loopCounter = m_currentParameter;
+                }
+                break;
             }
             //update the current action
             m_currentAction = instructions[instruction];
-            if (m_programCounter == m_program.size())
-            {
-                stop();
-                LOG("Finished running program", xy::Logger::Type::Info);
-            }
         }
 
         //check if action changed our direction and message if so
@@ -185,6 +209,12 @@ void PlayerLogic::entityUpdate(xy::Entity& entity, float dt)
             msg->direction = m_currentDirection;
         }
     }
+}
+
+void PlayerLogic::onDelayedStart(xy::Entity& e)
+{
+    e.setPosition(m_spawnPosition);
+    m_entity = &e;
 }
 
 void PlayerLogic::setClientID(xy::ClientID id)
@@ -207,7 +237,12 @@ void PlayerLogic::rewind()
     if (m_transportStatus != TransportStatus::Playing)
     {
         stop();
-        //TODO reset current entity position
+        m_entity->setPosition(m_spawnPosition);
+        m_currentDirection = Direction::Right;
+
+        auto msg = sendMessage<DirectionEvent>(DirectionMessage);
+        msg->id = m_clientID;
+        msg->direction = m_currentDirection;
     }
 }
 
@@ -217,54 +252,8 @@ void PlayerLogic::stop()
     m_transportStatus = TransportStatus::Stopped;
     m_programCounter = 0;
     m_currentAction = instructions[Instruction::NOP];
+
+    auto msg = sendMessage<PlayerEvent>(PlayerMessage);
+    msg->action = PlayerEvent::FinishedProgram;
+    msg->id = m_clientID;
 }
-
-//auto path = targets[m_targetIdx] - entity.getPosition();
-//if (xy::Util::Vector::lengthSquared(path) > 2)
-//{
-//    entity.move(xy::Util::Vector::normalise(path) * movespeed * dt);
-//}
-//else
-//{
-//    //find new direction and update our entity
-//    const auto& oldTarget = targets[m_targetIdx];
-//    m_targetIdx = (m_targetIdx + 1) % targets.size();
-
-//    auto msg = sendMessage<DirectionEvent>(DirectionMessage);
-//    msg->id = m_clientID;
-
-//    auto direction = targets[m_targetIdx] - oldTarget;
-//    bool directionFound = false;
-//    if (direction.x > 0)
-//    {
-//        if (std::abs(direction.y) < direction.x)
-//        {
-//            //direction is right
-//            msg->direction = Direction::Right;
-//            directionFound = true;
-//        }
-//    }
-//    else if (direction.x < 0)
-//    {
-//        if (-std::abs(direction.y) > direction.x)
-//        {
-//            //direction is left
-//            msg->direction = Direction::Left;
-//            directionFound = true;
-//        }
-//    }
-
-//    if (!directionFound)
-//    {
-//        if (direction.y > 0)
-//        {
-//            //direction is down
-//            msg->direction = Direction::Down;
-//        }
-//        else
-//        {
-//            //direction is up
-//            msg->direction = Direction::Up;
-//        }
-//    }
-//}

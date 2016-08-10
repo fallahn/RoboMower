@@ -30,6 +30,7 @@ source distribution.
 #include <PacketEnums.hpp>
 #include <NetProtocol.hpp>
 
+//---------------------------------------------------------
 sf::Packet& operator << (sf::Packet& p, TransportStatus ts)
 {
     return p << static_cast<sf::Uint8>(ts);
@@ -42,7 +43,7 @@ sf::Packet& operator >> (sf::Packet& p, TransportStatus& ts)
     ts = static_cast<TransportStatus>(its);
     return p;
 }
-
+//---------------------------------------------------------
 sf::Packet& operator << (sf::Packet& p, TransportChange tc)
 {
     return p << sf::Uint8(tc);
@@ -55,7 +56,7 @@ sf::Packet& operator >> (sf::Packet& p, TransportChange& tc)
     tc = static_cast<TransportChange>(a);
     return p;
 }
-
+//---------------------------------------------------------
 sf::Packet& operator << (sf::Packet& p, Direction d)
 {
     return p << sf::Uint8(d);
@@ -68,7 +69,20 @@ sf::Packet& operator >> (sf::Packet& p, Direction& d)
     d = static_cast<Direction>(pid);
     return p;
 }
+//---------------------------------------------------------
+sf::Packet& operator << (sf::Packet& p, ProgramState d)
+{
+    return p << sf::Uint8(d);
+}
 
+sf::Packet& operator >> (sf::Packet& p, ProgramState& d)
+{
+    sf::Uint8 pid;
+    p >> pid;
+    d = static_cast<ProgramState>(pid);
+    return p;
+}
+//---------------------------------------------------------
 sf::Packet& operator << (sf::Packet& p, PacketIdent id)
 {
     return p << xy::PacketID(id);
@@ -81,3 +95,4 @@ sf::Packet& operator >> (sf::Packet& p, PacketIdent& id)
     id = static_cast<PacketIdent>(a);
     return p;
 }
+//---------------------------------------------------------

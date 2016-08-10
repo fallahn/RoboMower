@@ -256,7 +256,7 @@ void StackLogicComponent::instructionBlockHandler(xy::Component* c, const xy::Me
                     m_slots[i].targeted = false;
                     msgData.component->setStackIndex(i);
 
-                    bool child = (m_slots[i].instruction != Instruction::EngineOff && m_slots[i].instruction != Instruction::EngineOn);
+                    bool child = (m_slots[i].instruction == Instruction::Forward || m_slots[i].instruction == Instruction::Loop);
                     auto instruction = m_slots[i].instruction;
 
                     //send command to enable cropping shader

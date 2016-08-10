@@ -80,6 +80,7 @@ private:
 
     GameUI m_gameUI;
     xy::Network::ClientConnection m_connection;
+    bool m_programFinished;
 
     std::map<xy::ClientID, xy::Entity*> m_playerEntities;
 

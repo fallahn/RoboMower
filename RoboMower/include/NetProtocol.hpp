@@ -45,7 +45,9 @@ enum PacketIdent
     //transport state
     TransportStateChanged,
     //clientID, transport state
-    TransportRequestChange
+    TransportRequestChange,
+    //action
+    ProgramStatus
 };
 
 sf::Packet& operator << (sf::Packet&, PacketIdent);

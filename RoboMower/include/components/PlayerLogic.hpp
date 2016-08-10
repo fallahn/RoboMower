@@ -40,11 +40,12 @@ source distribution.
 class PlayerLogic final : public xy::Component
 {
 public:
-    explicit PlayerLogic(xy::MessageBus&);
+    PlayerLogic(xy::MessageBus&, const sf::Vector2f&);
     ~PlayerLogic() = default;
 
     xy::Component::Type type() const override { return xy::Component::Type::Script; }
     void entityUpdate(xy::Entity&, float) override;
+    void onDelayedStart(xy::Entity&) override;
 
     void setClientID(xy::ClientID);
     void setProgram(const std::vector<sf::Uint8>& program) { m_program = program; }
@@ -54,8 +55,8 @@ public:
     void rewind();
 
 private:
-
-    //std::size_t m_targetIdx;
+    xy::Entity* m_entity;
+    sf::Vector2f m_spawnPosition;
     xy::ClientID m_clientID;
     Direction m_currentDirection;
     sf::Vector2f m_target;
@@ -64,6 +65,8 @@ private:
     TransportStatus m_transportStatus;
     std::vector<sf::Uint8> m_program;
     std::size_t m_programCounter;
+    std::size_t m_loopDestination;
+    sf::Uint8 m_loopCounter;
 
     sf::Uint8 m_currentParameter;
     std::function<bool(xy::Entity&, float)> m_currentAction;
