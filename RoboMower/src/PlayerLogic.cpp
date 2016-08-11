@@ -42,14 +42,6 @@ source distribution.
 
 namespace
 {
-    //const std::array<sf::Vector2f, 4u> targets =
-    //{ 
-    //    sf::Vector2f(1056.f, 160.f),
-    //    sf::Vector2f(1065.f, 736.f),
-    //    sf::Vector2f(224.f, 736.f),
-    //    sf::Vector2f(224.f, 160.f)
-    //};
-
     const float movespeed = 200.f;
 
     //TODO we need to marry this up with what's actually loaded
@@ -125,10 +117,15 @@ PlayerLogic::PlayerLogic(xy::MessageBus& mb, const sf::Vector2f& spawnPosition)
 
     instructions.insert(std::make_pair(Instruction::Loop,
         [this](xy::Entity& entity, float dt)
-    {
-        //m_programCounter = m_loopDestination;
-        //m_loopCounter--;
-        return (m_loopCounter == 0);
+    { 
+        REPORT("Loop count", std::to_string(m_loopCounter));
+                
+        m_loopCounter--;
+        if (m_loopCounter > 0)
+        {
+            m_programCounter = m_loopDestination;
+        }
+        return true;
     }));
 
     m_currentAction = instructions[Instruction::NOP];
@@ -191,14 +188,13 @@ void PlayerLogic::entityUpdate(xy::Entity& entity, float dt)
                 break;
             case Instruction::Loop:
                 m_loopDestination = m_program[m_programCounter++];
-                if (m_loopCounter == 0) //this is wrong because we'll get stuck in this loop forever
-                {
-                    m_loopCounter = m_currentParameter;
-                }
+                if(m_loopCounter == 0) m_loopCounter = m_currentParameter;
                 break;
             }
             //update the current action
             m_currentAction = instructions[instruction];
+
+            REPORT("Program Counter", std::to_string(m_programCounter));
         }
 
         //check if action changed our direction and message if so

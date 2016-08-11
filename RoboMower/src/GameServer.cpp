@@ -186,6 +186,9 @@ void GameServer::handlePacket(const sf::IpAddress& ip, xy::PortNumber port, xy::
             if (program.size() != size)
             {
                 //failed transmission, send request for program again
+                sf::Packet response;
+                response << ProgramStatus << ProgramState::Resend;
+                m_connection.send(clid, response, true);
             }
             else
             {

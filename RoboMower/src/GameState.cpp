@@ -209,20 +209,7 @@ void GameState::handleMessage(const xy::Message& msg)
             if (m_gameUI.getTransportStatus() == TransportStatus::Stopped && m_programFinished)
             {
                 //get the program and send if valid
-                auto program = m_gameUI.getProgram();
-                if (!program.empty())
-                {
-                    sf::Packet packet;
-                    packet << PacketIdent::TransmitProgram;
-                    packet << m_connection.getClientID();
-                    packet << sf::Uint32(program.size());
-                    for (auto data : program)
-                    {
-                        //LOG(std::to_string(data), xy::Logger::Type::Info);
-                        packet << data;
-                    }
-                    m_connection.send(packet, true);
-                }
+                sendProgram();
             }
             else if(m_gameUI.getTransportStatus() == TransportStatus::Paused)
             {
@@ -372,9 +359,29 @@ void GameState::handlePacket(xy::Network::PacketType type, sf::Packet& packet, x
         case ProgramState::Rewound:
             m_programFinished = true;
             break;
+        case ProgramState::Resend:
+            sendProgram();
+            break;
         }
     }
         break;
     default: break;
+    }
+}
+
+void GameState::sendProgram()
+{
+    auto program = m_gameUI.getProgram();
+    if (!program.empty())
+    {
+        sf::Packet packet;
+        packet << PacketIdent::TransmitProgram;
+        packet << m_connection.getClientID();
+        packet << sf::Uint32(program.size());
+        for (auto data : program)
+        {
+            packet << data;
+        }
+        m_connection.send(packet, true);
     }
 }

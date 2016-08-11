@@ -58,7 +58,8 @@ enum class Direction : sf::Uint8
 enum class ProgramState : sf::Uint8
 {
     Finished = 0,
-    Rewound
+    Rewound,
+    Resend
 };
 
 sf::Packet& operator << (sf::Packet& p, TransportStatus ts);

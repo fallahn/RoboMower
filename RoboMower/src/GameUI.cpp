@@ -557,6 +557,24 @@ std::vector<sf::Uint8> GameUI::getProgram() const
         auto* logic = i->getComponent<InstructionBlockLogic>();
         retVal.push_back(sf::Uint8(logic->getInstruction()));
         retVal.push_back(logic->getValue());
+
+        if (logic->getInstruction() == Instruction::Loop)
+        {
+            //find the destination
+            auto* loop = i->getChildren()[0]->getComponent<LoopHandle>();
+
+            //if we assume we can't have nested loops then the program counter
+            //spacing will always be 2 values (this is prime for borkage one day...)
+            auto jump = 2 * loop->getSize();
+            if (jump)
+            {
+                retVal.push_back(sf::Uint8((retVal.size() - 2) - jump)); //- extra 2 for loop bytes
+            }
+            else
+            {
+                retVal.push_back(0);
+            }
+        }
     }
 
     return std::move(retVal);
@@ -627,7 +645,6 @@ void GameUI::addInstructionBlock(const sf::Vector2f& position, const sf::Vector2
     td.setFillColor(sf::Color::Black);
     xy::Util::Position::centreOrigin(td);
     text->setPosition(labelSize / 2.f);
-    //text->move(0.f, textOffset);
     text->setShader(&m_shaderResource.get(Shader::Id::CropText));
     text->setShaderActive(false);
     entity->addComponent<xy::SfDrawableComponent<sf::Text>>(text);
@@ -637,7 +654,8 @@ void GameUI::addInstructionBlock(const sf::Vector2f& position, const sf::Vector2
     lc->setCursorOffset(offset);
     entity->addComponent<InstructionBlockLogic>(lc);
 
-    if (instruction == Instruction::Forward || instruction == Instruction::Loop /*!= Instruction::EngineOff && instruction != Instruction::EngineOn*/)
+    //add input if required
+    if (instruction == Instruction::Forward || instruction == Instruction::Loop)
     {
         auto subEnt = xy::Entity::create(m_messageBus);
         subEnt->setPosition({ labelSize.x + inputBoxSpacing, 0.f });
@@ -650,10 +668,9 @@ void GameUI::addInstructionBlock(const sf::Vector2f& position, const sf::Vector2
         text = std::make_unique<xy::SfDrawableComponent<sf::Text>>(m_messageBus);
         auto& td = text->getDrawable();
         td.setFont(m_fontResource.get("assets/fonts/Console.ttf"));
-        td.setString("0");
+        td.setString("1");
         xy::Util::Position::centreOrigin(td);
         text->setPosition(inputSize / 2.f);
-        //text->move(0.f, textOffset);
         text->setShader(&m_shaderResource.get(Shader::Id::CropText));
         text->setShaderActive(false);
         subEnt->addComponent<xy::SfDrawableComponent<sf::Text>>(text);
@@ -661,9 +678,9 @@ void GameUI::addInstructionBlock(const sf::Vector2f& position, const sf::Vector2
         entity->addChild(subEnt);
     }
 
+    //add loop handle to loops
     if (instruction == Instruction::Loop)
     {
-        //add loop wire
         auto& child = entity->getChildren()[0];
         auto loop = std::make_unique<LoopHandle>(m_messageBus, m_textureResource.get("assets/images/loop_handle.png"), labelSize.y + 22.f); //TODO get the padding value from stack
         //loop->setEnabled(true);

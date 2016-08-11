@@ -50,7 +50,7 @@ namespace
 InputWindow::InputWindow(xy::MessageBus& mb)
     : xy::Component (mb, this),
     m_targetId      (0),
-    m_value         (0),
+    m_value         (1),
     m_blink         (true),
     m_close         (false)
 {
@@ -61,7 +61,7 @@ InputWindow::InputWindow(xy::MessageBus& mb)
     xy::Util::Position::centreOrigin(m_background);
 
     m_text.setPosition(-56.f, -60.f);
-    m_text.setString("0");
+    m_text.setString("1");
 
     m_cursor.setSize({ 10.f, 58.f });
     m_cursor.setPosition(-1.f, cursorTop);
@@ -109,8 +109,8 @@ void InputWindow::handleTextEvent(const sf::Event& evt)
     {
         if (m_strValue.size() < 2)
         {
-            //only want numeric input
-            if (evt.text.unicode > 47 && evt.text.unicode < 58)
+            //only want numeric input, and only 0 when second digit
+            if (evt.text.unicode > (48 - m_strValue.size()) && evt.text.unicode < 58)
             {
                 m_strValue += static_cast<char>(evt.text.unicode);
             }
@@ -118,7 +118,7 @@ void InputWindow::handleTextEvent(const sf::Event& evt)
     }
 
     //update m_value
-    m_value = (m_strValue.empty()) ? 0 : std::atoi(m_strValue.c_str());
+    m_value = (m_strValue.empty()) ? 1 : std::atoi(m_strValue.c_str());
     m_text.setString(m_strValue);
 
     auto bounds = m_text.getGlobalBounds();

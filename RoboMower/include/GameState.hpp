@@ -88,6 +88,7 @@ private:
     void handlePacket(xy::Network::PacketType type, sf::Packet& packet, xy::Network::ClientConnection* connection);
 
     void buildMap();
+    void sendProgram();
 };
 
 #endif //GAME_STATE_HPP_

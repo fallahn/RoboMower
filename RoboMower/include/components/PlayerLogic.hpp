@@ -66,7 +66,7 @@ private:
     std::vector<sf::Uint8> m_program;
     std::size_t m_programCounter;
     std::size_t m_loopDestination;
-    sf::Uint8 m_loopCounter;
+    sf::Int8 m_loopCounter;
 
     sf::Uint8 m_currentParameter;
     std::function<bool(xy::Entity&, float)> m_currentAction;
