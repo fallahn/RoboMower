@@ -28,6 +28,7 @@ source distribution.
 -----------------------------------------------------------------------*/
 
 #include <components/InstructionBlockLogic.hpp>
+#include <components/LoopHandle.hpp>
 #include <Messages.hpp>
 
 #include <xygine/Entity.hpp>
@@ -70,6 +71,48 @@ InstructionBlockLogic::InstructionBlockLogic(xy::MessageBus& mb, Instruction ins
             {
                 m_value = sf::Uint8(msgData.value);
                 //LOG("Set instruction block value to " + std::to_string(m_value), xy::Logger::Type::Info);
+            }
+        }
+    };
+    addMessageHandler(mh);
+
+    //when a block is dropped and this block has a loop handle
+    //check if new block is above and disable loop
+    mh.id = InstructionBlockMessage;
+    mh.action = [this](xy::Component*, const xy::Message& msg)
+    {
+        if (m_instruction == Instruction::Loop)
+        {
+            const auto& msgData = msg.getData<InstructionBlockEvent>();
+            if (msgData.action == InstructionBlockEvent::Dropped)
+            {
+                auto lh = m_entity->getChildren()[0]->getComponent<LoopHandle>();
+                XY_ASSERT(lh, "not a loop!");
+
+                if (msgData.component != this
+                    && msgData.component->getInstruction() == Instruction::Loop)
+                {
+                    auto idx = msgData.component->getStackIndex(); //but... this is set by this event :S
+                    if (idx == m_stackIndex - 1)
+                    {                  
+                        lh->setEnabled(false);
+                    }
+                    else
+                    {
+                        lh->setEnabled(true);
+                    }
+                }
+                else if (msgData.component == this) //resize handle to fit
+                {
+                    if (m_stackIndex == 0)
+                    {                    
+                        lh->setEnabled(false);
+                    }
+                    else if(lh->getSize() > m_stackIndex)
+                    {
+                        lh->setSize(m_stackIndex);
+                    }
+                }
             }
         }
     };

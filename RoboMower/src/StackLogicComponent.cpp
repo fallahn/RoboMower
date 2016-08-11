@@ -247,6 +247,7 @@ void StackLogicComponent::instructionBlockHandler(xy::Component* c, const xy::Me
         case InstructionBlockEvent::Dropped:
         {
             //update the slot data with the block info and vice versa
+            auto lastLoop = m_slots.size(); //so we know the last loop before current (see enable loop, below)
             for (auto i = 0u; i < m_slots.size(); ++i)
             {
                 if (m_slots[i].slotArea.contains(msgData.position))
@@ -262,7 +263,7 @@ void StackLogicComponent::instructionBlockHandler(xy::Component* c, const xy::Me
                     //send command to enable cropping shader
                     xy::Command cmd;
                     cmd.entityID = m_slots[i].occupierID;
-                    cmd.action = [child, instruction](xy::Entity& entity, float)
+                    cmd.action = [child, instruction, lastLoop](xy::Entity& entity, float)
                     {
                         entity.getComponent<xy::SfDrawableComponent<sf::Text>>()->setShaderActive();
                         entity.getComponent<xy::SfDrawableComponent<RoundedRectangle>>()->setShaderActive();
@@ -279,9 +280,23 @@ void StackLogicComponent::instructionBlockHandler(xy::Component* c, const xy::Me
                             {
                                 auto lh = chent.getComponent<LoopHandle>();
                                 lh->setEnabled(true);
+                                //shrink handle to fit if bigger than stack box or
+                                //bigger than previous loop
                                 if (lh->getSize() > idx)
-                                {
+                                {                                   
                                     lh->setSize(idx);
+                                }
+
+                                if (lastLoop < idx)
+                                {
+                                    if (lastLoop == idx - 1) //don't loop back to loop
+                                    {
+                                        lh->setEnabled(false);
+                                    }
+                                    else if (lh->getSize() > (idx - lastLoop)) //loop back as far as last loop
+                                    {
+                                        lh->setSize((idx - lastLoop) - 1);
+                                    }
                                 }
                             }
                         }
@@ -289,6 +304,11 @@ void StackLogicComponent::instructionBlockHandler(xy::Component* c, const xy::Me
                     m_parentEntity->getScene()->sendCommand(cmd);
 
                     break;
+                }
+                //remember this for next iter
+                if (m_slots[i].instruction == Instruction::Loop)
+                {
+                    lastLoop = i;
                 }
             }
 
