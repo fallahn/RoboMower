@@ -65,6 +65,8 @@ public:
     sf::Int32 getStackIndex() const;
     sf::Int32 getPreviousStackIndex() const;
 
+    void setPreviousLoop(sf::Int32 pl) { m_previousLoop = pl; }
+
 private:
     enum class State
     {
@@ -83,6 +85,8 @@ private:
 
     sf::Int32 m_stackIndex;
     sf::Int32 m_previousStackindex;
+
+    sf::Int32 m_previousLoop;
 
     xy::Entity* m_entity;
 };

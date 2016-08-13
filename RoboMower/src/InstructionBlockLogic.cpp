@@ -34,6 +34,7 @@ source distribution.
 #include <xygine/Entity.hpp>
 #include <xygine/util/Vector.hpp>
 #include <xygine/Reports.hpp>
+#include <xygine/Scene.hpp>
 
 namespace
 {
@@ -49,6 +50,7 @@ InstructionBlockLogic::InstructionBlockLogic(xy::MessageBus& mb, Instruction ins
     m_destroyWhenDone   (true),
     m_stackIndex        (-1),
     m_previousStackindex(-1),
+    m_previousLoop      (-1),
     m_entity            (nullptr)
 {
     xy::Component::MessageHandler mh;
@@ -77,7 +79,7 @@ InstructionBlockLogic::InstructionBlockLogic(xy::MessageBus& mb, Instruction ins
     addMessageHandler(mh);
 
     //when a block is dropped and this block has a loop handle
-    //check if new block is above and disable loop
+    //check surrounding blocks and update handle size / visibility
     mh.id = InstructionBlockMessage;
     mh.action = [this](xy::Component*, const xy::Message& msg)
     {
@@ -88,31 +90,41 @@ InstructionBlockLogic::InstructionBlockLogic(xy::MessageBus& mb, Instruction ins
             {
                 auto lh = m_entity->getChildren()[0]->getComponent<LoopHandle>();
                 XY_ASSERT(lh, "not a loop!");
+                //resize handle to fit and enable if suitable
+                if (msgData.component == this) 
+                {
+                    xy::Command cmd;
+                    cmd.entityID = m_entity->getUID();
+                    cmd.action = [this, lh](xy::Entity&, float)
+                    {
+                        if (m_stackIndex == 0 || m_stackIndex == (m_previousLoop + 1))
+                        {
+                            lh->setEnabled(false);
+                            return;
+                        }
 
-                if (msgData.component != this
-                    && msgData.component->getInstruction() == Instruction::Loop)
-                {
-                    auto idx = msgData.component->getStackIndex(); //but... this is set by this event :S
-                    if (idx == m_stackIndex - 1)
-                    {                  
-                        lh->setEnabled(false);
-                    }
-                    else
-                    {
+                        if (lh->getSize() > m_stackIndex)
+                        {
+                            lh->setSize(m_stackIndex);
+                        }
+
+                        if (m_previousLoop < m_stackIndex)
+                        {
+                            auto newSize = (m_stackIndex - m_previousLoop) - 1;
+                            if(newSize < lh->getSize()) lh->setSize(newSize);
+                        }
+
                         lh->setEnabled(true);
-                    }
+                    };
+                    m_entity->getScene()->sendCommand(cmd);
                 }
-                else if (msgData.component == this) //resize handle to fit
-                {
-                    if (m_stackIndex == 0)
-                    {                    
-                        lh->setEnabled(false);
-                    }
-                    else if(lh->getSize() > m_stackIndex)
-                    {
-                        lh->setSize(m_stackIndex);
-                    }
-                }
+            }
+            else if ((msgData.action == InstructionBlockEvent::PickedUp)
+                && msgData.component == this)
+            {
+                auto lh = m_entity->getChildren()[0]->getComponent<LoopHandle>();
+                XY_ASSERT(lh, "not a loop!");
+                lh->setEnabled(false);
             }
         }
     };
