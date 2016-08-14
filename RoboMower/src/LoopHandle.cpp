@@ -35,6 +35,7 @@ source distribution.
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Graphics/Texture.hpp>
+#include <SFML/Window/Mouse.hpp>
 
 namespace
 {
@@ -47,7 +48,9 @@ LoopHandle::LoopHandle(xy::MessageBus& mb, const sf::Texture& texture, float ver
     m_verticalSpacing   (verticalSpacing),
     m_vertexSpacing     (0.f),
     m_enabled           (false),
-    m_size              (0)
+    m_size              (0),
+    m_mouseDown         (false),
+    m_maxSize           (32)
 {
     //this assumes the texture is square and can be divided into a 3x3 grid
     //so that the vertex array can be stretched horizonatally and vertically
@@ -72,18 +75,37 @@ void LoopHandle::entityUpdate(xy::Entity& entity, float)
 
     //REPORT("Mouse Position", "x: " + std::to_string(m_mousePosition.x) + ", y: " + std::to_string(m_mousePosition.y));
 
+    //change colour when mouse over
     if (m_mouseArea.contains(m_mousePosition))
     {
         for (auto& v : m_vertices)
         {
             v.color = hoverColour;
         }
+
+        m_mouseDown = sf::Mouse::isButtonPressed(sf::Mouse::Button::Left);
     }
     else
     {
         for (auto& v : m_vertices)
         {
             v.color = sf::Color::White;
+        }
+
+        if (!sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
+        {
+            m_mouseDown = false;
+        }
+    }
+
+    //resize if mouse down
+    if (m_mouseDown)
+    {
+        //check direction and resize if necessary
+        auto size = static_cast<std::size_t>(std::floor(std::abs(m_mousePosition.y / (m_vertexSpacing + m_verticalSpacing))));
+        if (size != m_size && size < m_maxSize && size > 0)
+        {
+            setSize(size);
         }
     }
 }

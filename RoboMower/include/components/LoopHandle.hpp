@@ -58,6 +58,7 @@ public:
     void setSize(std::size_t);
 
     void setMousePosition(const sf::Vector2f& mp) { m_mousePosition = getTransform().getInverse().transformPoint(mp); }
+    void setMaxSize(std::size_t size) { m_maxSize = size; }
 
 private:
 
@@ -75,6 +76,8 @@ private:
 
     sf::Vector2f m_mousePosition;
     sf::FloatRect m_mouseArea;
+    bool m_mouseDown;
+    std::size_t m_maxSize;
 
     void draw(sf::RenderTarget&, sf::RenderStates) const override;
 };

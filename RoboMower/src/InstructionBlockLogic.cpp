@@ -107,13 +107,20 @@ InstructionBlockLogic::InstructionBlockLogic(xy::MessageBus& mb, Instruction ins
                         {
                             lh->setSize(m_stackIndex);
                         }
-
+                       
                         if (m_previousLoop < m_stackIndex)
-                        {
-                            auto newSize = (m_stackIndex - m_previousLoop) - 1;
-                            if(newSize < lh->getSize()) lh->setSize(newSize);
+                        {                            
+                            auto maxSize = (m_stackIndex - m_previousLoop) - 1;
+                            if (maxSize < lh->getSize())
+                            {
+                                lh->setSize(maxSize);
+                            }
+                            lh->setMaxSize(maxSize + 1);
                         }
-
+                        else
+                        {
+                            lh->setMaxSize(m_stackIndex + 1);
+                        }
                         lh->setEnabled(true);
                     };
                     m_entity->getScene()->sendCommand(cmd);
