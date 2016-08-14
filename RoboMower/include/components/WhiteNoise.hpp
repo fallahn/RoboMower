@@ -27,56 +27,36 @@ source distribution.
 
 -----------------------------------------------------------------------*/
 
-//displays a handle for loop instructions to display jump destination
-
-#ifndef LOOP_HANDLE_HPP_
-#define LOOP_HANDLE_HPP_
+#ifndef RB_WHITE_NOISE_HPP_
+#define RB_WHITE_NOISE_HPP_
 
 #include <xygine/components/Component.hpp>
 
 #include <SFML/Graphics/Drawable.hpp>
+#include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Graphics/Vertex.hpp>
-#include <SFML/Graphics/Transformable.hpp>
+#include <SFML/Graphics/Shader.hpp>
 
-#include <vector>
+#include <array>
 
-class LoopHandle final : public xy::Component, public sf::Drawable, public sf::Transformable
+class WhiteNoise final :public xy::Component, public sf::Drawable
 {
 public:
-    LoopHandle(xy::MessageBus&, const sf::Texture&, float verticalSpacing);
-    ~LoopHandle() = default;
+    explicit WhiteNoise(xy::MessageBus&);
+    ~WhiteNoise() = default;
 
     xy::Component::Type type() const override { return xy::Component::Type::Drawable; }
     void entityUpdate(xy::Entity&, float) override;
 
-    sf::FloatRect globalBounds() const override;
-    sf::FloatRect localBounds() const override;
-
-    void setEnabled(bool);
-
-    std::size_t getSize() const;
-    void setSize(std::size_t);
-
-    void setMousePosition(const sf::Vector2f& mp) { m_mousePosition = getTransform().getInverse().transformPoint(mp); }
-
 private:
 
-    const sf::Texture& m_texture;
-    std::vector<sf::Vertex> m_vertices;
-
-    sf::FloatRect m_localBounds;
-    sf::FloatRect m_globalBounds;
-
-    float m_verticalSpacing;
-    float m_vertexSpacing;
-
-    bool m_enabled;
-    std::size_t m_size;
-
-    sf::Vector2f m_mousePosition;
-    sf::FloatRect m_mouseArea;
+    std::array<sf::Vertex, 4u> m_vertices;
+    sf::Texture m_texture;
+    mutable sf::RenderTexture m_renderTexture;
+    sf::Shader m_shader;
 
     void draw(sf::RenderTarget&, sf::RenderStates) const override;
+
 };
 
-#endif //LOOP_HANDLE_HPP_
+#endif //RB_WHITE_NOISE_HPP_

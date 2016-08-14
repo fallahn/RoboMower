@@ -33,6 +33,7 @@ source distribution.
 #include <components/Tilemap.hpp>
 #include <components/PlayerDrawable.hpp>
 #include <components/NetworkController.hpp>
+#include <components/WhiteNoise.hpp>
 
 #include <xygine/Reports.hpp>
 #include <xygine/Entity.hpp>
@@ -239,8 +240,13 @@ void GameState::buildMap()
     static const sf::Vector2f mapPos(440.f, 40.f);
  
     //le background
-    auto tilemap = xy::Component::create<Tilemap>(m_messageBus, m_textureResource.get("assets/images/tileset.png"));
+    auto whiteNoise = xy::Component::create<WhiteNoise>(m_messageBus);
     auto ent = xy::Entity::create(m_messageBus);
+    ent->addComponent(whiteNoise);
+    m_scene.addEntity(ent, xy::Scene::Layer::BackRear);
+
+    auto tilemap = xy::Component::create<Tilemap>(m_messageBus, m_textureResource.get("assets/images/tileset.png"));
+    ent = xy::Entity::create(m_messageBus);
     ent->addComponent(tilemap);
     ent->setPosition(mapPos);
 

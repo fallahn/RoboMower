@@ -30,10 +30,16 @@ source distribution.
 #include <components/LoopHandle.hpp>
 
 #include <xygine/Entity.hpp>
+#include <xygine/Reports.hpp>
 
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Graphics/Texture.hpp>
+
+namespace
+{
+    const sf::Color hoverColour(10u, 230u, 10u);
+}
 
 LoopHandle::LoopHandle(xy::MessageBus& mb, const sf::Texture& texture, float verticalSpacing)
     : xy::Component     (mb, this),
@@ -63,6 +69,23 @@ LoopHandle::LoopHandle(xy::MessageBus& mb, const sf::Texture& texture, float ver
 void LoopHandle::entityUpdate(xy::Entity& entity, float)
 {
     m_globalBounds = entity.getWorldTransform().transformRect(m_localBounds);
+
+    //REPORT("Mouse Position", "x: " + std::to_string(m_mousePosition.x) + ", y: " + std::to_string(m_mousePosition.y));
+
+    if (m_mouseArea.contains(m_mousePosition))
+    {
+        for (auto& v : m_vertices)
+        {
+            v.color = hoverColour;
+        }
+    }
+    else
+    {
+        for (auto& v : m_vertices)
+        {
+            v.color = sf::Color::White;
+        }
+    }
 }
 
 sf::FloatRect LoopHandle::globalBounds() const
@@ -99,6 +122,11 @@ void LoopHandle::setSize(std::size_t size)
     m_localBounds = {m_vertices.front().position, m_vertices.back().position};
     setOrigin(m_localBounds.width + /*borderThickness*/6.f, -(m_verticalSpacing / 2.f));
     m_size = size;
+
+    //update mouse grabbing area
+    m_mouseArea = m_localBounds;
+    m_mouseArea.height /= 3.f;
+    m_mouseArea.top += m_mouseArea.height * 2.f;
 }
 
 //private

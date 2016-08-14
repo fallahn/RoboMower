@@ -313,7 +313,7 @@ void GameUI::update(float dt, const sf::Vector2f& mousePos)
 
     xy::Command dragCommand;
     dragCommand.category = CommandCategory::InstructionBlock;
-    dragCommand.action = [this](xy::Entity& entity, float) //TODO if we really have to send this every frame make it a member function
+    dragCommand.action = [this](xy::Entity& entity, float)
     {
         auto lc = entity.getComponent<InstructionBlockLogic>();
         if (lc->carried())
@@ -328,7 +328,7 @@ void GameUI::update(float dt, const sf::Vector2f& mousePos)
     };
     m_scene.sendCommand(dragCommand);
 
-    //resend to scroll bar (probably make this a member function too)
+    //resend to scroll bar
     dragCommand.category = CommandCategory::ScrollHandle;
     dragCommand.action = [this](xy::Entity& entity, float)
     {
@@ -343,6 +343,18 @@ void GameUI::update(float dt, const sf::Vector2f& mousePos)
             auto msg = m_messageBus.post<ScrollbarEvent>(MessageId::ScrollbarMessage);
             msg->position = entity.getComponent<ScrollHandleLogic>()->getPosition();
             //REPORT("Scroll Position", std::to_string(msg->position));
+        }
+    };
+    m_scene.sendCommand(dragCommand);
+
+    //and also to any loop handles
+    dragCommand.category = CommandCategory::LoopingHandle;
+    dragCommand.action = [&mousePos](xy::Entity& entity, float)
+    {
+        auto lh = entity.getComponent<LoopHandle>();
+        if (lh)
+        {
+            lh->setMousePosition(entity.getWorldTransform().getInverse().transformPoint(mousePos));
         }
     };
     m_scene.sendCommand(dragCommand);
@@ -686,6 +698,7 @@ void GameUI::addInstructionBlock(const sf::Vector2f& position, const sf::Vector2
         //loop->setEnabled(true);
         loop->setPosition(-(labelSize.x + inputBoxSpacing), 0.f);
         child->addComponent<LoopHandle>(loop);
+        child->addCommandCategories(CommandCategory::LoopingHandle);
     }
 
     m_instructionStack->addChild(entity);
